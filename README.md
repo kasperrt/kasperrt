@@ -1,4 +1,4 @@
-### More meta goes here 🌊
+### Insert more meta-humor here 🌊
 
 <!--
 **kasperrt/kasperrt** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
