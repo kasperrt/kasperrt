@@ -32,6 +32,10 @@
 		width: 50vw;
 		max-width: 600px;
 
+		@media screen and (max-width: 860px) {
+			width: 90%;
+		}
+
 		a {
 			&,
 			&:visited,
@@ -58,6 +62,10 @@
 					width: 30vw;
 					line-height: 1.75;
 
+					@media screen and (max-width: 860px) {
+						width: 100%;
+					}
+
 					p {
 						transform: translate3d(0px, 0px, 0px);
 						-webkit-font-smoothing: antialiased;
@@ -76,6 +84,11 @@
 					left: 0px;
 					bottom: -40px;
 					transition: all 0.1s ease 0s;
+
+					@media screen and (max-width: 860px) {
+						left: unset;
+						right: 0px;
+					}
 				}
 
 				&:hover {
@@ -92,6 +105,10 @@
 				object-fit: cover;
 				background: rgb(45, 45, 45);
 				margin-right: 10px;
+
+				@media screen and (max-width: 860px) {
+					display: none;
+				}
 			}
 		}
 	}

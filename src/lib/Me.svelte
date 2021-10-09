@@ -34,8 +34,20 @@
 		align-items: center;
 		margin-right: 5vw;
 
+		@media screen and (max-width: 860px) {
+			top: 30vh;
+			margin-right: -20vw;
+		}
+
 		img {
 			max-height: 80vh;
+
+			@media screen and (max-width: 860px) {
+				opacity: 0.5;
+				max-width: 95vw;
+				right: 15vw;
+				top: 30vh;
+			}
 		}
 	}
 </style>

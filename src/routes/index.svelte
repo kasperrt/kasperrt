@@ -36,5 +36,12 @@
 		line-height: 1.75;
 		-webkit-font-smoothing: antialiased;
 		transform: translate3d(0px, 0px, 0px);
+
+		@media screen and (max-width: 860px) {
+			width: 95vw;
+			height: auto;
+			margin-top: 0px;
+			max-width: 90vw;
+		}
 	}
 </style>

@@ -32,5 +32,29 @@
 		margin-left: 30px;
 		transform: translate3d(0px, 0px, 0px);
 		-webkit-font-smoothing: antialiased;
+
+		@media screen and (max-width: 860px) {
+			width: 100vw;
+			margin-right: 0px;
+			margin-left: 0px;
+			padding-bottom: 50px;
+		}
+
+		h2 {
+			@media screen and (max-width: 860px) {
+				width: auto;
+				max-width: 100%;
+				padding: 0px 20px 0px 0px;
+				display: flex;
+				flex-direction: row-reverse;
+			}
+		}
+
+		p {
+			@media screen and (max-width: 860px) {
+				padding: 20px;
+				text-align: right;
+			}
+		}
 	}
 </style>

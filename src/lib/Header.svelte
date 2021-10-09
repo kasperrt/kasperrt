@@ -42,12 +42,22 @@
 		transform: translate3d(0px, 0px, 0px);
 		-webkit-font-smoothing: antialiased;
 
+		@media screen and (max-width: 860px) {
+			position: relative;
+			height: auto;
+			width: 100vw;
+		}
+
 		nav {
 			ul {
 				list-style: none;
 				height: 80vh;
 				display: flex;
 				flex-direction: column;
+
+				@media screen and (max-width: 860px) {
+					height: auto;
+				}
 
 				li {
 					list-style: none;
