@@ -37,6 +37,7 @@
 		}
 
 		a {
+			color: black;
 			&,
 			&:visited,
 			&:focus,
