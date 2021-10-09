@@ -19,6 +19,10 @@
 	{#each portfolio as project}
 		<Element {...project} />
 	{/each}
+	<p>
+		more works, projects and employments, see my
+		<a href="https://kasper.rynning-toennesen.no">cv</a>.
+	</p>
 </section>
 
 <style lang="scss">
