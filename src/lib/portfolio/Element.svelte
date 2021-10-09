@@ -43,7 +43,7 @@
 			&:active,
 			&:focus-visible,
 			&:hover {
-				color: inherit;
+				color: black;
 				text-decoration: none;
 			}
 
