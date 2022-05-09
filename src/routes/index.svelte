@@ -10,7 +10,7 @@
 	<h1>👋 hi</h1>
 
 	<p>
-		my name is kasper, and i am a lead developer at aller media norway. i have worked with a range
+		my name is kasper, and i am a lead architect at aller media norway. i have worked with a range
 		of technologies, all from episerver, c# and .net, to golang, svelte, react, vue.js, and mongodb,
 		and a bunch more.
 	</p>
