@@ -26,6 +26,7 @@
 		z-index: -1;
 		width: 80%;
 		height: 80vh;
+		opacity: 0.5;
 		transition: transform 0.1s ease 0s;
 		display: flex;
 		-webkit-box-pack: end;

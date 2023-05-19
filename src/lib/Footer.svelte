@@ -3,7 +3,7 @@
 </script>
 
 <footer>
-	<a href="https://www.github.com">
+	<a href="https://www.github.com/kasperrt">
 		<img src="/images/github.png" alt="github" />
 	</a>
 </footer>

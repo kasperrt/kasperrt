@@ -8,7 +8,7 @@
 	<nav>
 		<ul>
 			<li>
-				<a class:active={$page.path === '/'} sveltekit:prefetch href="/">kasper rynning-tønnesen</a>
+				<a class:active={$page.route.id === '/'} sveltekit:prefetch href="/">kasper rynning-tønnesen</a>
 			</li>
 			<li>
 				<!-- <a class:active={$page.path === '/cv'} sveltekit:prefetch href="/cv">cv</a> -->

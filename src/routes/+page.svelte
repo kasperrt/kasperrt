@@ -1,7 +1,3 @@
-<script context="module" lang="ts">
-	export const prerender = true;
-</script>
-
 <svelte:head>
 	<title>kasperrt</title>
 </svelte:head>
@@ -10,9 +6,8 @@
 	<h1>👋 hi</h1>
 
 	<p>
-		my name is kasper, and i am a lead architect at cybr. i have worked with a range
-		of technologies, all from episerver, c# and .net, to golang, svelte, react, vue.js, and mongodb,
-		and a bunch more.
+		i am kasper the lead architect at cybr. i have worked with a range
+		of technologies, all from golang, svelte, react, postgresql, mongodb, to episerver, c# and .net and a bunch more.
 	</p>
 	<p>programming is one of my hobbies, so i made this to showcase some of my stuff.</p>
 	<p>
