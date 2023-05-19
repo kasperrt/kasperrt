@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 	const images: string[] = [
 		'/images/me-smile.jpg',
-		// '/images/me-work.jpeg',
-		// '/images/me-work-smile.jpeg'
+		'/images/me-work.jpg',
+		'/images/me-work-smile.jpg'
 	];
 	let chosen: string;
 
