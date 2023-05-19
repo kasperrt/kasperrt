@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	const images: string[] = [
-		'/images/me-dumb.jpeg',
-		'/images/me-glad.jpeg',
-		'/images/me-spaghetti.jpeg'
+		'/images/me-smile.jpg',
+		// '/images/me-work.jpeg',
+		// '/images/me-work-smile.jpeg'
 	];
 	let chosen: string;
 
