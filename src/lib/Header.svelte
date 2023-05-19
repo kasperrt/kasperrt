@@ -11,11 +11,6 @@
 				<a class:active={$page.path === '/'} sveltekit:prefetch href="/">kasper rynning-tønnesen</a>
 			</li>
 			<li>
-				<a class:active={$page.path === '/portfolio'} sveltekit:prefetch href="/portfolio"
-					>portfolio</a
-				>
-			</li>
-			<li>
 				<!-- <a class:active={$page.path === '/cv'} sveltekit:prefetch href="/cv">cv</a> -->
 				<a href="https://kasper.rynning-toennesen.no">cv</a>
 			</li>
