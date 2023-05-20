@@ -11,8 +11,7 @@
 				<a class:active={$page.route.id === '/'} sveltekit:prefetch href="/">kasper rynning-tønnesen</a>
 			</li>
 			<li>
-				<!-- <a class:active={$page.path === '/cv'} sveltekit:prefetch href="/cv">cv</a> -->
-				<a href="https://kasper.rynning-toennesen.no">cv</a>
+				<a href="https://kasper.rynning-toennesen.no/?lang=en">cv</a>
 			</li>
 			<li>
 				<a href="https://github.com/kasperrt">github</a>
