@@ -39,8 +39,11 @@
 
 		@media screen and (max-width: 768px) {
 			right: 0px;
+			top: 20vh;
 
-			max-height: 50vh;
+			img {
+				max-height: 50vh;
+			}
 		}
 	}
 </style>
