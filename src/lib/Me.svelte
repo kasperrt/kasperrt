@@ -36,5 +36,11 @@
 		img {
 			max-height: 80vh;
 		}
+
+		@media screen and (max-width: 768px) {
+			right: 0px;
+
+			max-height: 50vh;
+		}
 	}
 </style>
