@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>kasperrt</title>
+	<title>kasper rynning-tønnesen</title>
 </svelte:head>
 
 <section class="left-rotate">
