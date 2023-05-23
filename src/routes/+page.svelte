@@ -6,8 +6,8 @@
 	<h1>👋 hi</h1>
 
 	<p>
-		I am Kasper and I currently work as the lead architect at <a href="https://cybr.ai">CYBR</a>, a
-		tech startup in Norway. Prior to this I worked as the lead architect at aller media norway.
+		I am Kasper and I currently work as the VP of Engineering at Pistachio, a
+		tech startup in Norway. Prior to this I worked as the Lead Architect at Aller Media.
 	</p>
 	<p>
 		I have worked with a range of technologies from golang, react, postgresql - to svelte, c#, mongodb and <a href="https://kasper.rynning-toennesen.no?lang=en">a bunch more</a
