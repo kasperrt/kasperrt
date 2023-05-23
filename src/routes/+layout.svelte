@@ -7,7 +7,6 @@
 
 	 /** @type {import('./$types').PageData} */
 	 export let data:LayoutExport;
-	export const prerender = true;
 
 	const shadowMultiplier = 15;
 	const multiplier = 1;

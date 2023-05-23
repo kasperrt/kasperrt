@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-
-	export const prerender = true;
 </script>
 
 <header class="right-rotate">

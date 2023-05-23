@@ -9,6 +9,8 @@ export function load():LayoutExport {
 	];
 
     return {
-        photo: images[Math.floor(Math.random() * images.length)]
+        photo: images[Math.floor(Math.random() * images.length)],
     };
 }
+
+export const prerender = true
