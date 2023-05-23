@@ -1,13 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Header from '$lib/Header.svelte';
-	import Footer from '$lib/Footer.svelte';
-	import Me from '$lib/Me.svelte';
+	import Photo from '$lib/Photo.svelte';
 	import '../app.css';
+	import type { LayoutExport } from './+layout.server';
+
+	 /** @type {import('./$types').PageData} */
+	 export let data:LayoutExport;
+	export const prerender = true;
 
 	const shadowMultiplier = 15;
 	const multiplier = 1;
 	const meMinimultipler = 5;
+
 
 	onMount(() => {
 		window.addEventListener(
@@ -43,14 +48,12 @@
 
 		const leftRotate = document.querySelectorAll<HTMLElement>('.left-rotate');
 		const rightRotate = document.querySelectorAll<HTMLElement>('.right-rotate');
+
+		const rotate = [...leftRotate].concat([...rightRotate])
 		const shadowContainer = document.querySelectorAll<HTMLElement>('.shadow-container');
 		const shadowTransform = document.querySelectorAll<HTMLElement>('.shadow-transform');
 
-		leftRotate.forEach((element) => {
-			element.style.transform = `translate(${left * multiplier}px, ${top * multiplier}px)`;
-		});
-
-		rightRotate.forEach((element) => {
+		rotate.forEach((element) => {
 			element.style.transform = `translate(${left * multiplier}px, ${top * multiplier}px)`;
 		});
 
@@ -94,7 +97,5 @@
 
 <main>
 	<slot />
-	<Me />
+	<Photo photo={data.photo} />
 </main>
-
-<Footer />

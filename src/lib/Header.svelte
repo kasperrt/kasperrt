@@ -17,7 +17,7 @@
 				<a href="https://github.com/kasperrt">github</a>
 			</li>
 			<li>
-				<a href="https://www.linkedin.com/in/kasper-rynning-t%C3%B8nnesen-101aab95/">linkedin</a>
+				<a href="https://www.linkedin.com/in/kasperrt/">linkedin</a>
 			</li>
 			<li>
 				<a href="mailto:kasper@rynning-toennesen.no">contact</a>
