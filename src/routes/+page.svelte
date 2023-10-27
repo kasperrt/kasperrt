@@ -10,13 +10,13 @@
 		tech startup in Norway. Prior to this I worked as the Lead Architect at Aller Media.
 	</p>
 	<p>
-		I have worked with a range of technologies from golang, react, postgresql - to svelte, c#, mongodb and <a href="https://kasper.rynning-toennesen.no?lang=en">a bunch more</a
+		I have worked with a range of technologies from golang, react, postgresql - to svelte, c#, mongodb and <a href="https://kasper.rynning-toennesen.email?lang=en">a bunch more</a
 		>.
 	</p>
 	<p>
 		Want to get to know me or connect?
 		<br />
-		<a href="mailto:kasper@rynning-toennesen.no">kasper@rynning-toennesen.no</a>
+		<a href="mailto:kasper@rynning-toennesen.email">kasper@rynning-toennesen.email</a>
 	</p>
 </section>
 

@@ -9,7 +9,7 @@
 				<a class:active={$page.route.id === '/'} href="/">kasper rynning-tønnesen</a>
 			</li>
 			<li>
-				<a href="https://kasper.rynning-toennesen.no/?lang=en">cv</a>
+				<a href="https://kasper.rynning-toennesen.email/?lang=en">cv</a>
 			</li>
 			<li>
 				<a href="https://github.com/kasperrt">github</a>
@@ -18,7 +18,7 @@
 				<a href="https://www.linkedin.com/in/kasperrt/">linkedin</a>
 			</li>
 			<li>
-				<a href="mailto:kasper@rynning-toennesen.no">contact</a>
+				<a href="mailto:kasper@rynning-toennesen.email">contact</a>
 			</li>
 		</ul>
 	</nav>
