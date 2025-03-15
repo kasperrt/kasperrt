@@ -1,19 +1,14 @@
+import { useRef } from 'react';
 import { NavLink } from 'react-router';
-import type { Route } from './+types/_root._index';
-
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: 'kasper rynning-tønnesen' },
-    {
-      name: 'description',
-      content: "hi, i'm kasper and welcome to my webpage 👋",
-    },
-  ];
-}
+import { useRotate } from '~/hooks/useRotate';
 
 export default function Index() {
+  const textRef = useRef<HTMLElement>(null);
+
+  useRotate({ elements: [{ multiplier: -0.5, ref: textRef }] });
+
   return (
-    <section className="mb-[15%] flex w-2/5 flex-col gap-y-6 self-center pl-5">
+    <section ref={textRef} className="flex w-2/5 flex-col gap-y-6 self-center pl-5 font-light">
       <h1 className="py-4 text-2xl font-bold">hi 👋</h1>
       <p>
         I am Kasper and I currently work as the VP of Engineering at Pistachio, a tech startup in Norway. Prior to this
