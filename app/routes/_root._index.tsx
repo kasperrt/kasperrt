@@ -8,7 +8,7 @@ export default function Index() {
   useRotate({ elements: [{ multiplier: -0.5, ref: textRef }] });
 
   return (
-    <section ref={textRef} className="flex w-2/5 flex-col gap-y-6 self-center pl-5 font-light">
+    <section ref={textRef} className="flex flex-col gap-y-6 self-center pr-6 pl-5 font-light md:w-2/5">
       <h1 className="py-4 text-2xl font-bold">hi 👋</h1>
       <p>
         I am Kasper and I currently work as the VP of Engineering at Pistachio, a tech startup in Norway. Prior to this

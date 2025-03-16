@@ -30,7 +30,7 @@ export function useRotate({ elements }: Props) {
         if (!element.shadow) {
           continue;
         }
-        curr.style.boxShadow = `${left * element.shadow.multiplier}px ${top * element.shadow.multiplier}px #8e8e8e`;
+        curr.style.boxShadow = `${left * element.shadow.multiplier}px ${top * element.shadow.multiplier}px #8d8d8d`;
       }
     },
     [elements],

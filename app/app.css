@@ -13,4 +13,26 @@ body {
   @media (prefers-color-scheme: dark) {
     color-scheme: dark;
   }
+
+  min-height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+@page {
+  size: auto;
+  margin: 0;
+}
+
+@print {
+  @page :footer {
+    display: none;
+  }
+
+  @page :header {
+    display: none;
+  }
 }

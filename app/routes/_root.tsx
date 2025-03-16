@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { NavLink, Outlet } from 'react-router';
+import { Underline } from '~/components/Underline';
 import { useRotate } from '~/hooks/useRotate';
 import { classNames } from '~/utils/classNames';
 import type { Route } from './+types/_root';
@@ -27,69 +28,42 @@ export default function RootLayout() {
 
   return (
     <>
-      <header ref={headerRef} className="fixed top-2.5 right-2.5 z-10 w-2/5 text-right">
+      <header ref={headerRef} className="top-2.5 right-2.5 z-10 text-right md:fixed md:w-2/5">
         <nav>
           <ul>
             <li className="p-2.5">
               <NavLink
                 to="/"
                 className={({ isActive }) =>
-                  classNames(
-                    'group text-2xl font-bold transition-all duration-300 ease-in-out',
-                    !isActive && 'text-gray-900',
-                    isActive && 'text-red-600',
-                  )
+                  classNames('text-2xl font-bold', !isActive && 'text-gray-900', isActive && 'text-red-600')
                 }
               >
-                <span className="bg-gradient-to-l from-red-600 to-red-600 bg-[length:0%_2px] bg-right-bottom bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-[length:100%_2px]">
-                  kasper rynning-tønnesen
-                </span>
+                <Underline>kasper rynning-tønnesen</Underline>
               </NavLink>
             </li>
             <li className="p-2.5">
               <NavLink
-                to="/cv"
+                to="/more"
                 className={({ isActive }) =>
-                  classNames(
-                    'group text-2xl font-bold transition-all duration-300 ease-in-out',
-                    !isActive && 'text-gray-900',
-                    isActive && 'text-red-600',
-                  )
+                  classNames('text-2xl font-bold', !isActive && 'text-gray-900', isActive && 'text-red-600')
                 }
               >
-                <span className="bg-gradient-to-l from-red-600 to-red-600 bg-[length:0%_2px] bg-right-bottom bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-[length:100%_2px]">
-                  cv
-                </span>
+                <Underline>cv</Underline>
               </NavLink>
             </li>
             <li className="p-2.5">
-              <a
-                href="https://github.com/kasperrt"
-                className="group text-2xl font-bold text-gray-900 transition-all duration-300 ease-in-out"
-              >
-                <span className="bg-gradient-to-l from-red-600 to-red-600 bg-[length:0%_2px] bg-right-bottom bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-[length:100%_2px]">
-                  github
-                </span>
+              <a href="https://github.com/kasperrt" className="group text-2xl font-bold text-gray-900">
+                <Underline>github</Underline>
               </a>
             </li>
             <li className="p-2.5">
-              <a
-                href="https://www.linkedin.com/in/kasperrt/"
-                className="group text-2xl font-bold text-gray-900 transition-all duration-300 ease-in-out"
-              >
-                <span className="bg-gradient-to-l from-red-600 to-red-600 bg-[length:0%_2px] bg-right-bottom bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-[length:100%_2px]">
-                  linkedin
-                </span>
+              <a href="https://www.linkedin.com/in/kasperrt/" className="group text-2xl font-bold text-gray-900">
+                <Underline>linkedin</Underline>
               </a>
             </li>
             <li className="p-2.5">
-              <a
-                href="mailto:kasper@rynning-toennesen.email"
-                className="group text-2xl font-bold text-gray-900 transition-all duration-300 ease-in-out"
-              >
-                <span className="bg-gradient-to-l from-red-600 to-red-600 bg-[length:0%_2px] bg-right-bottom bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-[length:100%_2px]">
-                  contact
-                </span>
+              <a href="mailto:kasper@rynning-toennesen.email" className="group text-2xl font-bold text-gray-900">
+                <Underline>contact</Underline>
               </a>
             </li>
           </ul>
@@ -103,11 +77,11 @@ export default function RootLayout() {
           ref={imageRef}
           src="/me.png"
           alt="Me smiling"
-          className="absolute top-0 bottom-0 left-1/2 m-auto h-auto max-h-4/5 max-w-2/5 opacity-35"
+          className="fixed top-0 bottom-0 left-1/5 m-auto h-auto max-h-4/5 max-w-3/5 opacity-35 md:left-1/2 md:max-w-2/5"
         />
       </picture>
 
-      <main className="relative flex min-h-screen">
+      <main className="relative flex flex-1 md:min-h-screen">
         <Outlet />
       </main>
     </>
