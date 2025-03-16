@@ -15,16 +15,6 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export function meta() {
-  return [
-    { title: 'kasper rynning-tønnesen' },
-    {
-      name: 'description',
-      content: "hi, i'm kasper and welcome to my webpage 👋",
-    },
-  ];
-}
-
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -32,13 +22,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
-        <meta name="og:title" content="kasper rynning-tønnesen" />
-        <meta name="og:description" content="hi, i'm kasper and welcome to my webpage 👋" />
-        <meta name="og:image" content="https://kasperrt.me/me.png" />
-        <meta name="twitter:title" content="kasper rynning-tønnesen" />
-        <meta name="twitter:description" content="hi, i'm kasper and welcome to my webpage 👋" />
-        <meta name="twitter:image" content="https://kasperrt.me/me.png" />
-        <meta property="twitter:card" content="summary_large_image" />
         <Links />
       </head>
       <body>

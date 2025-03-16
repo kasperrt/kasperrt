@@ -3,9 +3,8 @@ import { NavLink, Outlet } from 'react-router';
 import { Underline } from '~/components/Underline';
 import { useRotate } from '~/hooks/useRotate';
 import { classNames } from '~/utils/classNames';
-import type { Route } from './+types/_root';
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
   return [
     { title: 'kasper rynning-tønnesen' },
     {
@@ -77,7 +76,7 @@ export default function RootLayout() {
           ref={imageRef}
           src="/me.png"
           alt="Me smiling"
-          className="fixed top-0 bottom-0 left-1/5 m-auto h-auto max-h-4/5 max-w-3/5 opacity-35 md:left-1/2 md:max-w-2/5"
+          className="fixed top-0 bottom-0 left-1/5 m-auto h-auto max-h-4/5 max-w-3/5 opacity-25 md:left-1/2 md:max-w-2/5 md:opacity-35"
         />
       </picture>
 

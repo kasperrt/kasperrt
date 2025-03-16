@@ -16,7 +16,7 @@ export default function Index() {
       </p>
       <p>
         I have worked with a range of technologies from golang, react, postgresql - to svelte, c#, mongodb and{' '}
-        <NavLink className="text-red-600" to="/cv">
+        <NavLink className="text-red-600" to="/more">
           a bunch more
         </NavLink>
         .
