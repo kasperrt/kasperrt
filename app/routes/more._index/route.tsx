@@ -11,14 +11,14 @@ export const meta = CVMeta;
 export default function CV({ loaderData: { experiences, educations, skills } }: Route.ComponentProps) {
   return (
     <div className="mx-auto max-w-4xl p-6 text-xs">
-      <section className="mb-6 grid grid-cols-12">
+      <section className="mb-5 grid grid-cols-12">
         <picture className="col-span-3 m-auto size-20 overflow-hidden rounded-full object-cover md:size-32">
           <source type="image/webp" srcSet="/me.webp" />
           <source type="image/png" srcSet="/me.png" />
           <img src="/me.png" alt="Me smiling" />
         </picture>
         <div className="col-span-8">
-          <h1 className="mb-6 text-center text-2xl font-bold">Kasper Rynning-Tønnesen</h1>
+          <h1 className="mb-5 text-center text-2xl font-bold">Kasper Rynning-Tønnesen</h1>
           <ul className="mt-2 grid list-none grid-cols-2 gap-2 pl-5 text-gray-700">
             <li>
               <a href="mailto:kasper@rynning-toennesen.email" className="underline">
@@ -55,7 +55,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
           </ul>
         </div>
       </section>
-      <section className="mb-6">
+      <section className="mb-5">
         <h2 className="text-xl font-bold">Experience</h2>
         {experiences.map((experience) => (
           <Fragment key={experience.summary}>
@@ -86,7 +86,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
         ))}
       </section>
 
-      <section className="mb-6 grid grid-cols-12">
+      <section className="mb-5 grid grid-cols-12">
         <h2 className="col-span-12 text-xl font-bold">Skills</h2>
         <ul className="col-span-8 col-start-4 mt-2 grid list-disc grid-cols-3 pl-5 text-gray-700">
           {skills.map((skill) => (
@@ -95,7 +95,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
         </ul>
       </section>
 
-      <section className="mb-6">
+      <section className="mb-5">
         <h2 className="text-xl font-bold">Education</h2>
         {educations.map((education) => (
           <div key={`${education.from}-${education.to}`} className="mt-4 grid grid-cols-12 gap-x-4">
