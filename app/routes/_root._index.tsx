@@ -15,7 +15,7 @@ export default function Index() {
         I worked as the Lead Architect at Aller Media.
       </p>
       <p>
-        I have worked with a range of technologies from golang, react, postgresql - to svelte, c#, mongodb and{' '}
+        I have worked with a range of technologies from go, react, postgresql - to svelte, c#, mongodb and{' '}
         <NavLink className="text-red-600" to="/more">
           a bunch more
         </NavLink>
