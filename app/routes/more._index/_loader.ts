@@ -22,7 +22,8 @@ export function CVLoader() {
       where: 'Pistachio',
       skills: ['Go', 'React', 'PostgreSQL', 'MicroServices', 'node.js', 'Docker'],
       summary:
-        'Fully automated cybersecurity awareness training program that tailors training for every person onboarded in an organization, through artificial intelligence, machine learning, distributed micro-services, and cutting edge frontend, all the while mainting minimal configurability allowing IT-Admins as well as customers to remain secured with minimal interruption in their day-to-day activites.',
+        'Fully automated cyber security awareness training program that tailors training for every person onboarded in an organization, through artificial intelligence, ' +
+        'machine learning, distributed micro-services, and cutting edge frontend, all the while maintaining minimal configurability allowing IT-Admins as well as customers to remain secured with minimal interruption in their day-to-day activities.',
     },
     {
       from: '2023',
@@ -44,7 +45,7 @@ export function CVLoader() {
       where: 'Aller Media',
       skills: ['React', 'svelte', 'Go', 'PostgreSQL', 'MicroServices'],
       summary:
-        'One of Norways largest Media conglomerates housing a range of brands such as Dagbladet, Se&Hør, Børsen and more. ' +
+        "One of Norway's largest Media conglomerates housing a range of brands such as Dagbladet, Se&Hør, Børsen and more. " +
         'Worked with a range of systems, all from frontend applications to structuring recommender-systems and serving content realtime.',
     },
     {
@@ -71,13 +72,13 @@ export function CVLoader() {
       where: 'Knowit Experience',
       skills: ['C#', 'vue.js', 'EpiServer', 'React', 'C#', 'Xamarin.Forms'],
       summary:
-        'Inhouse consultancy in Oslo focusing on C#, EpiServer, and cross-platform mobile-apps, with a strong ideal of delivering all disciplines in a development-cycle, all from design, to analytics, to development.',
+        'In-house consultancy in Oslo focusing on C#, EpiServer, and cross-platform mobile-apps, with a strong ideal of delivering all disciplines in a development-cycle, all from design, to analytics, to development.',
     },
     {
       positions: ['System Developer'],
       summary:
         'Full time system developer, fullstack at Knowit Experience Oslo. ' +
-        'Worked on projects spanning from the Norwegian National Gallery, Bademiljø, PPFinans, and Norsirk. All EpiServer apps, with varying React or Vue.js frontends, with Norsirk using ServiceFabric for micro-serivce architecture.',
+        'Worked on projects spanning from the Norwegian National Gallery, Bademiljø, PPFinans, and Norsirk. All EpiServer apps, with varying React or Vue.js frontends, with Norsirk using ServiceFabric for micro-service architecture.',
     },
     {
       from: '2018',
