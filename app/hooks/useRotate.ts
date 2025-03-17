@@ -44,8 +44,7 @@ export function useRotate({ elements }: Props) {
   );
 
   const onDeviceOrientation = useCallback(
-    (e: Event) => {
-      const event = e as DeviceOrientationEvent;
+    (event: DeviceOrientationEvent) => {
       if (!event || !event.beta || !event.gamma) {
         return;
       }
@@ -75,10 +74,11 @@ export function useRotate({ elements }: Props) {
       return;
     }
 
-    window.addEventListener('orientationchange', onDeviceOrientation, { passive: true });
+    window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     window.addEventListener('mousemove', onMouseMove, { passive: true });
 
     return () => {
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
       window.removeEventListener('mousemove', onMouseMove);
     };
   }, [elements.length, onDeviceOrientation, onMouseMove]);

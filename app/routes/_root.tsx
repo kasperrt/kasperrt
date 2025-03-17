@@ -33,9 +33,7 @@ export default function RootLayout() {
             <li className="p-2.5">
               <NavLink
                 to="/"
-                className={({ isActive }) =>
-                  classNames('text-2xl font-bold', !isActive && 'text-gray-900', isActive && 'text-red-600')
-                }
+                className={({ isActive }) => classNames('text-2xl font-bold', isActive && 'text-red-600')}
               >
                 <Underline>kasper rynning-tønnesen</Underline>
               </NavLink>
@@ -43,25 +41,23 @@ export default function RootLayout() {
             <li className="p-2.5">
               <NavLink
                 to="/more"
-                className={({ isActive }) =>
-                  classNames('text-2xl font-bold', !isActive && 'text-gray-900', isActive && 'text-red-600')
-                }
+                className={({ isActive }) => classNames('text-2xl font-bold', isActive && 'text-red-600')}
               >
                 <Underline>cv</Underline>
               </NavLink>
             </li>
             <li className="p-2.5">
-              <a href="https://github.com/kasperrt" className="group text-2xl font-bold text-gray-900">
+              <a href="https://github.com/kasperrt" className="group text-2xl font-bold">
                 <Underline>github</Underline>
               </a>
             </li>
             <li className="p-2.5">
-              <a href="https://www.linkedin.com/in/kasperrt/" className="group text-2xl font-bold text-gray-900">
+              <a href="https://www.linkedin.com/in/kasperrt/" className="group text-2xl font-bold">
                 <Underline>linkedin</Underline>
               </a>
             </li>
             <li className="p-2.5">
-              <a href="mailto:kasper@rynning-toennesen.email" className="group text-2xl font-bold text-gray-900">
+              <a href="mailto:kasper@rynning-toennesen.email" className="group text-2xl font-bold">
                 <Underline>contact</Underline>
               </a>
             </li>

@@ -35,7 +35,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
               <a href="https://kasperrt.me" className="hidden underline print:block">
                 kasperrt.me
               </a>
-              <NavLink to="/" className="text-red-600 underline print:hidden">
+              <NavLink to="/" className="underline print:hidden">
                 kasperrt.me
               </NavLink>
             </li>
@@ -75,11 +75,10 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
               <div className="col-span-8">
                 {experience.where && <h3 className="font-bold">{experience.where}</h3>}
                 {experience.positions.map((position) => (
-                  <h4 key={position} className="italic">
-                    {position}
-                  </h4>
+                  <h4 key={position}>{position}</h4>
                 ))}
-                <p>{experience.summary}</p>
+                <p className="mt-2">{experience.summary}</p>
+                {experience.skills && <span className="mt-2 block italic">{experience.skills.join(', ')}</span>}
               </div>
             </div>
           </Fragment>
@@ -88,7 +87,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
 
       <section className="mb-5 grid grid-cols-12">
         <h2 className="col-span-12 text-xl font-bold">Skills</h2>
-        <ul className="col-span-8 col-start-4 mt-2 grid list-disc grid-cols-3 pl-5 text-gray-700">
+        <ul className="col-span-8 col-start-4 mt-2 grid list-disc grid-cols-2 gap-x-6 pl-5 text-gray-700 md:grid-cols-3 md:gap-x-4">
           {skills.map((skill) => (
             <li key={skill}>{skill}</li>
           ))}
