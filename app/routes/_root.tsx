@@ -72,7 +72,7 @@ export default function RootLayout() {
           ref={imageRef}
           src="/me.png"
           alt="Me smiling"
-          className="fixed -top-2/5 bottom-0 left-1/5 m-auto h-auto max-h-3/5 max-w-2/5 md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35"
+          className="absolute -top-2/5 bottom-0 left-1/5 m-auto h-auto max-h-3/5 max-w-2/5 md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35"
           style={{
             boxShadow: 'rgb(141, 141, 141) 9.91031px 9.61118px;',
           }}
