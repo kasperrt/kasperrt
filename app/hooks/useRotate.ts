@@ -1,4 +1,5 @@
 import { type RefObject, useCallback, useEffect } from 'react';
+import { hasTouchSupport } from '~/utils/touch';
 
 interface Props {
   elements: {
@@ -71,6 +72,14 @@ export function useRotate({ elements }: Props) {
 
   useEffect(() => {
     if (!elements?.length) {
+      return;
+    }
+
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (hasTouchSupport()) {
       return;
     }
 

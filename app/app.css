@@ -9,12 +9,12 @@
 html,
 body {
   @apply bg-white;
-  min-height: 100vh;
+  @apply min-h-svh;
 }
 
 body {
-  display: flex;
-  flex-direction: column;
+  @apply flex;
+  @apply flex-col;
 }
 
 @page {
