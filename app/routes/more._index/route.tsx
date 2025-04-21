@@ -18,7 +18,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
           pictureClass="col-span-2 m-auto md:col-start-2 print:col-start-2"
           alt="Me smiling"
           imageClass={classNames(
-            'view-transition-picture size-18 overflow-hidden rounded-full object-cover object-top transition-[border] md:size-32',
+            'view-transition-picture min-w-18 min-h-18 max-h-18 max-w-18 md:max-w-32 md:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] md:min-w-32 md:min-h-32',
             isRootTransitioning && 'rounded-full',
           )}
           sources={[
