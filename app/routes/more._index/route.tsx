@@ -1,4 +1,5 @@
 import { NavLink, useViewTransitionState } from 'react-router';
+import { Image } from '~/components/Image';
 import { classNames } from '~/utils/classNames';
 import type { Route } from './+types/route';
 import { CVLoader } from './_loader';
@@ -13,18 +14,24 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
   return (
     <div className="mx-auto max-w-4xl p-6 text-xs">
       <section className="mb-5 grid grid-cols-12 gap-x-4">
-        <picture className="col-span-2 m-auto md:col-start-2 print:col-start-2">
-          <source type="image/webp" srcSet="/me.webp" />
-          <source type="image/png" srcSet="/me.png" />
-          <img
-            src="/me.png"
-            alt="Me smiling"
-            className={classNames(
-              'view-transition-picture size-18 overflow-hidden rounded-full object-cover object-top transition-all md:size-32',
-              isRootTransitioning && 'rounded-full',
-            )}
-          />
-        </picture>
+        <Image
+          pictureClass="col-span-2 m-auto md:col-start-2 print:col-start-2"
+          alt="Me smiling"
+          imageClass={classNames(
+            'view-transition-picture size-18 overflow-hidden rounded-full object-cover object-top transition-[border] md:size-32',
+            isRootTransitioning && 'rounded-full',
+          )}
+          sources={[
+            {
+              type: 'image/webp',
+              srcSet: '/me.webp',
+            },
+            {
+              type: 'image/png',
+              srcSet: '/me.png',
+            },
+          ]}
+        />
         <div className="col-span-8 col-start-4">
           <h1 className="mb-5 text-left text-2xl font-extrabold">
             <span className="view-transition-title">Kasper Rynning-Tønnesen</span>

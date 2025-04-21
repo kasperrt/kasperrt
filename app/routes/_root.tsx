@@ -1,5 +1,6 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { NavLink, Outlet, useViewTransitionState } from 'react-router';
+import { Image } from '~/components/Image';
 import { Underline } from '~/components/Underline';
 import { useRotate } from '~/hooks/useRotate';
 import { classNames } from '~/utils/classNames';
@@ -18,6 +19,11 @@ export default function RootLayout() {
   const imageRef = useRef<HTMLImageElement>(null);
   const headerRef = useRef<HTMLElement>(null);
   const isMoreTransitioning = useViewTransitionState('/more');
+  const [loadedImage, setLoadedImage] = useState<boolean>(false);
+
+  const onImageLoaded = () => {
+    setLoadedImage(true);
+  };
 
   useRotate({
     elements: [
@@ -69,22 +75,30 @@ export default function RootLayout() {
         </nav>
       </header>
 
-      <picture>
-        <source type="image/webp" srcSet="/me.webp" />
-        <source type="image/png" srcSet="/me.png" />
-        <img
-          src="/me.png"
-          alt="Me smiling"
-          ref={imageRef}
-          className={classNames(
-            'view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-min max-h-3/5 max-w-2/5 transition-all md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35',
-            isMoreTransitioning && 'rounded-none',
-          )}
-          style={{
+      <Image
+        alt="Me smiling"
+        ref={imageRef}
+        onLoad={onImageLoaded}
+        imageClass={classNames(
+          'view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-min max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35',
+          isMoreTransitioning && 'rounded-none',
+        )}
+        sources={[
+          {
+            type: 'image/webp',
+            srcSet: '/me.webp',
+          },
+          {
+            type: 'image/png',
+            srcSet: '/me.png',
+          },
+        ]}
+        {...(loadedImage && {
+          style: {
             boxShadow: 'rgb(141, 141, 141) 9.91031px 9.61118px',
-          }}
-        />
-      </picture>
+          },
+        })}
+      />
 
       <main className="relative flex flex-1 md:min-h-svh">
         <Outlet />
