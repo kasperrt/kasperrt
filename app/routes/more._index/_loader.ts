@@ -70,7 +70,7 @@ export function CVLoader() {
       from: '2019',
       to: '2020',
       where: 'Knowit Experience',
-      skills: ['C#', 'vue.js', 'EpiServer', 'React', 'C#', 'Xamarin.Forms'],
+      skills: ['C#', 'vue.js', 'EpiServer', 'React', 'Xamarin.Forms'],
       summary:
         'In-house consultancy in Oslo focusing on C#, EpiServer, and cross-platform mobile-apps, with a strong ideal of delivering all disciplines in a development-cycle, all from design, to analytics, to development.',
     },

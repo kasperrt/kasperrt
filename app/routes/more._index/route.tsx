@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router';
+import { NavLink, useViewTransitionState } from 'react-router';
 import { classNames } from '~/utils/classNames';
 import type { Route } from './+types/route';
 import { CVLoader } from './_loader';
@@ -8,16 +8,27 @@ export const loader = CVLoader;
 export const meta = CVMeta;
 
 export default function CV({ loaderData: { experiences, educations, skills } }: Route.ComponentProps) {
+  const isRootTransitioning = useViewTransitionState('/');
+
   return (
     <div className="mx-auto max-w-4xl p-6 text-xs">
       <section className="mb-5 grid grid-cols-12 gap-x-4">
-        <picture className="col-span-2 m-auto size-18 overflow-hidden rounded-full object-cover md:col-start-2 md:size-32 print:col-start-2">
+        <picture className="col-span-2 m-auto md:col-start-2 print:col-start-2">
           <source type="image/webp" srcSet="/me.webp" />
           <source type="image/png" srcSet="/me.png" />
-          <img src="/me.png" alt="Me smiling" />
+          <img
+            src="/me.png"
+            alt="Me smiling"
+            className={classNames(
+              'view-transition-picture size-18 overflow-hidden rounded-full object-cover object-top transition-all md:size-32',
+              isRootTransitioning && 'rounded-full',
+            )}
+          />
         </picture>
         <div className="col-span-8 col-start-4">
-          <h1 className="mb-5 text-left text-2xl font-extrabold">Kasper Rynning-Tønnesen</h1>
+          <h1 className="mb-5 text-left text-2xl font-extrabold">
+            <span className="view-transition-title">Kasper Rynning-Tønnesen</span>
+          </h1>
           <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700">
             <li>
               <a href="mailto:kasper@rynning-toennesen.email" className="underline">
@@ -34,7 +45,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
               <a href="https://kasperrt.me" className="hidden underline print:block">
                 kasperrt.me
               </a>
-              <NavLink to="/" className="underline print:hidden">
+              <NavLink to="/" viewTransition className="underline print:hidden">
                 kasperrt.me
               </NavLink>
             </li>

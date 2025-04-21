@@ -39,3 +39,11 @@ body {
     margin-bottom: 1.6cm;
   }
 }
+
+.view-transition-picture {
+  view-transition-name: image-expand;
+}
+
+.view-transition-title {
+  view-transition-name: title-change;
+}

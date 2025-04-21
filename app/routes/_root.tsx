@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { NavLink, Outlet } from 'react-router';
+import { NavLink, Outlet, useViewTransitionState } from 'react-router';
 import { Underline } from '~/components/Underline';
 import { useRotate } from '~/hooks/useRotate';
 import { classNames } from '~/utils/classNames';
@@ -17,6 +17,7 @@ export function meta() {
 export default function RootLayout() {
   const imageRef = useRef<HTMLImageElement>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const isMoreTransitioning = useViewTransitionState('/more');
 
   useRotate({
     elements: [
@@ -35,12 +36,15 @@ export default function RootLayout() {
                 to="/"
                 className={({ isActive }) => classNames('text-2xl font-bold', isActive && 'text-red-600')}
               >
-                <Underline>kasper rynning-tønnesen</Underline>
+                <Underline>
+                  <span className="view-transition-title lowercase">Kasper Rynning-Tønnesen</span>
+                </Underline>
               </NavLink>
             </li>
             <li className="p-2.5">
               <NavLink
                 to="/more"
+                viewTransition
                 className={({ isActive }) => classNames('text-2xl font-bold', isActive && 'text-red-600')}
               >
                 <Underline>cv</Underline>
@@ -69,12 +73,15 @@ export default function RootLayout() {
         <source type="image/webp" srcSet="/me.webp" />
         <source type="image/png" srcSet="/me.png" />
         <img
-          ref={imageRef}
           src="/me.png"
           alt="Me smiling"
-          className="absolute -top-2/5 bottom-0 left-1/5 m-auto h-auto max-h-3/5 max-w-2/5 md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35"
+          ref={imageRef}
+          className={classNames(
+            'view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-min max-h-3/5 max-w-2/5 transition-all md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35',
+            isMoreTransitioning && 'rounded-none',
+          )}
           style={{
-            boxShadow: 'rgb(141, 141, 141) 9.91031px 9.61118px;',
+            boxShadow: 'rgb(141, 141, 141) 9.91031px 9.61118px',
           }}
         />
       </picture>
