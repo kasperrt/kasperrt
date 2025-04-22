@@ -27,7 +27,7 @@ export function CVLoader() {
       from: '2022',
       to: 'Present',
       where: 'Pistachio',
-      skills: ['Go', 'React', 'PostgreSQL', 'MicroServices', 'node.js', 'Docker'],
+      skills: ['Go', 'React', 'TypeScript', 'PostgreSQL', 'MicroServices', 'Node.js', 'Docker', 'TailwindCSS'],
       summary:
         "A fully automated cybersecurity awareness training program that adapts to each individual in your organization using AI, machine learning, and distributed microservices — all wrapped in a cutting-edge frontend. It's designed to require minimal setup, keeping both IT admins and end users secure without disrupting their day-to-day work.",
     },
@@ -50,7 +50,7 @@ export function CVLoader() {
       from: '2020',
       to: '2022',
       where: 'Aller Media',
-      skills: ['React', 'svelte', 'Go', 'PostgreSQL', 'MicroServices'],
+      skills: ['React', 'TypeScript', 'Svelte', 'Node.js', 'Go', 'PostgreSQL', 'MicroServices'],
       summary:
         "One of Norway's largest media conglomerates, home to brands like Dagbladet, Se&Hør, Børsen, and more. Worked across a wide range of systems — from frontend applications to designing recommender systems and delivering real-time content.",
     },
@@ -123,7 +123,16 @@ export function CVLoader() {
   const skills: Skill[] = [
     {
       area: 'Languages & Frameworks',
-      points: ['Go', 'JavaScript (React, Node.js, Svelte, Vue.js', 'C#', 'HTML', 'CSS', 'PHP'],
+      points: [
+        'Go',
+        'TypeScript',
+        'JavaScript (React, Node.js, Svelte, Vue.js)',
+        'TailwindCSS',
+        'C#',
+        'HTML',
+        'CSS',
+        'PHP',
+      ],
     },
     {
       area: 'Databases',
@@ -131,7 +140,7 @@ export function CVLoader() {
     },
     {
       area: 'Architecture & Tools',
-      points: ['Microservices', 'Docker'],
+      points: ['MicroServices', 'Docker'],
     },
   ];
 
