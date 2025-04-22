@@ -12,7 +12,12 @@ interface Education {
   from: string;
   to: string;
   where: string;
-  grades: { title: string; grade: string }[];
+  grades: { title: string; grade?: string }[];
+}
+
+interface Skill {
+  area: string;
+  points: string[];
 }
 
 export function CVLoader() {
@@ -100,31 +105,34 @@ export function CVLoader() {
         'Developed a mobile app in Xamarin.Forms for LOS Energy, designed to display real-time power consumption data. Integrated the app with third-party services to provide personalized power consumption advice, enhancing user engagement and energy efficiency.',
     },
     {
-      id: 'uninett',
+      id: 'uninett-summary',
       from: '2016',
       where: 'UNINETT',
-      positions: ['Summer intern', 'Part time developer'],
       skills: ['JavaScript', 'Docker', 'PHP', 'Go'],
+      summary:
+        'Norwegian state-owned company that provides high-speed internet and IT infrastructure services to research and educational institutions in Norway.',
+    },
+    {
+      id: 'uninett-internship',
+      positions: ['Summer intern', 'Part time developer'],
       summary:
         'Developed client integrations for Dataporten (OAuth2.0/OpenID provider), while also containerizing these solutions for scalability and ease of deployment. The integrations spanned various platforms, including SimpleSAML2, WordPress, and OmniAuth. Initially started as a summer internship, which evolved into a longer-term role alongside my studies.',
     },
   ];
 
-  const skills = [
-    'Go',
-    'React',
-    'PostgreSQL',
-    'MicroServices',
-    'Docker',
-    'Node.js',
-    'JavaScript',
-    'HTML',
-    'CSS',
-    'Svelte',
-    'mongodb',
-    'PHP',
-    'C#',
-    'vue.js',
+  const skills: Skill[] = [
+    {
+      area: 'Languages & Frameworks',
+      points: ['Go', 'JavaScript (React, Node.js, Svelte, Vue.js', 'C#', 'HTML', 'CSS', 'PHP'],
+    },
+    {
+      area: 'Databases',
+      points: ['PostgreSQL', 'MongoDB'],
+    },
+    {
+      area: 'Architecture & Tools',
+      points: ['Microservices', 'Docker'],
+    },
   ];
 
   const educations: Education[] = [
@@ -135,11 +143,9 @@ export function CVLoader() {
       grades: [
         {
           title: 'Masters, Informatics',
-          grade: 'B',
         },
         {
           title: 'Bachelors, Informatics',
-          grade: 'C',
         },
       ],
     },

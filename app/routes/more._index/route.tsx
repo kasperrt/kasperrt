@@ -35,9 +35,23 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
             <span className="view-transition-title">Kasper Rynning-Tønnesen</span>
           </h1>
           <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700">
+            <li>Oslo, Norway</li>
+            <li>
+              <a href="https://kasperrt.me" className="hidden underline print:inline-block">
+                website
+              </a>
+              <NavLink to="/" viewTransition className="underline print:hidden">
+                website
+              </NavLink>
+            </li>
             <li>
               <a href="mailto:kasper@rynning-toennesen.email" className="underline">
                 kasper@rynning-toennesen.email
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/kasperrt" className="underline">
+                github
               </a>
             </li>
             <li>
@@ -45,26 +59,10 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
                 +47 977 40 427
               </a>
             </li>
+
             <li>
-              website:{' '}
-              <a href="https://kasperrt.me" className="hidden underline print:inline-block">
-                kasperrt.me
-              </a>
-              <NavLink to="/" viewTransition className="underline print:hidden">
-                kasperrt.me
-              </NavLink>
-            </li>
-            <li>Oslo, Norway</li>
-            <li>
-              github:{' '}
-              <a href="https://github.com/kasperrt" className="underline">
-                kasperrt
-              </a>
-            </li>
-            <li>
-              linkedin:{' '}
               <a href="https://www.linkedin.com/in/kasperrt/" className="underline">
-                kasperrt
+                linkedin
               </a>
             </li>
           </ul>
@@ -100,9 +98,12 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
 
       <section className="mb-5 grid grid-cols-12 gap-x-4">
         <h2 className="col-span-3 text-right text-xl font-extrabold">Skills</h2>
-        <ul className="col-span-8 col-start-4 row-start-2 mt-2 grid list-disc grid-cols-2 gap-x-6 pl-5 text-gray-700 md:grid-cols-3 md:gap-x-4">
-          {skills.map((skill) => (
-            <li key={skill}>{skill}</li>
+        <ul className="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 md:gap-x-4">
+          {skills.map(({ area, points }) => (
+            <li key={area} className="grid grid-cols-12">
+              <b className="col-span-4 font-extrabold">{area}:</b>{' '}
+              <span className="col-span-8 text-gray-600">{points.join(', ')}</span>
+            </li>
           ))}
         </ul>
       </section>
@@ -121,7 +122,8 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
                 <h3 className="font-extrabold">{education.where}</h3>
                 {education.grades?.map(({ title, grade }) => (
                   <h4 key={title}>
-                    {title} - Grade {grade}
+                    {title}
+                    {grade && `- Grade ${grade}`}
                   </h4>
                 ))}
               </div>
