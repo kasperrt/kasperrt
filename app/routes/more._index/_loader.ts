@@ -22,22 +22,19 @@ export function CVLoader() {
       where: 'Pistachio',
       skills: ['Go', 'React', 'PostgreSQL', 'MicroServices', 'node.js', 'Docker'],
       summary:
-        'Fully automated cyber security awareness training program that tailors training for every person onboarded in an organization, through artificial intelligence, ' +
-        'machine learning, distributed micro-services, and cutting edge frontend, all the while maintaining minimal configurability allowing IT-Admins as well as customers to remain secured with minimal interruption in their day-to-day activities.',
+        "A fully automated cybersecurity awareness training program that adapts to each individual in your organization using AI, machine learning, and distributed microservices — all wrapped in a cutting-edge frontend. It's designed to require minimal setup, keeping both IT admins and end users secure without disrupting their day-to-day work.",
     },
     {
       from: '2023',
       positions: ['VP of Engineering'],
       summary:
-        "Responsible for all code written and deployed by company, as well as the functionality and functioning of Pistachio's systems. " +
-        'Managed developers and team members of the tech team, and hiring new members to work at Pistachio, while working with other stakeholders in the company to deliver on Pistachios vision.',
+        "Responsible for all code written and deployed at the company, as well as the overall functionality and performance of Pistachio's systems. Led the tech team — managing developers, hiring new team members, and working closely with other stakeholders to deliver on Pistachio's vision.",
     },
     {
       from: '2022',
       positions: ['Lead Architect'],
       summary:
-        'Responsible for building and maintaining backend and frontend applications, and making key decisions on overall architecture of all technical systems. ' +
-        'Worked on establishing processes for the team on how development work should be distributed on the team.',
+        'Responsible for building and maintaining both backend and frontend applications, while making key decisions on the overall architecture of all technical systems. Also helped establish team processes for how development work should be planned and distributed.',
     },
     {
       from: '2020',
@@ -45,26 +42,25 @@ export function CVLoader() {
       where: 'Aller Media',
       skills: ['React', 'svelte', 'Go', 'PostgreSQL', 'MicroServices'],
       summary:
-        "One of Norway's largest Media conglomerates housing a range of brands such as Dagbladet, Se&Hør, Børsen and more. " +
-        'Worked with a range of systems, all from frontend applications to structuring recommender-systems and serving content realtime.',
+        "One of Norway's largest media conglomerates, home to brands like Dagbladet, Se&Hør, Børsen, and more. Worked across a wide range of systems — from frontend applications to designing recommender systems and delivering real-time content.",
     },
     {
       from: '2022',
       positions: ['Lead Architect'],
       summary:
-        'Overall architectural responsibility for Aller Media distributed apps, both frontend apps and backend apps.',
+        "Held overall architectural responsibility for Aller Media's distributed applications — both frontend and backend.",
     },
     {
       from: '2021',
       positions: ['Lead Developer'],
       summary:
-        'Decision-making around frontend apps and what direction it should go, as well as expanding on newer areas like including new frameworks as svelte.',
+        'Led decision-making around frontend applications and their strategic direction, including exploring and adopting newer frameworks like Svelte.',
     },
     {
       from: '2020',
       positions: ['Developer'],
       summary:
-        "Worked on Aller Medias widespread media business' website on expanding their CMS and interconnected frontends",
+        "Worked on Aller Media's expansive media network, focusing on extending their CMS and integrating interconnected frontend platforms.",
     },
     {
       from: '2019',
@@ -72,25 +68,24 @@ export function CVLoader() {
       where: 'Knowit Experience',
       skills: ['C#', 'vue.js', 'EpiServer', 'Entity Framework', 'React', 'Xamarin.Forms'],
       summary:
-        'In-house consultancy in Oslo with C#, EpiServer, and cross-platform mobile-apps as the primary focus, with a strong ideal of delivering all disciplines in a development-cycle, all from design, to analytics, to development.',
+        'In-house consultancy in Oslo focused on C#, Episerver, and cross-platform mobile apps. Emphasized delivering across the full development cycle — from design and development to analytics — all under one roof.',
     },
     {
       positions: ['System Developer'],
       summary:
-        'Full time system developer, fullstack at Knowit Experience Oslo. ' +
-        'Worked on projects spanning from the Norwegian National Gallery, Bademiljø, PPFinans, and Norsirk. All EpiServer apps, with varying React or Vue.js frontends, with Norsirk using ServiceFabric for micro-service architecture.',
+        'Full-time system developer at Knowit Experience Oslo. Worked on projects for the Norwegian National Gallery, Bademiljø, PPFinans, and Norsirk — all using Episerver, with frontends built in React or Vue.js. Norsirk also utilized ServiceFabric for a microservice architecture.',
     },
     {
       from: '2018',
       positions: ['Summer Internship'],
       summary:
-        'Setup a mobile banking solution for yABank, working full-stack on backend solution for integrating with mobile app.',
+        'Led the setup of a mobile banking solution for yABank, working full-stack to develop and implement the backend infrastructure. Focused on seamless integration between the backend systems and the mobile app, ensuring a smooth and secure user experience.',
     },
     {
       from: '2017',
       positions: ['Summer Internship'],
       summary:
-        'Made a mobile app in Xamarin.Forms for LOS Energy, displaying power consumption and integrating with third parties on power-consumption advice.',
+        'Developed a mobile app in Xamarin.Forms for LOS Energy, designed to display real-time power consumption data. Integrated the app with third-party services to provide personalized power consumption advice, enhancing user engagement and energy efficiency.',
     },
     {
       from: '2016',
@@ -98,8 +93,7 @@ export function CVLoader() {
       positions: ['Summer intern', 'Part time developer'],
       skills: ['JavaScript', 'Docker', 'PHP', 'Go'],
       summary:
-        'Developed client-integrations for dataporten (OAuth2.0 openID provider), as well as containerizing these solutions. ' +
-        'Integrations ranged form SimpleSAML2, WordPress, to OmniAuth. Worked a summer internship that spanned into an internship along side studies to keep expanding integrations.',
+        'Developed client integrations for Dataporten (OAuth2.0/OpenID provider), while also containerizing these solutions for scalability and ease of deployment. The integrations spanned various platforms, including SimpleSAML2, WordPress, and OmniAuth. Initially started as a summer internship, which evolved into a longer-term role alongside my studies.',
     },
   ];
 
@@ -111,8 +105,8 @@ export function CVLoader() {
     'Docker',
     'Node.js',
     'JavaScript',
-    'HTML5',
-    'CSS3',
+    'HTML',
+    'CSS',
     'Svelte',
     'mongodb',
     'PHP',
