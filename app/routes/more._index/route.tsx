@@ -47,7 +47,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
             </li>
             <li>
               website:{' '}
-              <a href="https://kasperrt.me" className="hidden underline print:block">
+              <a href="https://kasperrt.me" className="hidden underline print:inline-block">
                 kasperrt.me
               </a>
               <NavLink to="/" viewTransition className="underline print:hidden">
@@ -74,7 +74,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
         <h2 className="col-span-3 text-right text-xl font-extrabold">Experience</h2>
         <div className="col-span-12">
           {experiences.map((experience) => (
-            <div key={JSON.stringify(experience)} className="print:break-inside-avoid">
+            <div key={experience.id} className="print:break-inside-avoid">
               <div className={classNames('grid grid-cols-12 gap-x-4')}>
                 <div className="col-span-3 text-right">
                   <p className="text-gray-600">
