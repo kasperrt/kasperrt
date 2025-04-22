@@ -35,8 +35,8 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
             <span className="view-transition-title">Kasper Rynning-Tønnesen</span>
           </h1>
           <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700">
-            <li>Oslo, Norway</li>
-            <li>
+            <li className="flex items-center">Oslo, Norway</li>
+            <li className="flex items-center">
               <a href="https://kasperrt.me" className="hidden underline print:inline-block">
                 website
               </a>
@@ -44,23 +44,22 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
                 website
               </NavLink>
             </li>
-            <li>
+            <li className="flex items-center">
               <a href="mailto:kasper@rynning-toennesen.email" className="underline">
                 kasper@rynning-toennesen.email
               </a>
             </li>
-            <li>
+            <li className="flex items-center">
               <a href="https://github.com/kasperrt" className="underline">
                 github
               </a>
             </li>
-            <li>
+            <li className="flex items-center">
               <a href="tel:004797740427" className="underline">
                 +47 977 40 427
               </a>
             </li>
-
-            <li>
+            <li className="flex items-center">
               <a href="https://www.linkedin.com/in/kasperrt/" className="underline">
                 linkedin
               </a>
