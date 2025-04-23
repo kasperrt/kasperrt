@@ -99,9 +99,9 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
         <h2 className="col-span-3 text-right text-xl font-extrabold">Skills</h2>
         <ul className="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 md:gap-x-4">
           {skills.map(({ area, points }) => (
-            <li key={area} className="grid grid-cols-12">
-              <b className="col-span-4 font-extrabold">{area}:</b>{' '}
-              <span className="col-span-8 text-gray-600">{points.join(', ')}</span>
+            <li key={area} className="flex flex-col md:grid md:grid-cols-12">
+              <b className="font-extrabold md:col-span-4">{area}:</b>{' '}
+              <span className="text-gray-600 md:col-span-8">{points.join(', ')}</span>
             </li>
           ))}
         </ul>
