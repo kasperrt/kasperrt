@@ -2,9 +2,11 @@ import { NavLink, useViewTransitionState } from 'react-router';
 import { Image } from '~/components/Image';
 import { classNames } from '~/utils/classNames';
 import type { Route } from './+types/route';
-import { CVLoader } from './_loader';
+import { CVLoader } from './loader';
+import { CVMeta } from './meta';
 
 export const loader = CVLoader;
+export const meta = CVMeta
 
 export default function CV({ loaderData: { experiences, educations, skills } }: Route.ComponentProps) {
   const isRootTransitioning = useViewTransitionState('/');
