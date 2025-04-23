@@ -37,36 +37,33 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
             <span className="view-transition-title">Kasper Rynning-Tønnesen</span>
           </h1>
           <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700">
-            <li>
+            <li className="flex items-center">Oslo, Norway</li>
+            <li className="flex items-center">
+              <a href="https://kasperrt.me" className="hidden underline print:inline-block">
+                website
+              </a>
+              <NavLink to="/" viewTransition className="underline print:hidden">
+                website
+              </NavLink>
+            </li>
+            <li className="flex items-center">
               <a href="mailto:kasper@rynning-toennesen.email" className="underline">
                 kasper@rynning-toennesen.email
               </a>
             </li>
-            <li>
+            <li className="flex items-center">
+              <a href="https://github.com/kasperrt" className="underline">
+                github
+              </a>
+            </li>
+            <li className="flex items-center">
               <a href="tel:004797740427" className="underline">
                 +47 977 40 427
               </a>
             </li>
-            <li>
-              website:{' '}
-              <a href="https://kasperrt.me" className="hidden underline print:block">
-                kasperrt.me
-              </a>
-              <NavLink to="/" viewTransition className="underline print:hidden">
-                kasperrt.me
-              </NavLink>
-            </li>
-            <li>Oslo, Norway</li>
-            <li>
-              github:{' '}
-              <a href="https://github.com/kasperrt" className="underline">
-                kasperrt
-              </a>
-            </li>
-            <li>
-              linkedin:{' '}
+            <li className="flex items-center">
               <a href="https://www.linkedin.com/in/kasperrt/" className="underline">
-                kasperrt
+                linkedin
               </a>
             </li>
           </ul>
@@ -76,7 +73,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
         <h2 className="col-span-3 text-right text-xl font-extrabold">Experience</h2>
         <div className="col-span-12">
           {experiences.map((experience) => (
-            <div key={JSON.stringify(experience)} className="print:break-inside-avoid">
+            <div key={experience.id} className="print:break-inside-avoid">
               <div className={classNames('grid grid-cols-12 gap-x-4')}>
                 <div className="col-span-3 text-right">
                   <p className="text-gray-600">
@@ -102,9 +99,12 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
 
       <section className="mb-5 grid grid-cols-12 gap-x-4">
         <h2 className="col-span-3 text-right text-xl font-extrabold">Skills</h2>
-        <ul className="col-span-8 col-start-4 row-start-2 mt-2 grid list-disc grid-cols-2 gap-x-6 pl-5 text-gray-700 md:grid-cols-3 md:gap-x-4">
-          {skills.map((skill) => (
-            <li key={skill}>{skill}</li>
+        <ul className="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 md:gap-x-4">
+          {skills.map(({ area, points }) => (
+            <li key={area} className="flex flex-col md:grid md:grid-cols-12">
+              <b className="font-extrabold md:col-span-4">{area}:</b>{' '}
+              <span className="text-gray-600 md:col-span-8">{points.join(', ')}</span>
+            </li>
           ))}
         </ul>
       </section>
@@ -123,7 +123,8 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
                 <h3 className="font-extrabold">{education.where}</h3>
                 {education.grades?.map(({ title, grade }) => (
                   <h4 key={title}>
-                    {title} - Grade {grade}
+                    {title}
+                    {grade && `- Grade ${grade}`}
                   </h4>
                 ))}
               </div>

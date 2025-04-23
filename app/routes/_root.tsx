@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { NavLink, Outlet, useViewTransitionState, type MetaDescriptor } from 'react-router';
+import { type MetaDescriptor, NavLink, Outlet, useViewTransitionState } from 'react-router';
 import { Image } from '~/components/Image';
 import { Underline } from '~/components/Underline';
 import { useRotate } from '~/hooks/useRotate';
@@ -10,11 +10,13 @@ export function meta(): MetaDescriptor[] {
     { title: 'Kasper Rynning-Tønnesen' },
     {
       name: 'description',
-      content: "Hi, I'm Kasper, a developer and engineer. Welcome to my personal website, where you can learn more about my projects, expertise, and experience in the tech industry.",
+      content:
+        "Hi, I'm Kasper, a developer and engineer. Welcome to my personal website, where you can learn more about my projects, expertise, and experience in the tech industry.",
     },
     {
       name: 'keywords',
-      content: "Kasper Rynning-Tønnesen, developer, engineer, tech professional, web development, React, JavaScript, software engineering",
+      content:
+        'Kasper Rynning-Tønnesen, developer, engineer, tech professional, web development, React, JavaScript, software engineering',
     },
     {
       name: 'robots',
@@ -26,7 +28,8 @@ export function meta(): MetaDescriptor[] {
     },
     {
       property: 'og:description',
-      content: "Hi, I'm Kasper. Explore my personal site to learn more about my work and the technologies I specialize in.",
+      content:
+        "Hi, I'm Kasper. Explore my personal site to learn more about my work and the technologies I specialize in.",
     },
     {
       property: 'og:image',
@@ -104,7 +107,7 @@ export default function RootLayout() {
         ref={imageRef}
         onLoad={onImageLoaded}
         imageClass={classNames(
-          'view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,_min-content,_auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/5 md:opacity-35',
+          'view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,_min-content,_auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/6',
           isMoreTransitioning && 'rounded-none',
         )}
         sources={[

@@ -50,7 +50,12 @@ export function Image({ pictureClass, imageClass, sources, alt, ref, onLoad: onI
         ref={ref ?? internalRef}
         alt={alt}
         src={fallback.srcSet}
-        className={classNames(imageClass, 'transition-opacity', !loaded && '!opacity-0')}
+        className={classNames(
+          imageClass,
+          'transition-opacity duration-300',
+          !imageClass?.includes('opacity-') && loaded && 'opacity-100',
+          !loaded && '!opacity-0',
+        )}
         onLoad={onLoad}
       />
     </picture>
