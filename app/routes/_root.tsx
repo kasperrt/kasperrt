@@ -108,7 +108,7 @@ export default function RootLayout() {
         onLoad={onImageLoaded}
         imageClass={classNames(
           'view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,_min-content,_auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/6',
-          isMoreTransitioning && 'rounded-none',
+          isMoreTransitioning && 'rounded-none !opacity-100',
         )}
         sources={[
           {
