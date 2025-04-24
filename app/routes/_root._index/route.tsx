@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { NavLink } from 'react-router';
 import { useRotate } from '~/hooks/useRotate';
 
-export default function Index() {
+export default function Root() {
   const textRef = useRef<HTMLElement>(null);
 
   useRotate({ elements: [{ multiplier: -0.5, ref: textRef }] });
@@ -17,7 +17,7 @@ export default function Index() {
       <p>
         I've worked with a bunch of different technologies over the years — from Go, React, and PostgreSQL to Svelte,
         C#, MongoDB, and{' '}
-        <NavLink viewTransition className="text-red-600" to="/more">
+        <NavLink viewTransition prefetch="intent" className="text-red-600" to="/more">
           a bunch more
         </NavLink>
         .

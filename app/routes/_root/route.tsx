@@ -1,46 +1,12 @@
 import { useRef, useState } from 'react';
-import { type MetaDescriptor, NavLink, Outlet, useViewTransitionState } from 'react-router';
+import { NavLink, Outlet, useViewTransitionState } from 'react-router';
 import { Image } from '~/components/Image';
 import { Underline } from '~/components/Underline';
 import { useRotate } from '~/hooks/useRotate';
 import { classNames } from '~/utils/classNames';
+import { rootMeta } from './meta';
 
-export function meta(): MetaDescriptor[] {
-  return [
-    { title: 'Kasper Rynning-Tønnesen' },
-    {
-      name: 'description',
-      content:
-        "Hi, I'm Kasper, a developer and engineer. Welcome to my personal website, where you can learn more about my projects, expertise, and experience in the tech industry.",
-    },
-    {
-      name: 'keywords',
-      content:
-        'Kasper Rynning-Tønnesen, developer, engineer, tech professional, web development, React, JavaScript, software engineering',
-    },
-    {
-      name: 'robots',
-      content: 'index, follow',
-    },
-    {
-      property: 'og:title',
-      content: 'Kasper Rynning-Tønnesen',
-    },
-    {
-      property: 'og:description',
-      content:
-        "Hi, I'm Kasper. Explore my personal site to learn more about my work and the technologies I specialize in.",
-    },
-    {
-      property: 'og:image',
-      content: '/me.png',
-    },
-    {
-      property: 'og:url',
-      content: 'https://kasperrt.me',
-    },
-  ];
-}
+export const meta = rootMeta;
 
 export default function RootLayout() {
   const imageRef = useRef<HTMLImageElement>(null);
@@ -78,6 +44,7 @@ export default function RootLayout() {
               <NavLink
                 to="/more"
                 viewTransition
+                prefetch="intent"
                 className={({ isActive }) => classNames('text-2xl font-bold', isActive && 'text-red-600')}
               >
                 <Underline>cv</Underline>

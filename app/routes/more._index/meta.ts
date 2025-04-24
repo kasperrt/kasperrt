@@ -1,6 +1,6 @@
 import type { MetaDescriptor } from 'react-router';
 
-export function CVMeta(): MetaDescriptor[] {
+export function resumeMeta(): MetaDescriptor[] {
   return [
     { title: 'Kasper Rynning-Tønnesen | More' },
     {

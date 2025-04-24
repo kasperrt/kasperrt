@@ -1,14 +1,13 @@
 import { NavLink, useViewTransitionState } from 'react-router';
 import { Image } from '~/components/Image';
 import { classNames } from '~/utils/classNames';
-import type { Route } from './+types/route';
-import { CVLoader } from './loader';
-import { CVMeta } from './meta';
+import { resumeData } from './data';
+import { resumeMeta } from './meta';
 
-export const loader = CVLoader;
-export const meta = CVMeta
+export const meta = resumeMeta;
 
-export default function CV({ loaderData: { experiences, educations, skills } }: Route.ComponentProps) {
+export default function CV() {
+  const { experiences, educations, skills } = resumeData();
   const isRootTransitioning = useViewTransitionState('/');
 
   return (
@@ -42,7 +41,7 @@ export default function CV({ loaderData: { experiences, educations, skills } }: 
               <a href="https://kasperrt.me" className="hidden underline print:inline-block">
                 website
               </a>
-              <NavLink to="/" viewTransition className="underline print:hidden">
+              <NavLink to="/" viewTransition prefetch="intent" className="underline print:hidden">
                 website
               </NavLink>
             </li>

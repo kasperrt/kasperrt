@@ -20,7 +20,7 @@ interface Skill {
   points: string[];
 }
 
-export function CVLoader() {
+export function resumeData() {
   const experiences: Experience[] = [
     {
       id: 'pistachio-summary',
