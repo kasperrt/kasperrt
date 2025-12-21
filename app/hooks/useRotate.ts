@@ -19,7 +19,7 @@ export function useRotate({ elements }: Props) {
       if (!shadow) {
         return;
       }
-      element.style.boxShadow = `${left * shadow.multiplier}px ${top * shadow.multiplier}px #8d8d8d`;
+      element.style.boxShadow = `${left * shadow.multiplier}px ${top * shadow.multiplier}px var(--image-shadow-color)`;
     },
     [],
   );

@@ -15,9 +15,9 @@ export default function Root() {
         Lead Architect at Aller Media.
       </p>
       <p>
-        I've worked with a bunch of different technologies over the years, from Go, React, and PostgreSQL to Svelte,
-        C#, MongoDB, and{" "}
-        <NavLink viewTransition prefetch="intent" className="text-red-600" to="/more">
+        I've worked with a bunch of different technologies over the years, from Go, React, and PostgreSQL to Svelte, C#,
+        MongoDB, and{" "}
+        <NavLink viewTransition prefetch="intent" className="text-red-600 dark:text-red-400" to="/more">
           a bunch more
         </NavLink>
         .
@@ -25,7 +25,7 @@ export default function Root() {
       <p>
         Want to get in touch or connect?
         <br />
-        <a className="text-red-600" href="mailto:kasper@rynning-toennesen.email">
+        <a className="text-red-600 dark:text-red-400" href="mailto:kasper@rynning-toennesen.email">
           kasper@rynning-toennesen.email
         </a>
       </p>

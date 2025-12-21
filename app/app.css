@@ -8,13 +8,32 @@
 
 html,
 body {
-  @apply bg-white;
+  @apply bg-white text-neutral-900;
   @apply min-h-svh;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+:root {
+  --image-shadow-color: rgb(141, 141, 141);
 }
 
 body {
   @apply flex;
   @apply flex-col;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    @apply bg-neutral-950 text-neutral-100;
+  }
+
+  :root {
+    --image-shadow-color: transparent;
+  }
 }
 
 @page {

@@ -35,7 +35,7 @@ export default function CV() {
           <h1 className="mb-5 text-left font-extrabold text-2xl">
             <span className="view-transition-title">Kasper Rynning-Tønnesen</span>
           </h1>
-          <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700">
+          <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700 dark:text-gray-200">
             <li className="flex items-center">Oslo, Norway</li>
             <li className="flex items-center">
               <a href="https://kasperrt.me" className="hidden underline print:inline-block">
@@ -75,7 +75,7 @@ export default function CV() {
             <div key={experience.id} className="print:break-inside-avoid">
               <div className={classNames("grid grid-cols-12 gap-x-4")}>
                 <div className="col-span-3 text-right">
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-200">
                     {experience.from}
                     {experience.to && ` - ${experience.to}`}
                   </p>
@@ -102,7 +102,7 @@ export default function CV() {
           {skills.map(({ area, points }) => (
             <li key={area} className="flex flex-col md:grid md:grid-cols-12">
               <b className="font-extrabold md:col-span-4">{area}:</b>{" "}
-              <span className="text-gray-600 md:col-span-8">{points.join(", ")}</span>
+              <span className="text-gray-600 md:col-span-8 dark:text-gray-200">{points.join(", ")}</span>
             </li>
           ))}
         </ul>
@@ -114,7 +114,7 @@ export default function CV() {
           {educations.map((education) => (
             <div key={`${education.from}-${education.to}`} className="grid grid-cols-12 gap-x-4">
               <div className="col-span-3 text-right">
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-200">
                   {education.from} - {education.to}
                 </p>
               </div>

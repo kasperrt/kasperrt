@@ -43,8 +43,5 @@
       "brace-expansion": ">=2.0.2"
     }
   },
-  "onlyBuiltDependencies": [
-    "@sentry/cli",
-    "esbuild"
-  ]
+  "onlyBuiltDependencies": ["@sentry/cli", "esbuild"]
 }

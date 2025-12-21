@@ -33,7 +33,9 @@ export default function RootLayout() {
             <li className="p-2.5">
               <NavLink
                 to="/"
-                className={({ isActive }) => classNames("font-bold text-2xl", isActive && "text-red-600")}>
+                className={({ isActive }) =>
+                  classNames("font-bold text-2xl", isActive && "text-red-600 dark:text-red-400")
+                }>
                 <Underline>
                   <span className="view-transition-title lowercase">Kasper Rynning-Tønnesen</span>
                 </Underline>
@@ -44,7 +46,9 @@ export default function RootLayout() {
                 to="/more"
                 viewTransition
                 prefetch="intent"
-                className={({ isActive }) => classNames("font-bold text-2xl", isActive && "text-red-600")}>
+                className={({ isActive }) =>
+                  classNames("font-bold text-2xl", isActive && "text-red-600 dark:text-red-400")
+                }>
                 <Underline>cv</Underline>
               </NavLink>
             </li>
@@ -87,7 +91,7 @@ export default function RootLayout() {
         ]}
         {...(loadedImage && {
           style: {
-            boxShadow: "rgb(141, 141, 141) 9.91031px 9.61118px",
+            boxShadow: "9.91031px 9.61118px var(--image-shadow-color)",
           },
         })}
       />
