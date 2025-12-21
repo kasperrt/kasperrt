@@ -28,7 +28,7 @@ body {
 @media (prefers-color-scheme: dark) {
   html,
   body {
-    @apply bg-neutral-950 text-neutral-100;
+    @apply bg-neutral-900 text-neutral-100;
   }
 
   :root {
