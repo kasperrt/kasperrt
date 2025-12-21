@@ -29,14 +29,14 @@ export function resumeData() {
       where: "Pistachio",
       skills: ["Go", "React", "TypeScript", "PostgreSQL", "MicroServices", "Node.js", "Docker", "TailwindCSS"],
       summary:
-        "A fully automated cybersecurity awareness training program that adapts to each individual in your organization using AI, machine learning, and distributed microservices — all wrapped in a cutting-edge frontend. It's designed to require minimal setup, keeping both IT admins and end users secure without disrupting their day-to-day work.",
+        "A fully automated cybersecurity awareness training program that adapts to each individual in your organization using AI, machine learning, and distributed microservices, all wrapped in a cutting-edge frontend. It's designed to require minimal setup, keeping both IT admins and end users secure without disrupting their day-to-day work.",
     },
     {
       id: "pistachio-vp-engineering",
       from: "2023",
       positions: ["VP of Engineering"],
       summary:
-        "Responsible for all code written and deployed at the company, as well as the overall functionality and performance of Pistachio's systems. Led the tech team — managing developers, hiring new team members, and working closely with other stakeholders to deliver on Pistachio's vision.",
+        "Responsible for all code written and deployed at the company, as well as the overall functionality and performance of Pistachio's systems. Led the tech team, managing developers, hiring new team members, and working closely with other stakeholders to deliver on Pistachio's vision.",
     },
     {
       id: "pistachio-lead-architect",
@@ -52,14 +52,14 @@ export function resumeData() {
       where: "Aller Media",
       skills: ["React", "TypeScript", "Svelte", "Node.js", "Go", "PostgreSQL", "MicroServices"],
       summary:
-        "One of Norway's largest media conglomerates, home to brands like Dagbladet, Se&Hør, Børsen, and more. Worked across a wide range of systems — from frontend applications to designing recommender systems and delivering real-time content.",
+        "One of Norway's largest media conglomerates, home to brands like Dagbladet, Se&Hør, Børsen, and more. Worked across a wide range of systems, from frontend applications to designing recommender systems and delivering real-time content.",
     },
     {
       id: "aller-media-lead-architect",
       from: "2022",
       positions: ["Lead Architect"],
       summary:
-        "Held overall architectural responsibility for Aller Media's distributed applications — both frontend and backend.",
+        "Held overall architectural responsibility for Aller Media's distributed applications, both frontend and backend.",
     },
     {
       id: "aller-media-lead-developer",
@@ -82,13 +82,13 @@ export function resumeData() {
       where: "Knowit Experience",
       skills: ["C#", "vue.js", "TypeScript", "EpiServer", "Entity Framework", "React", "Xamarin.Forms"],
       summary:
-        "In-house consultancy in Oslo focused on C#, Episerver, and cross-platform mobile apps. Emphasized delivering across the full development cycle — from design and development to analytics — all under one roof.",
+        "In-house consultancy in Oslo focused on C#, Episerver, and cross-platform mobile apps. Emphasized delivering across the full development cycle, from design and development to analytics, all under one roof.",
     },
     {
       id: "knowit-system-developer",
       positions: ["System Developer"],
       summary:
-        "Full-time system developer at Knowit Experience Oslo. Worked on projects for the Norwegian National Gallery, Bademiljø, PPFinans, and Norsirk — all using Episerver, with frontends built in React or Vue.js. Norsirk also utilized ServiceFabric for a microservice architecture.",
+        "Full-time system developer at Knowit Experience Oslo. Worked on projects for the Norwegian National Gallery, Bademiljø, PPFinans, and Norsirk, all using Episerver, with frontends built in React or Vue.js. Norsirk also utilized ServiceFabric for a microservice architecture.",
     },
     {
       id: "knowit-summer-internship-yabank",
