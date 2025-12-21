@@ -11,11 +11,11 @@ export default function Root() {
     <section ref={textRef} className="flex flex-col gap-y-6 self-center pr-6 pl-5 font-light md:w-2/5">
       <h1 className="py-4 font-bold text-2xl">hi 👋</h1>
       <p>
-        I'm Kasper, currently working as VP of Engineering at Pistachio — a tech startup in Norway. Before this, I was
+        I'm Kasper, currently working as VP of Engineering at Pistachio, a tech startup in Norway. Before this, I was
         Lead Architect at Aller Media.
       </p>
       <p>
-        I've worked with a bunch of different technologies over the years — from Go, React, and PostgreSQL to Svelte,
+        I've worked with a bunch of different technologies over the years, from Go, React, and PostgreSQL to Svelte,
         C#, MongoDB, and{" "}
         <NavLink viewTransition prefetch="intent" className="text-red-600" to="/more">
           a bunch more
