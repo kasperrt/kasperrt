@@ -1,14 +1,14 @@
-import { NavLink, useViewTransitionState } from 'react-router';
-import { Image } from '~/components/Image';
-import { classNames } from '~/utils/classNames';
-import { resumeData } from './data';
-import { resumeMeta } from './meta';
+import { NavLink, useViewTransitionState } from "react-router";
+import { Image } from "~/components/Image";
+import { classNames } from "~/utils/classNames";
+import { resumeData } from "./data";
+import { resumeMeta } from "./meta";
 
 export const meta = resumeMeta;
 
 export default function CV() {
   const { experiences, educations, skills } = resumeData();
-  const isRootTransitioning = useViewTransitionState('/');
+  const isRootTransitioning = useViewTransitionState("/");
 
   return (
     <div className="mx-auto max-w-4xl p-6 text-xs">
@@ -17,22 +17,22 @@ export default function CV() {
           pictureClass="col-span-2 m-auto md:col-start-2 print:col-start-2"
           alt="Me smiling"
           imageClass={classNames(
-            'view-transition-picture min-w-18 min-h-18 max-h-18 max-w-18 md:max-w-32 md:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] md:min-w-32 md:min-h-32',
-            isRootTransitioning && 'rounded-full !opacity-100',
+            "view-transition-picture min-w-18 min-h-18 max-h-18 max-w-18 md:max-w-32 md:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] md:min-w-32 md:min-h-32",
+            isRootTransitioning && "rounded-full !opacity-100",
           )}
           sources={[
             {
-              type: 'image/webp',
-              srcSet: '/me.webp',
+              type: "image/webp",
+              srcSet: "/me.webp",
             },
             {
-              type: 'image/png',
-              srcSet: '/me.png',
+              type: "image/png",
+              srcSet: "/me.png",
             },
           ]}
         />
         <div className="col-span-8 col-start-4">
-          <h1 className="mb-5 text-left text-2xl font-extrabold">
+          <h1 className="mb-5 text-left font-extrabold text-2xl">
             <span className="view-transition-title">Kasper Rynning-Tønnesen</span>
           </h1>
           <ul className="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700">
@@ -69,11 +69,11 @@ export default function CV() {
         </div>
       </section>
       <section className="mb-5 grid grid-cols-12 gap-x-4">
-        <h2 className="col-span-3 text-right text-xl font-extrabold">Experience</h2>
+        <h2 className="col-span-3 text-right font-extrabold text-xl">Experience</h2>
         <div className="col-span-12">
           {experiences.map((experience) => (
             <div key={experience.id} className="print:break-inside-avoid">
-              <div className={classNames('grid grid-cols-12 gap-x-4')}>
+              <div className={classNames("grid grid-cols-12 gap-x-4")}>
                 <div className="col-span-3 text-right">
                   <p className="text-gray-600">
                     {experience.from}
@@ -82,7 +82,7 @@ export default function CV() {
                 </div>
                 <div className="col-span-8">
                   {experience.where && <h3 className="font-extrabold">{experience.where}</h3>}
-                  {experience.skills && <span className="mb-2 font-light italic">{experience.skills.join(', ')}</span>}
+                  {experience.skills && <span className="mb-2 font-light italic">{experience.skills.join(", ")}</span>}
                   {experience.positions?.map((position) => (
                     <h4 key={position} className="font-medium">
                       {position}
@@ -97,19 +97,19 @@ export default function CV() {
       </section>
 
       <section className="mb-5 grid grid-cols-12 gap-x-4">
-        <h2 className="col-span-3 text-right text-xl font-extrabold">Skills</h2>
+        <h2 className="col-span-3 text-right font-extrabold text-xl">Skills</h2>
         <ul className="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 md:gap-x-4">
           {skills.map(({ area, points }) => (
             <li key={area} className="flex flex-col md:grid md:grid-cols-12">
-              <b className="font-extrabold md:col-span-4">{area}:</b>{' '}
-              <span className="text-gray-600 md:col-span-8">{points.join(', ')}</span>
+              <b className="font-extrabold md:col-span-4">{area}:</b>{" "}
+              <span className="text-gray-600 md:col-span-8">{points.join(", ")}</span>
             </li>
           ))}
         </ul>
       </section>
 
       <section className="mb-5 grid grid-cols-12 gap-x-4">
-        <h2 className="col-span-3 mb-4 text-right text-xl font-extrabold">Education</h2>
+        <h2 className="col-span-3 mb-4 text-right font-extrabold text-xl">Education</h2>
         <div className="col-span-12">
           {educations.map((education) => (
             <div key={`${education.from}-${education.to}`} className="grid grid-cols-12 gap-x-4">

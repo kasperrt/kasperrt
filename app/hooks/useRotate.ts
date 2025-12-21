@@ -1,5 +1,5 @@
-import { type RefObject, useCallback, useEffect } from 'react';
-import { hasTouchSupport } from '~/utils/touch';
+import { type RefObject, useCallback, useEffect } from "react";
+import { hasTouchSupport } from "~/utils/touch";
 
 interface Props {
   elements: {
@@ -13,7 +13,7 @@ interface Props {
 
 export function useRotate({ elements }: Props) {
   const rotate = useCallback(
-    (element: HTMLElement, left: number, top: number, shadow?: Props['elements'][number]['shadow']) => {
+    (element: HTMLElement, left: number, top: number, shadow?: Props["elements"][number]["shadow"]) => {
       element.style.transform = `translate(${left}px, ${top}px)`;
 
       if (!shadow) {
@@ -75,7 +75,7 @@ export function useRotate({ elements }: Props) {
       return;
     }
 
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -83,12 +83,14 @@ export function useRotate({ elements }: Props) {
       return;
     }
 
-    window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
-    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    window.addEventListener("deviceorientation", onDeviceOrientation, {
+      passive: true,
+    });
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
 
     return () => {
-      window.removeEventListener('deviceorientation', onDeviceOrientation);
-      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener("deviceorientation", onDeviceOrientation);
+      window.removeEventListener("mousemove", onMouseMove);
     };
   }, [elements.length, onDeviceOrientation, onMouseMove]);
 }

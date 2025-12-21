@@ -1,7 +1,7 @@
-import { type HTMLAttributes, type RefObject, useEffect, useRef, useState } from 'react';
-import { classNames } from '~/utils/classNames';
+import { type HTMLAttributes, type RefObject, useEffect, useRef, useState } from "react";
+import { classNames } from "~/utils/classNames";
 
-interface Props extends Omit<HTMLAttributes<HTMLImageElement>, 'className'> {
+interface Props extends Omit<HTMLAttributes<HTMLImageElement>, "className"> {
   ref?: RefObject<HTMLImageElement | null>;
   sources: {
     srcSet: string;
@@ -13,21 +13,12 @@ interface Props extends Omit<HTMLAttributes<HTMLImageElement>, 'className'> {
 }
 
 export function Image({ pictureClass, imageClass, sources, alt, ref, onLoad: onInheritLoad, ...rest }: Props) {
-  if (!sources) {
-    return null;
-  }
-
   const internalRef = useRef(null);
   const [loaded, setLoaded] = useState(false);
   const fallback = sources[sources.length - 1];
 
-  const onLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
-    setLoaded(true);
-    onInheritLoad?.(event);
-  };
-
   useEffect(() => {
-    if (typeof document === 'undefined') {
+    if (typeof document === "undefined") {
       return;
     }
 
@@ -36,8 +27,17 @@ export function Image({ pictureClass, imageClass, sources, alt, ref, onLoad: onI
       return;
     }
 
-    c.dispatchEvent(new Event('load'));
+    c.dispatchEvent(new Event("load"));
   }, [ref]);
+
+  const onLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
+    setLoaded(true);
+    onInheritLoad?.(event);
+  };
+
+  if (!sources) {
+    return null;
+  }
 
   return (
     <picture className={pictureClass}>
@@ -52,9 +52,9 @@ export function Image({ pictureClass, imageClass, sources, alt, ref, onLoad: onI
         src={fallback.srcSet}
         className={classNames(
           imageClass,
-          'transition-opacity duration-300',
-          !imageClass?.includes('opacity-') && loaded && 'opacity-100',
-          !loaded && '!opacity-0',
+          "transition-opacity duration-300",
+          !imageClass?.includes("opacity-") && loaded && "opacity-100",
+          !loaded && "opacity-0!",
         )}
         onLoad={onLoad}
       />

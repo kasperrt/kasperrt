@@ -1,6 +1,6 @@
-import { useRef } from 'react';
-import { NavLink } from 'react-router';
-import { useRotate } from '~/hooks/useRotate';
+import { useRef } from "react";
+import { NavLink } from "react-router";
+import { useRotate } from "~/hooks/useRotate";
 
 export default function Root() {
   const textRef = useRef<HTMLElement>(null);
@@ -9,14 +9,14 @@ export default function Root() {
 
   return (
     <section ref={textRef} className="flex flex-col gap-y-6 self-center pr-6 pl-5 font-light md:w-2/5">
-      <h1 className="py-4 text-2xl font-bold">hi 👋</h1>
+      <h1 className="py-4 font-bold text-2xl">hi 👋</h1>
       <p>
         I'm Kasper, currently working as VP of Engineering at Pistachio — a tech startup in Norway. Before this, I was
         Lead Architect at Aller Media.
       </p>
       <p>
         I've worked with a bunch of different technologies over the years — from Go, React, and PostgreSQL to Svelte,
-        C#, MongoDB, and{' '}
+        C#, MongoDB, and{" "}
         <NavLink viewTransition prefetch="intent" className="text-red-600" to="/more">
           a bunch more
         </NavLink>
