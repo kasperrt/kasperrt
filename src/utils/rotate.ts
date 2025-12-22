@@ -23,11 +23,13 @@ export function getRotateElements(): RotateElement[] {
 }
 
 export function rotateElement(
-  el: HTMLElement,
+  {
+    element,
+    tiltMultiplier,
+    shadowMultiplier,
+  }: Pick<RotateElement, "element" | "shadowMultiplier" | "tiltMultiplier">,
   left: number,
-  top: number,
-  shadowMultiplier: number | null,
-  tiltMultiplier: number | null
+  top: number
 ) {
   const maxTilt = 12;
   const tiltX = tiltMultiplier
@@ -37,13 +39,13 @@ export function rotateElement(
     ? Math.max(-maxTilt, Math.min(maxTilt, left * tiltMultiplier))
     : 0;
 
-  el.style.transform = `perspective(1000px) translate3d(${left}px, ${top}px, 0) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+  element.style.transform = `perspective(1000px) translate(${left}px, ${top}px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
 
   if (!shadowMultiplier) {
     return;
   }
 
-  el.style.boxShadow = `${left * shadowMultiplier}px ${
+  element.style.boxShadow = `${left * shadowMultiplier}px ${
     top * shadowMultiplier
   }px var(--image-shadow-color)`;
 }
