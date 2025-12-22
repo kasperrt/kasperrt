@@ -3,45 +3,32 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
-    "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/index.js",
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "sync": "astro sync",
     "check": "pnpm check:lint && pnpm check:format && pnpm check:ts",
     "check:format": "pnpm exec biome format --error-on-warnings",
     "check:lint": "pnpm exec biome lint --error-on-warnings",
-    "check:ts": "react-router typegen && tsc --noEmit",
+    "check:ts": "astro check && tsc --noEmit",
+    "postinstall": "astro sync",
     "check:watch": "tsc --noEmit --watch",
     "fix": "pnpm exec biome check --write",
     "fix:format": "pnpm exec biome format --write",
     "fix:lint": "pnpm exec biome lint --write"
   },
   "dependencies": {
-    "@react-router/fs-routes": "7.11.0",
-    "@react-router/node": "7.11.0",
-    "@react-router/serve": "7.11.0",
-    "@sentry/react": "10.32.1",
-    "@sentry/vite-plugin": "4.6.1",
-    "isbot": "5.1.32",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-router": "7.11.0"
+    "astro": "5.16.6"
   },
   "devDependencies": {
     "@biomejs/biome": "2.3.10",
-    "@react-router/dev": "7.11.0",
     "@tailwindcss/vite": "4.1.18",
     "@types/node": "22",
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
     "tailwindcss": "4.1.18",
-    "typescript": "5.9.3",
-    "vite": "7.3.0",
-    "vite-tsconfig-paths": "6.0.3"
+    "typescript": "5.9.3"
   },
-  "pnpm": {
-    "overrides": {
-      "brace-expansion": ">=2.0.2"
-    }
-  },
-  "onlyBuiltDependencies": ["@sentry/cli", "esbuild"]
+  "onlyBuiltDependencies": [
+    "@sentry/cli",
+    "esbuild"
+  ]
 }
