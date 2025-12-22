@@ -8,6 +8,11 @@ export default defineConfig({
     plugins: [
       tailwind(),
       sentryVitePlugin({
+        sourcemaps: {
+          filesToDeleteAfterUpload: ["./build/**/*.map"],
+          disable: !createSentryRelease,
+        },
+        silent: true,
         org: "kasperrt",
         project: "kasperrtme",
       }),
