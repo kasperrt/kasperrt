@@ -95,13 +95,14 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
       backgroundImage && (
         <Image
           data-rotate="4"
-          data-shadow-multiplier="5"
+          data-shadow-multiplier="-7.5"
+          data-tilt-multiplier="1"
           sources={[
             { srcSet: "/me.webp", type: "image/webp" },
             { srcSet: "/me.png", type: "image/png" },
           ]}
           style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
-          imageClass="view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/6"
+          imageClass="view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/6 rounded-sm"
         />
       )
     }
@@ -124,10 +125,15 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
 
         const { clientWidth, clientHeight } = document.documentElement;
 
-        for (const { element, multiplier, shadowMultiplier } of elements) {
+        for (const {
+          element,
+          multiplier,
+          shadowMultiplier,
+          tiltMultiplier,
+        } of elements) {
           const left = (event.clientX / clientWidth - 0.5) * multiplier;
           const top = (event.clientY / clientHeight - 0.5) * multiplier;
-          rotateElement(element, left, top, shadowMultiplier);
+          rotateElement(element, left, top, shadowMultiplier, tiltMultiplier);
         }
       }
 
@@ -140,10 +146,21 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
         const y = Math.round(event.beta * 10) / 10;
         const movement = 0.5;
 
-        for (const { element, multiplier, shadowMultiplier } of elements) {
+        for (const {
+          element,
+          multiplier,
+          shadowMultiplier,
+          tiltMultiplier,
+        } of elements) {
           const left = -(x / 10) * movement * multiplier;
           const top = (y / 10) * movement * multiplier;
-          rotateElement(element, -(left - 0.5), -(top - 0.5), shadowMultiplier);
+          rotateElement(
+            element,
+            -(left - 0.5),
+            -(top - 0.5),
+            shadowMultiplier,
+            tiltMultiplier
+          );
         }
       }
 
