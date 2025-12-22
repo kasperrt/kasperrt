@@ -10,7 +10,7 @@ export default defineConfig({
       sentryVitePlugin({
         sourcemaps: {
           filesToDeleteAfterUpload: ["./build/**/*.map"],
-          disable: !createSentryRelease,
+          disable: false,
         },
         silent: true,
         org: "kasperrt",
