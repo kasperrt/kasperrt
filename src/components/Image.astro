@@ -12,13 +12,7 @@ interface Props {
   [key: string]: unknown;
 }
 
-const {
-  pictureClass,
-  imageClass,
-  sources = [],
-  alt = "",
-  ...rest
-} = Astro.props;
+const { pictureClass, imageClass, sources = [], alt = "", ...rest } = Astro.props;
 
 const fallback = sources[sources.length - 1];
 const imageClasses = [

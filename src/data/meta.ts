@@ -6,7 +6,8 @@ export const rootMeta = {
     "Kasper Rynning-Tønnesen, developer, engineer, tech professional, web development, React, JavaScript, software engineering",
   robots: "index, follow",
   ogTitle: "Kasper Rynning-Tønnesen",
-  ogDescription: "Hi, I'm Kasper. Explore my personal site to learn more about my work and the technologies I specialize in.",
+  ogDescription:
+    "Hi, I'm Kasper. Explore my personal site to learn more about my work and the technologies I specialize in.",
   ogImage: "/me.png",
   ogUrl: "https://kasperrt.me",
   twitterHandle: "kasper_rt",
