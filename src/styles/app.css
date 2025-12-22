@@ -25,17 +25,6 @@ body {
   @apply flex-col;
 }
 
-@media (prefers-color-scheme: dark) {
-  html,
-  body {
-    @apply bg-neutral-900 text-neutral-100;
-  }
-
-  :root {
-    --image-shadow-color: transparent;
-  }
-}
-
 @page {
   size: A4;
   margin-top: 50px;
@@ -65,4 +54,34 @@ body {
 
 .view-transition-title {
   view-transition-name: title-change;
+}
+
+.markdown a {
+  @apply text-red-600 dark:text-red-400;
+}
+
+@layer base {
+  html {
+    @apply antialiased;
+  }
+  body {
+    @apply text-base;
+  }
+  h1 {
+    @apply text-2xl font-bold;
+  }
+  h2 {
+    @apply text-xl font-extrabold;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    @apply bg-neutral-900 text-white;
+  }
+
+  :root {
+    --image-shadow-color: transparent;
+  }
 }

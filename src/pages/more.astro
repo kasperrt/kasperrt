@@ -1,0 +1,166 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Image from "../components/Image.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { resumeMeta } from "../data/meta";
+import type { Education, Experience, Skills } from "../schemas/more";
+
+const collection: CollectionEntry<"more">[] = await getCollection("more");
+
+const experienceEntries = collection
+  .filter((entry): entry is CollectionEntry<"more"> & { data: Experience } => entry.data.type === "experience")
+  .sort((a, b) => a.data.order - b.data.order);
+
+const experiences = await Promise.all(
+  experienceEntries.map(async (entry) => {
+    const { Content } = await entry.render();
+    return { ...entry, Content };
+  }),
+);
+
+const skills = collection
+  .filter((entry): entry is CollectionEntry<"more"> & { data: Skills } => entry.data.type === "skills")
+  .sort((a, b) => a.data.order - b.data.order);
+
+const educations = collection
+  .filter((entry): entry is CollectionEntry<"more"> & { data: Education } => entry.data.type === "education")
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout {...resumeMeta} backgroundImage={false} menu={false}>
+  <div class="mx-auto max-w-4xl p-6 text-xs">
+    <section class="mb-5 grid grid-cols-12 gap-x-4">
+      <Image
+        pictureClass="col-span-2 m-auto md:col-start-2 print:col-start-2"
+        alt="Me smiling"
+        imageClass="view-transition-picture min-w-18 min-h-18 max-h-18 max-w-18 md:max-w-32 md:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] md:min-w-32 md:min-h-32"
+        sources={[
+          {
+            type: "image/webp",
+            srcSet: "/me.webp",
+          },
+          {
+            type: "image/png",
+            srcSet: "/me.png",
+          },
+        ]}
+      />
+      <div class="col-span-8 col-start-4">
+        <h1 class="mb-5 text-left font-extrabold text-2xl">
+          <span class="view-transition-title">Kasper Rynning-Tønnesen</span>
+        </h1>
+        <ul
+          class="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700 dark:text-neutral-100"
+        >
+          <li class="flex items-center">Oslo, Norway</li>
+          <li class="flex items-center">
+            <a
+              href="https://kasperrt.me"
+              class="hidden underline print:inline-block">website</a
+            >
+            <a href="/" class="underline print:hidden">website</a>
+          </li>
+          <li class="flex items-center">
+            <a href="mailto:kasper@rynning-toennesen.email" class="underline">
+              kasper@rynning-toennesen.email
+            </a>
+          </li>
+          <li class="flex items-center">
+            <a href="https://github.com/kasperrt" class="underline">github</a>
+          </li>
+          <li class="flex items-center">
+            <a href="tel:004797740427" class="underline">+47 977 40 427</a>
+          </li>
+          <li class="flex items-center">
+            <a href="https://www.linkedin.com/in/kasperrt/" class="underline"
+              >linkedin</a
+            >
+          </li>
+        </ul>
+      </div>
+    </section>
+    <section class="mb-5 grid grid-cols-12 gap-x-4">
+      <h2 class="col-span-3 text-right font-extrabold text-xl">Experience</h2>
+      <div class="col-span-12">
+        {
+          experiences.map((experience) => (
+            <div class="print:break-inside-avoid">
+              <div class="grid grid-cols-12 gap-x-4">
+                <div class="col-span-3 text-right">
+                  <p class="text-gray-600 dark:text-neutral-100">
+                    {experience.data.from}
+                    {experience.data.to && ` - ${experience.data.to}`}
+                  </p>
+                </div>
+                <div class="col-span-8">
+                  {experience.data.where && (
+                    <h3 class="font-extrabold">{experience.data.where}</h3>
+                  )}
+                  {experience.data.skills && (
+                    <span class="mb-2 font-light italic">
+                      {experience.data.skills.join(", ")}
+                    </span>
+                  )}
+                  {experience.data.positions?.map((position) => (
+                    <h4 class="font-medium">{position}</h4>
+                  ))}
+                  {experience.Content && (
+                    <div class="mb-4">
+                      <experience.Content />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="mb-5 grid grid-cols-12 gap-x-4">
+      <h2 class="col-span-3 text-right font-extrabold text-xl">Skills</h2>
+      <ul
+        class="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 md:gap-x-4"
+      >
+        {
+          skills.map((skill) => (
+            <li class="flex flex-col md:grid md:grid-cols-12">
+              <b class="font-extrabold md:col-span-4">{skill.data.area}:</b>
+              <span class="text-gray-600 dark:text-neutral-100 md:col-span-8">
+                {skill.data.points.join(", ")}
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="mb-5 grid grid-cols-12 gap-x-4">
+      <h2 class="col-span-3 mb-4 text-right font-extrabold text-xl">
+        Education
+      </h2>
+      <div class="col-span-12">
+        {
+          educations.map((education) => (
+            <div class="grid grid-cols-12 gap-x-4">
+              <div class="col-span-3 text-right">
+                <p class="text-gray-600 dark:text-neutral-100">
+                  {education.data.from} - {education.data.to}
+                </p>
+              </div>
+              <div class="col-span-8">
+                <h3 class="font-extrabold">{education.data.where}</h3>
+                {education.data.grades?.map(({ title, grade }) => (
+                  <h4>
+                    {title}
+                    {grade && `- Grade ${grade}`}
+                  </h4>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>

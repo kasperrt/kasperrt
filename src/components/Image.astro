@@ -1,0 +1,36 @@
+---
+interface Source {
+  srcSet: string;
+  type: string;
+}
+
+interface Props {
+  pictureClass?: string;
+  imageClass?: string;
+  sources?: Source[];
+  alt?: string;
+  [key: string]: unknown;
+}
+
+const { pictureClass, imageClass, sources = [], alt = "", ...rest } = Astro.props;
+
+const fallback = sources[sources.length - 1];
+const imageClasses = [
+  imageClass,
+  "transition-opacity duration-300",
+  imageClass?.includes("opacity-") ? "" : "opacity-0!",
+]
+  .filter(Boolean)
+  .join(" ");
+---
+
+<picture class={pictureClass}>
+  {sources.map((props: Source) => <source {...props} />)}
+  <img
+    {...rest}
+    alt={alt}
+    src={fallback?.srcSet}
+    class={imageClasses}
+    onload="this.classList.add('opacity-100'); this.classList.remove('opacity-0!');"
+  />
+</picture>

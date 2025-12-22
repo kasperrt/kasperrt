@@ -1,0 +1,190 @@
+---
+import "../styles/app.css";
+import Header from "~/components/Header.astro";
+import { ClientRouter } from "astro:transitions";
+import Image from "~/components/Image.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  keywords: string;
+  robots: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImage: string;
+  backgroundImage: boolean;
+  menu: boolean;
+  twitterHandle: string;
+  author?: string;
+  ogUrl?: string;
+}
+
+const {
+  title,
+  description,
+  keywords,
+  robots,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  backgroundImage,
+  menu,
+  twitterHandle,
+  author = "Kasper Rynning-Tønnesen",
+  ogUrl: ogUrlProp,
+}: Props = Astro.props;
+const activePath = Astro.url.pathname;
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
+const ogUrl = ogUrlProp ?? canonicalUrl;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script
+      defer
+      is:inline
+      data-domain="kasperrt.me"
+      src="https://analytics.kasperrt.me/js/script.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="robots" content={robots} />
+    <meta name="author" content={author} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:image" content={ogImage} />
+    {ogUrl && <meta property="og:url" content={ogUrl} />}
+    <meta property="og:site_name" content={author} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${twitterHandle}`} />
+    <meta name="twitter:creator" content={`@${twitterHandle}`} />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta
+      name="theme-color"
+      content="#ffffff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#0f0f0f"
+      media="(prefers-color-scheme: dark)"
+    />
+  </head>
+
+  <body>
+    {
+      backgroundImage && (
+        <Image
+          data-rotate="4"
+          data-shadow-multiplier="5"
+          sources={[
+            { srcSet: "/me.webp", type: "image/webp" },
+            { srcSet: "/me.png", type: "image/png" },
+          ]}
+          style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
+          imageClass="view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] md:fixed md:top-0 md:left-1/2 md:max-h-4/5 md:max-w-2/6"
+        />
+      )
+    }
+
+    {menu && <Header activePath={activePath} />}
+
+    <main class="relative flex flex-1 md:min-h-svh">
+      <slot />
+    </main>
+
+    <script>
+      const hasTouchSupport = () =>
+        "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+      const elements = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-rotate]")
+      )
+        .map((element) => {
+          const multiplier = Number(element.getAttribute("data-rotate")) || 1;
+          const shadowMultiplier = element.getAttribute(
+            "data-shadow-multiplier"
+          );
+          return {
+            element,
+            multiplier,
+            shadowMultiplier: shadowMultiplier
+              ? Number(shadowMultiplier)
+              : null,
+          };
+        })
+        .filter(({ element }) => element instanceof HTMLElement);
+
+      const rotate = (
+        el: HTMLElement,
+        left: number,
+        top: number,
+        shadowMultiplier: number | null
+      ) => {
+        el.style.transform = `translate(${left}px, ${top}px)`;
+
+        if (!shadowMultiplier) {
+          return;
+        }
+
+        el.style.boxShadow = `${left * shadowMultiplier}px ${top * shadowMultiplier}px var(--image-shadow-color)`;
+      };
+
+      const onMouseMove = (event: MouseEvent) => {
+        if (!document) {
+          return;
+        }
+
+        const { clientWidth, clientHeight } = document.documentElement;
+
+        for (const { element, multiplier, shadowMultiplier } of elements) {
+          const left = (event.clientX / clientWidth - 0.5) * multiplier;
+          const top = (event.clientY / clientHeight - 0.5) * multiplier;
+          rotate(element, left, top, shadowMultiplier);
+        }
+      };
+
+      const onDeviceOrientation = (event: DeviceOrientationEvent) => {
+        if (!event || !event.beta || !event.gamma) {
+          return;
+        }
+
+        const x = Math.round(event.gamma * 10) / 10;
+        const y = Math.round(event.beta * 10) / 10;
+        const movement = 0.5;
+
+        for (const { element, multiplier, shadowMultiplier } of elements) {
+          const left = -(x / 10) * movement * multiplier;
+          const top = (y / 10) * movement * multiplier;
+          rotate(element, -(left - 0.5), -(top - 0.5), shadowMultiplier);
+        }
+      };
+
+      if (!hasTouchSupport()) {
+        window.addEventListener("deviceorientation", onDeviceOrientation, {
+          passive: true,
+        });
+        window.addEventListener("mousemove", onMouseMove, { passive: true });
+      }
+    </script>
+  </body>
+</html>
+
+<ClientRouter />

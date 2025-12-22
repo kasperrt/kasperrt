@@ -1,0 +1,69 @@
+---
+import { classNames } from "~/utils/classNames";
+import Underline from "./Underline.astro";
+
+interface Props {
+  activePath: string;
+}
+
+const { activePath } = Astro.props;
+const isHome = activePath === "/";
+const isMore = activePath === "/more" || activePath === "/more/";
+---
+
+<header
+  data-rotate="-0.5"
+  class="top-2.5 right-2.5 z-10 text-right md:fixed md:w-2/5"
+>
+  <nav>
+    <ul>
+      <li class="p-2.5">
+        <a
+          href="/"
+          class={classNames(
+            "font-bold text-2xl",
+            isHome && "text-red-600 dark:text-red-400"
+          )}
+        >
+          <Underline>
+            <span class="view-transition-title lowercase"
+              >Kasper Rynning-Tønnesen</span
+            >
+          </Underline>
+        </a>
+      </li>
+      <li class="p-2.5">
+        <a
+          href="/more"
+          class={classNames(
+            "font-bold text-2xl",
+            isMore && "text-red-600 dark:text-red-400"
+          )}
+        >
+          <Underline>cv</Underline>
+        </a>
+      </li>
+      <li class="p-2.5">
+        <a href="https://github.com/kasperrt" class="group font-bold text-2xl">
+          <Underline>github</Underline>
+        </a>
+      </li>
+      <li class="p-2.5">
+        <a
+          href="https://www.linkedin.com/in/kasperrt/"
+          class="group font-bold text-2xl"
+        >
+          <Underline>linkedin</Underline>
+        </a>
+      </li>
+      <li class="p-2.5">
+        <a
+          href="mailto:kasper@rynning-toennesen.email"
+          class="group font-bold text-2xl"
+        >
+          <Underline>contact</Underline>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</header>
