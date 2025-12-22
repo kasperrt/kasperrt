@@ -34,9 +34,7 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site
-  ? new URL(Astro.url.pathname, Astro.site).toString()
-  : "";
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 ---
 
@@ -114,8 +112,35 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
     </main>
 
     <script>
+      import * as Sentry from "@sentry/browser";
       import { rotateElement, getRotateElements } from "~/utils/rotate";
       import { hasTouchSupport } from "~/utils/touch";
+
+      const sentryDsn = import.meta.env.PUBLIC_SENTRY_DSN;
+      const sentryEnv = import.meta.env.PUBLIC_SENTRY_ENV;
+      let sentryInitialized = false;
+
+      function initSentry() {
+        if (sentryInitialized || !sentryDsn) {
+          return;
+        }
+
+        Sentry.init({
+          dsn: sentryDsn,
+          environment: sentryEnv,
+          tracesSampleRate: 0.1,
+          integrations: [
+            Sentry.browserTracingIntegration(),
+            Sentry.captureConsoleIntegration({ levels: ["error"] }),
+            Sentry.extraErrorDataIntegration(),
+            Sentry.httpClientIntegration(),
+          ],
+        });
+
+        sentryInitialized = true;
+      }
+
+      initSentry();
 
       let elements = getRotateElements();
       function onMouseMove(event: MouseEvent) {
