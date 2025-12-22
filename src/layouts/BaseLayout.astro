@@ -34,7 +34,9 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 ---
 
@@ -111,44 +113,12 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
     </main>
 
     <script>
-      const hasTouchSupport = () =>
-        "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      import { rotateElement, getRotateElements } from "~/utils/rotate";
+      import { hasTouchSupport } from "~/utils/touch";
 
-      const elements = Array.from(
-        document.querySelectorAll<HTMLElement>("[data-rotate]")
-      )
-        .map((element) => {
-          const multiplier = Number(element.getAttribute("data-rotate")) || 1;
-          const shadowMultiplier = element.getAttribute(
-            "data-shadow-multiplier"
-          );
-          return {
-            element,
-            multiplier,
-            shadowMultiplier: shadowMultiplier
-              ? Number(shadowMultiplier)
-              : null,
-          };
-        })
-        .filter(({ element }) => element instanceof HTMLElement);
-
-      const rotate = (
-        el: HTMLElement,
-        left: number,
-        top: number,
-        shadowMultiplier: number | null
-      ) => {
-        el.style.transform = `translate(${left}px, ${top}px)`;
-
-        if (!shadowMultiplier) {
-          return;
-        }
-
-        el.style.boxShadow = `${left * shadowMultiplier}px ${top * shadowMultiplier}px var(--image-shadow-color)`;
-      };
-
-      const onMouseMove = (event: MouseEvent) => {
-        if (!document) {
+      let elements = getRotateElements();
+      function onMouseMove(event: MouseEvent) {
+        if (!document || elements.length === 0) {
           return;
         }
 
@@ -157,12 +127,12 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
         for (const { element, multiplier, shadowMultiplier } of elements) {
           const left = (event.clientX / clientWidth - 0.5) * multiplier;
           const top = (event.clientY / clientHeight - 0.5) * multiplier;
-          rotate(element, left, top, shadowMultiplier);
+          rotateElement(element, left, top, shadowMultiplier);
         }
-      };
+      }
 
-      const onDeviceOrientation = (event: DeviceOrientationEvent) => {
-        if (!event || !event.beta || !event.gamma) {
+      function onDeviceOrientation(event: DeviceOrientationEvent) {
+        if (!event || !event.beta || !event.gamma || elements.length === 0) {
           return;
         }
 
@@ -173,16 +143,33 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
         for (const { element, multiplier, shadowMultiplier } of elements) {
           const left = -(x / 10) * movement * multiplier;
           const top = (y / 10) * movement * multiplier;
-          rotate(element, -(left - 0.5), -(top - 0.5), shadowMultiplier);
+          rotateElement(element, -(left - 0.5), -(top - 0.5), shadowMultiplier);
         }
-      };
+      }
 
-      if (!hasTouchSupport()) {
+      let listenersBound = false;
+      function bindListeners() {
+        if (listenersBound || hasTouchSupport()) {
+          return;
+        }
+
+        listenersBound = true;
         window.addEventListener("deviceorientation", onDeviceOrientation, {
           passive: true,
         });
+
         window.addEventListener("mousemove", onMouseMove, { passive: true });
       }
+
+      function initMotion() {
+        elements = getRotateElements();
+        bindListeners();
+      }
+
+      initMotion();
+
+      document.addEventListener("astro:page-load", initMotion);
+      document.addEventListener("astro:after-swap", initMotion);
     </script>
   </body>
 </html>
