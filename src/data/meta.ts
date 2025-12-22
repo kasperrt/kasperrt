@@ -27,3 +27,18 @@ export const resumeMeta = {
   ogUrl: "https://kasperrt.me/more",
   twitterHandle: "kasper_rt",
 };
+
+export const blogIndexMeta = {
+  title: "Kasper Rynning-Tønnesen | Blog",
+  description:
+    "Posts and notes from Kasper Rynning-Tønnesen on software, architecture, and building products.",
+  keywords:
+    "Kasper Rynning-Tønnesen, blog, software engineering, architecture, web development",
+  robots: "index, follow",
+  ogTitle: "Kasper Rynning-Tønnesen | Blog",
+  ogDescription:
+    "Posts and notes from Kasper Rynning-Tønnesen on software, architecture, and building products.",
+  ogImage: "/me.png",
+  ogUrl: "https://kasperrt.me/blog",
+  twitterHandle: "kasper_rt",
+};

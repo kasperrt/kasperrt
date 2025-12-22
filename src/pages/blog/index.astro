@@ -1,0 +1,58 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { blogIndexMeta } from "~/data/meta";
+import Underline from "~/components/Underline.astro";
+
+const posts = await getCollection("blog", ({ data }) => !data.draft);
+
+const sortedPosts = posts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
+---
+
+<BaseLayout {...blogIndexMeta} backgroundImage={false} menu>
+  <section class="markdown flex w-full flex-col gap-12 px-6 py-10 lg:w-3/5">
+    <header class="flex flex-col gap-2">
+      <h1 class="text-3xl text-red-600 dark:text-red-400">Thoughts</h1>
+      <p class="text-neutral-700 dark:text-neutral-200">
+        Sometimes I rant and like to share my thoughts, and on rare occasions I
+        write those rants down.
+      </p>
+    </header>
+
+    {
+      sortedPosts.length === 0 && (
+        <p class="text-neutral-700 dark:text-neutral-200">
+          No posts (yet), seems those rants have been rather sparse so far.
+        </p>
+      )
+    }
+    {
+      sortedPosts.length > 0 && (
+        <ul class="flex flex-col gap-6">
+          {sortedPosts.map((post) => (
+            <li>
+              <a
+                href={`/blog/${post.slug}`}
+                class="slug-link flex flex-col gap-2 group"
+              >
+                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <h2 class="text-2xl font-bold block">
+                    <Underline direction="right">{post.data.title}</Underline>
+                  </h2>
+                  <span class="text-sm text-neutral-600 dark:text-neutral-300">
+                    {post.data.pubDate.toLocaleDateString()}
+                  </span>
+                </div>
+                <p class="text-neutral-700 dark:text-neutral-200">
+                  {post.data.description}
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</BaseLayout>

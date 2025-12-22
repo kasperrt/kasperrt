@@ -1,10 +1,20 @@
 ---
+import { classNames } from "~/utils/classNames";
 
+interface Props {
+  direction?: "left" | "right";
+}
+
+const { direction = "left" } = Astro.props;
 ---
 
 <span class="group transition-all duration-300 ease-in-out">
   <span
-    class="bg-bottom-right bg-linear-to-l bg-size-[0%_2px] from-red-600 to-red-600 bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-[length:100%_2px] dark:from-red-400 dark:to-red-400"
+    class={classNames(
+      "bg-size-[0%_2px] from-red-600 to-red-600 bg-no-repeat pb-1 transition-all duration-500 ease-out group-hover:bg-size-[100%_2px] dark:from-red-400 dark:to-red-400",
+      direction === "left" && "bg-bottom-right bg-linear-to-l",
+      direction === "right" && "bg-bottom-left bg-linear-to-r"
+    )}
   >
     <slot />
   </span>
