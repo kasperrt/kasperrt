@@ -8,19 +8,16 @@ importers:
 
   .:
     dependencies:
+      '@sentry/browser':
+        specifier: 10.32.1
+        version: 10.32.1
+    devDependencies:
       '@astrojs/check':
         specifier: 0.9.6
         version: 0.9.6(prettier@3.7.4)(typescript@5.9.3)
       '@astrojs/rss':
         specifier: 4.0.14
         version: 4.0.14
-      '@sentry/browser':
-        specifier: 10.32.1
-        version: 10.32.1
-      astro:
-        specifier: 5.16.6
-        version: 5.16.6(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.54.0)(typescript@5.9.3)(yaml@2.8.2)
-    devDependencies:
       '@biomejs/biome':
         specifier: 2.3.10
         version: 2.3.10
@@ -33,6 +30,9 @@ importers:
       '@types/node':
         specifier: '22'
         version: 22.19.3
+      astro:
+        specifier: 5.16.6
+        version: 5.16.6(@types/node@22.19.3)(jiti@2.6.1)(lightningcss@1.30.2)(rollup@4.54.0)(typescript@5.9.3)(yaml@2.8.2)
       tailwindcss:
         specifier: 4.1.18
         version: 4.1.18
