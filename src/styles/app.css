@@ -95,6 +95,10 @@ body {
   :not(pre) > code::after {
     content: "";
   }
+
+  a:not(pre) > code {
+    text-decoration: underline;
+  }
 }
 
 @layer base {
