@@ -4,7 +4,7 @@ description: "Rethinking JavaScript error handling by replacing try-catch with G
 pubDate: 2025-04-14
 updatedDate: 2025-12-22
 draft: false
-hero: "/me.png"
+hero: "/me-small.png"
 ---
 
 _"Do I wrap my very specific code with a try-catch and move the variable creation outside the scope, or do I just keep expanding the catch scope as I go?"_

@@ -22,7 +22,7 @@ const {
   description,
   keywords,
   robots,
-  ogImage = "/me.png",
+  ogImage = "/me-small.png",
   backgroundImage,
   menu,
   twitterHandle,
@@ -30,7 +30,9 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
