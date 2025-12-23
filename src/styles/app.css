@@ -100,8 +100,8 @@ body {
     /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
     text-decoration: var(--shiki-dark-text-decoration) !important;
   }
+}
 
-  .astro-code {
-    padding: 8px;
-  }
+.astro-code {
+  padding: 8px;
 }
