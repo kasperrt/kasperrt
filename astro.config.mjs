@@ -4,6 +4,16 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineConfig({
   site: "https://kasperrt.me",
+  markdown: {
+    syntaxHighlight: "shiki",
+    shikiConfig: {
+      themes: {
+        light: "one-light",
+        dark: "one-dark-pro",
+        dim: "one-dark-pro",
+      },
+    },
+  },
   vite: {
     plugins: [
       tailwind(),

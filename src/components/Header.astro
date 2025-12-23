@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import { classNames } from "~/utils/classNames";
 import Underline from "./Underline.astro";
 
@@ -9,11 +10,14 @@ interface Props {
 const { activePath } = Astro.props;
 const isHome = activePath === "/";
 const isMore = activePath === "/more" || activePath === "/more/";
+const isBlog = activePath === "/blog" || activePath === "/blog/" || activePath.startsWith("/blog/");
+const publishedPosts = await getCollection("blog", ({ data }) => !data.draft);
+const hasPublishedPosts = publishedPosts.length > 0;
 ---
 
 <header
   data-rotate="-0.5"
-  class="top-2.5 right-2.5 z-10 text-right md:fixed md:w-2/5"
+  class="top-2.5 right-2.5 z-10 text-right lg:fixed lg:w-2/5"
 >
   <nav>
     <ul>
@@ -32,6 +36,21 @@ const isMore = activePath === "/more" || activePath === "/more/";
           </Underline>
         </a>
       </li>
+      {
+        hasPublishedPosts && (
+          <li class="p-2.5">
+            <a
+              href="/blog"
+              class={classNames(
+                "font-bold text-2xl",
+                isBlog && "text-red-600 dark:text-red-400"
+              )}
+            >
+              <Underline>blog</Underline>
+            </a>
+          </li>
+        )
+      }
       <li class="p-2.5">
         <a
           href="/more"

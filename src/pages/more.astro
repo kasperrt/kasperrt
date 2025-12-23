@@ -5,7 +5,7 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { resumeMeta } from "../data/meta";
 import type { Education, Experience, Skills } from "../schemas/more";
 
-const collection: CollectionEntry<"more">[] = await getCollection("more");
+const collection = await getCollection("more");
 
 const experienceEntries = collection
   .filter((entry): entry is CollectionEntry<"more"> & { data: Experience } => entry.data.type === "experience")
@@ -31,9 +31,9 @@ const educations = collection
   <div class="mx-auto max-w-4xl p-6 text-xs">
     <section class="mb-5 grid grid-cols-12 gap-x-4">
       <Image
-        pictureClass="col-span-2 m-auto md:col-start-2 print:col-start-2"
+        pictureClass="col-span-2 m-auto lg:col-start-2 print:col-start-2"
         alt="Me smiling"
-        imageClass="view-transition-picture min-w-18 min-h-18 max-h-18 max-w-18 md:max-w-32 md:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] md:min-w-32 md:min-h-32"
+        imageClass="view-transition-picture min-w-18 min-h-18 max-h-18 max-w-18 lg:max-w-32 lg:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] lg:min-w-32 lg:min-h-32"
         sources={[
           {
             type: "image/webp",
@@ -120,13 +120,13 @@ const educations = collection
     <section class="mb-5 grid grid-cols-12 gap-x-4">
       <h2 class="col-span-3 text-right font-extrabold text-xl">Skills</h2>
       <ul
-        class="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 md:gap-x-4"
+        class="col-span-8 col-start-4 row-start-2 mt-2 flex list-none flex-col gap-x-6 gap-y-2 lg:gap-x-4"
       >
         {
           skills.map((skill) => (
-            <li class="flex flex-col md:grid md:grid-cols-12">
-              <b class="font-extrabold md:col-span-4">{skill.data.area}:</b>
-              <span class="text-gray-600 dark:text-neutral-100 md:col-span-8">
+            <li class="flex flex-col lg:grid lg:grid-cols-12">
+              <b class="font-extrabold lg:col-span-4">{skill.data.area}:</b>
+              <span class="text-gray-600 dark:text-neutral-100 lg:col-span-8">
                 {skill.data.points.join(", ")}
               </span>
             </li>

@@ -1,0 +1,60 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import { formatReadingTime } from "~/utils/readingTime";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const pageTitle = `${post.data.title} | Blog`;
+const pageDescription = post.data.description;
+const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
+const keywords = `blog, ${post.data.title}`;
+const readingTime = formatReadingTime(post.body);
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  keywords={keywords}
+  robots={robots}
+  ogTitle={pageTitle}
+  ogDescription={pageDescription}
+  ogImage={post.data.hero}
+  twitterHandle="kasper_rt"
+  backgroundImage={false}
+  menu
+>
+  <section class="markdown flex w-full flex-col gap-6 px-6 py-10 lg:w-3/5">
+    <header class="flex flex-col gap-3">
+      {
+        post.data.draft && (
+          <span class="text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400">
+            Draft
+          </span>
+        )
+      }
+      <h1 class="text-3xl">{post.data.title}</h1>
+      <p class="text-sm text-neutral-600 dark:text-neutral-300">
+        Published: {post.data.pubDate.toLocaleDateString()} | {readingTime} |
+        {
+          post.data.updatedDate && (
+            <span> Updated: {post.data.updatedDate.toLocaleDateString()}</span>
+          )
+        }
+      </p>
+    </header>
+
+    <article class="flex flex-col gap-6">
+      <Content />
+    </article>
+  </section>
+</BaseLayout>

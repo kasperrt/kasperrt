@@ -56,7 +56,7 @@ body {
   view-transition-name: title-change;
 }
 
-.markdown a {
+.markdown a:not(.slug-link) {
   @apply text-red-600 dark:text-red-400;
 }
 
@@ -83,5 +83,24 @@ body {
 
   :root {
     --image-shadow-color: transparent;
+  }
+
+  .astro-code,
+  .astro-code span {
+    /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
+    color: var(--shiki-dark) !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
+    background-color: var(--shiki-dark-bg) !important;
+    /* Optional, if you also want font styles */
+    /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
+    font-style: var(--shiki-dark-font-style) !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
+    font-weight: var(--shiki-dark-font-weight) !important;
+    /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  .astro-code {
+    padding: 8px;
   }
 }
