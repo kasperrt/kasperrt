@@ -33,6 +33,9 @@ const activePath = Astro.url.pathname;
 const canonicalUrl = Astro.site
   ? new URL(Astro.url.pathname, Astro.site).toString()
   : "";
+const rssUrl = Astro.site
+  ? new URL("/rss.xml", Astro.site).toString()
+  : "/rss.xml";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
@@ -63,6 +66,12 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
     <meta name="robots" content={robots} />
     <meta name="author" content={author} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Kasper Rynning-Tønnesen | Blog"
+      href={rssUrl}
+    />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={image} />
