@@ -57,8 +57,44 @@ body {
   view-transition-name: title-change;
 }
 
-.markdown a:not(.slug-link) {
+.markdown article a:not(.slug-link) {
   @apply text-red-600 dark:text-red-400;
+}
+
+.markdown article {
+  ul {
+    list-style: disc;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  ul,
+  ol {
+    padding-left: 1.25rem;
+    margin: 0.75rem 0;
+  }
+
+  li {
+    margin: 0.25rem 0;
+  }
+
+  :not(pre) > code {
+    /* Tailwind-like defaults without needing classes */
+    font-size: 0.875em;
+    padding: 0.15em 0.35em;
+    border-radius: 0.375rem;
+    background: rgba(175, 184, 193, 0.2);
+    border: 1px solid rgba(175, 184, 193, 0.25);
+    color: #116329;
+  }
+
+  /* Remove the backticks that typography plugin adds by default */
+  :not(pre) > code::before,
+  :not(pre) > code::after {
+    content: "";
+  }
 }
 
 @layer base {
@@ -99,6 +135,12 @@ body {
     font-weight: var(--shiki-dark-font-weight) !important;
     /* biome-ignore lint/complexity/noImportantStyles: Hard override for shiki */
     text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  .markdown article :not(pre) > code {
+    background: rgba(110, 118, 129, 0.2);
+    border-color: rgba(110, 118, 129, 0.25);
+    color: #7ee787;
   }
 }
 

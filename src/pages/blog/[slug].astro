@@ -40,12 +40,12 @@ const readingTime = formatReadingTime(post.body);
           </span>
         )
       }
-      <h1 class="text-3xl">{post.data.title}</h1>
+      <h1 class="text-3xl text-red-600 dark:text-red-400">{post.data.title}</h1>
       <p class="text-sm text-neutral-600 dark:text-neutral-300">
-        Published: {post.data.pubDate.toLocaleDateString()} | {readingTime} |
+        Published: {post.data.pubDate.toLocaleDateString()} | {readingTime}
         {
           post.data.updatedDate && (
-            <span> Updated: {post.data.updatedDate.toLocaleDateString()}</span>
+            <span>| Updated: {post.data.updatedDate.toLocaleDateString()}</span>
           )
         }
       </p>

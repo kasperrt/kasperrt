@@ -7,11 +7,15 @@ import { formatReadingTime } from "~/utils/readingTime";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const sortedPosts = posts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
 ---
 
 <BaseLayout {...blogIndexMeta} backgroundImage={false} menu>
-  <section class="markdown flex w-full flex-col gap-12 px-6 py-10 lg:w-3/5">
+  <section
+    class="markdown flex w-full flex-col gap-12 px-6 py-10 lg:w-3/5 max-w-200"
+  >
     <header class="flex flex-col gap-2">
       <h1 class="text-3xl text-red-600 dark:text-red-400">Thoughts</h1>
       <p class="text-neutral-700 dark:text-neutral-200">
