@@ -9,9 +9,7 @@ interface Props {
   description: string;
   keywords: string;
   robots: string;
-  ogTitle: string;
-  ogDescription: string;
-  ogImage: string;
+  ogImage?: string;
   backgroundImage: boolean;
   menu: boolean;
   twitterHandle: string;
@@ -24,9 +22,7 @@ const {
   description,
   keywords,
   robots,
-  ogTitle,
-  ogDescription,
-  ogImage,
+  ogImage = "/me.png",
   backgroundImage,
   menu,
   twitterHandle,
@@ -34,10 +30,9 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site
-  ? new URL(Astro.url.pathname, Astro.site).toString()
-  : "";
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
+const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
 
 <!doctype html>
@@ -66,18 +61,18 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
     <meta name="robots" content={robots} />
     <meta name="author" content={author} />
     {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
-    <meta property="og:title" content={ogTitle} />
-    <meta property="og:description" content={ogDescription} />
-    <meta property="og:image" content={ogImage} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
     {ogUrl && <meta property="og:url" content={ogUrl} />}
     <meta property="og:site_name" content={author} />
     <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
     <meta name="twitter:site" content={`@${twitterHandle}`} />
     <meta name="twitter:creator" content={`@${twitterHandle}`} />
-    <meta name="twitter:title" content={ogTitle} />
-    <meta name="twitter:description" content={ogDescription} />
-    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
     <meta
       name="theme-color"
       content="#ffffff"

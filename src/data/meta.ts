@@ -5,9 +5,6 @@ export const rootMeta = {
   keywords:
     "Kasper Rynning-Tønnesen, developer, engineer, tech professional, web development, React, JavaScript, software engineering",
   robots: "index, follow",
-  ogTitle: "Kasper Rynning-Tønnesen",
-  ogDescription:
-    "Hi, I'm Kasper. Explore my personal site to learn more about my work and the technologies I specialize in.",
   ogImage: "/me.png",
   ogUrl: "https://kasperrt.me",
   twitterHandle: "kasper_rt",
@@ -20,9 +17,6 @@ export const resumeMeta = {
   keywords:
     "Kasper Rynning-Tønnesen, resume, CV, software engineer, web developer, React, JavaScript, TypeScript, full-stack developer, tech portfolio, professional experience",
   robots: "index, follow",
-  ogTitle: "Kasper Rynning-Tønnesen | More",
-  ogDescription:
-    "View the resume of Kasper Rynning-Tønnesen, a software engineer with experience in full-stack development, React, and scalable web architecture. Explore career highlights, technical skills, and projects.",
   ogImage: "/me.png",
   ogUrl: "https://kasperrt.me/more",
   twitterHandle: "kasper_rt",
@@ -30,11 +24,10 @@ export const resumeMeta = {
 
 export const blogIndexMeta = {
   title: "Kasper Rynning-Tønnesen | Blog",
-  description: "Posts and notes from Kasper Rynning-Tønnesen on software, architecture, and building products.",
+  description:
+    "Posts, notes and rants from Kasper Rynning-Tønnesen on software, code, architecture, and building products.",
   keywords: "Kasper Rynning-Tønnesen, blog, software engineering, architecture, web development",
   robots: "index, follow",
-  ogTitle: "Kasper Rynning-Tønnesen | Blog",
-  ogDescription: "Posts and notes from Kasper Rynning-Tønnesen on software, architecture, and building products.",
   ogImage: "/me.png",
   ogUrl: "https://kasperrt.me/blog",
   twitterHandle: "kasper_rt",
