@@ -133,7 +133,7 @@ With `validation` defaulting to `true`, WireTyped validates:
 - request bodies (when present)
 - response bodies (when present)
 
-To make validator choice flexible, the typing is based on [`@standard-schema/spec`](https://standardschema.dev/schema), so any validator implementing the Standard Schema interface should work (e.g. `zod`, `arktype`, `valibot`, etc.).
+To make validator choice flexible, the typing is based on <a href="https://standardschema.dev/schema" target="_blank">`@standard-schema/spec`</a>, so any validator implementing the Standard Schema interface should work (e.g. `zod`, `arktype`, `valibot`, etc.).
 
 ## Retries + timeouts
 
@@ -377,6 +377,6 @@ So the design goals are boring on purpose:
 - Make the happy path clean **without** making the failure path invisible.
 - Keep it fetch-native so it works across browser, Node, Bun, Deno, and Workers.
 
-If any of that sounds like your kind of pain, give WireTyped a spin, poke holes in it, and tell me what breaks. If you’ve got strong opinions about error handling (I clearly do), I’d love to hear them, especially if you’ve been burned by the same “oops, forgot to handle failure” bug in a different disguise. If you want to try it out, the docs and examples live at **https://wiretyped.io**. Start with the intro and you’ll be calling typed endpoints in a couple minutes.
+If any of that sounds like your kind of pain, give WireTyped a spin, poke holes in it, and tell me what breaks. If you’ve got strong opinions about error handling (I clearly do), I’d love to hear them, especially if you’ve been burned by the same “oops, forgot to handle failure” bug in a different disguise. If you want to try it out, the docs and examples live at <a href="https://wiretyped.io" target="_blank">wiretyped.io</a>. Start with the intro and you’ll be calling typed endpoints in a couple minutes.
 
 Either way: may your requests be fast, your schemas honest, and your errors handled **before** they become incidents.

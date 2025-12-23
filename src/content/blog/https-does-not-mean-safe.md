@@ -31,7 +31,7 @@ With Let’s Encrypt, all you need is a domain and access to a terminal. With th
 
 Extended Validation (EV) certificates provide a higher level of security assurance for websites. They require more rigorous verification of the legitimacy of the business requesting the certificate, offering greater trust to users. These certifications are expensive, at least compared to the zero cost that comes with normal SSL certificates. So why don't big companies like Microsoft use EV certificates for that added layer of security?
 
-Despite their benefits, EV certificates have seen a decline in popularity. This is probably due to the lack of distinct, user-recognizable benefits in most web browsers, leading organizations to question their value compared to standard SSL certificates. Browsers don’t care about EV certificates anymore, their special treatment of cool, [brand-in-url-bar-green-lock are gone from all major browsers](https://www.troyhunt.com/extended-validation-certificates-are-really-really-dead/).
+Despite their benefits, EV certificates have seen a decline in popularity. This is probably due to the lack of distinct, user-recognizable benefits in most web browsers, leading organizations to question their value compared to standard SSL certificates. Browsers don’t care about EV certificates anymore, their special treatment of cool, <a href="https://www.troyhunt.com/extended-validation-certificates-are-really-really-dead/" target="_blank">brand-in-url-bar-green-lock are gone from all major browsers</a>.
 
 ## Staying Safe, Online and Beyond
 
