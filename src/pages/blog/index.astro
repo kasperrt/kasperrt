@@ -7,7 +7,9 @@ import { formatReadingTime } from "~/utils/readingTime";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const sortedPosts = posts.sort(
+  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
+);
 ---
 
 <BaseLayout {...blogIndexMeta} backgroundImage={false} menu>
@@ -63,8 +65,7 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
                           class="opacity-0 invisible"
                           transition:name={updateTransitionName}
                         >
-                          | Updated:{" "}
-                          {post.data.updatedDate.toLocaleDateString()}
+                          Updated: {post.data.updatedDate.toLocaleDateString()}
                         </span>
                       )}
                     </span>

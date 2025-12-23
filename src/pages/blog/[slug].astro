@@ -55,7 +55,8 @@ const updateTransitionName = `update-${post.slug}`;
         {
           post.data.updatedDate && (
             <span class="opacity-100" transition:name={updateTransitionName}>
-              | Updated: {post.data.updatedDate.toLocaleDateString()}
+              <br />
+              Updated: {post.data.updatedDate.toLocaleDateString()}
             </span>
           )
         }
