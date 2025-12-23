@@ -30,7 +30,9 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
@@ -187,6 +189,31 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 
       document.addEventListener("astro:page-load", initMotion);
       document.addEventListener("astro:after-swap", initMotion);
+    </script>
+
+    <script is:inline>
+      /**
+       * iOS astro view-transitions breaks back-forward-navigation
+       * https://github.com/withastro/astro/issues/11919#issuecomment-2428186492
+       */
+      document.addEventListener("click", (e) => {
+        if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+          return false;
+        }
+        const target = e.target;
+        const link = target.closest("a");
+        const shouldPushState =
+          link &&
+          link.href &&
+          link.href.startsWith(window.location.origin) &&
+          !link.href.includes("#");
+        if (!shouldPushState) {
+          return;
+        }
+
+        history.pushState(null, "", link.href);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+      });
     </script>
   </body>
 </html>
