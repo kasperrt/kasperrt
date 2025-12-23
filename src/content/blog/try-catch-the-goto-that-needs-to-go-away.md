@@ -183,6 +183,6 @@ It’s time for try-catch—the modern GOTO—to finally GOAWAY.
 
 Even if this is a somewhat optimistic interpretation of Dijkstra’s famous words, I like to think he'd agree:
 
-_“The quality of programmers is determined by the quality of their control structures.”_
+> _“The quality of programmers is determined by the quality of their control structures.”_
 
 You made it this far, so maybe we’ve won one more developer over to a better way of handling errors in JavaScript—and maybe even in programming as a whole.

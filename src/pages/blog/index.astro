@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { blogIndexMeta } from "~/data/meta";
 import Underline from "~/components/Underline.astro";
+import { formatReadingTime } from "~/utils/readingTime";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
@@ -16,8 +17,8 @@ const sortedPosts = posts.sort(
     <header class="flex flex-col gap-2">
       <h1 class="text-3xl text-red-600 dark:text-red-400">Thoughts</h1>
       <p class="text-neutral-700 dark:text-neutral-200">
-        Sometimes I rant and like to share my thoughts, and on rare occasions I
-        write those rants down.
+        Sometimes I go on rants and tangents; once in a while, I write them
+        down. <br />Mostly tech, occasionally everything else.
       </p>
     </header>
 
@@ -31,26 +32,30 @@ const sortedPosts = posts.sort(
     {
       sortedPosts.length > 0 && (
         <ul class="flex flex-col gap-6">
-          {sortedPosts.map((post) => (
-            <li>
-              <a
-                href={`/blog/${post.slug}`}
-                class="slug-link flex flex-col gap-2 group"
-              >
-                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <h2 class="text-2xl font-bold block">
-                    <Underline direction="right">{post.data.title}</Underline>
-                  </h2>
-                  <span class="text-sm text-neutral-600 dark:text-neutral-300">
-                    {post.data.pubDate.toLocaleDateString()}
-                  </span>
-                </div>
-                <p class="text-neutral-700 dark:text-neutral-200">
-                  {post.data.description}
-                </p>
-              </a>
-            </li>
-          ))}
+          {sortedPosts.map((post) => {
+            const readingTime = formatReadingTime(post.body);
+
+            return (
+              <li>
+                <a
+                  href={`/blog/${post.slug}`}
+                  class="slug-link flex flex-col gap-2 group"
+                >
+                  <div class="flex flex-col items-baseline gap-x-3 gap-y-1">
+                    <h2 class="text-2xl font-bold block">
+                      <Underline direction="right">{post.data.title}</Underline>
+                    </h2>
+                    <span class="text-sm text-neutral-600 dark:text-neutral-300">
+                      {post.data.pubDate.toLocaleDateString()} | {readingTime}
+                    </span>
+                  </div>
+                  <p class="text-neutral-700 dark:text-neutral-200">
+                    {post.data.description}
+                  </p>
+                </a>
+              </li>
+            );
+          })}
         </ul>
       )
     }

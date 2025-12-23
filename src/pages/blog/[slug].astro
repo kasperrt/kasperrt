@@ -1,6 +1,7 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
+import { formatReadingTime } from "~/utils/readingTime";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -17,6 +18,7 @@ const pageTitle = `${post.data.title} | Blog`;
 const pageDescription = post.data.description;
 const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
 const keywords = `blog, ${post.data.title}`;
+const readingTime = formatReadingTime(post.body);
 ---
 
 <BaseLayout
@@ -42,10 +44,10 @@ const keywords = `blog, ${post.data.title}`;
       }
       <h1 class="text-3xl">{post.data.title}</h1>
       <p class="text-sm text-neutral-600 dark:text-neutral-300">
-        {post.data.pubDate.toLocaleDateString()}
+        Published: {post.data.pubDate.toLocaleDateString()} | {readingTime} |
         {
           post.data.updatedDate && (
-            <span> (Updated {post.data.updatedDate.toLocaleDateString()})</span>
+            <span> Updated: {post.data.updatedDate.toLocaleDateString()}</span>
           )
         }
       </p>
