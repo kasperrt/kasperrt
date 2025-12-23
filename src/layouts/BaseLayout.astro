@@ -30,9 +30,7 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site
-  ? new URL(Astro.url.pathname, Astro.site).toString()
-  : "";
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
@@ -99,7 +97,8 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
             { srcSet: "/me.png", type: "image/png" },
           ]}
           style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
-          imageClass="view-transition-picture absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] lg:fixed lg:top-0 lg:left-1/2 lg:max-h-4/5 lg:max-w-2/6 rounded-sm"
+          transition:name="me-picture"
+          imageClass="absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] lg:fixed lg:top-0 lg:left-1/2 lg:max-h-4/5 lg:max-w-2/6 rounded-sm"
         />
       )
     }

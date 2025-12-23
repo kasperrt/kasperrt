@@ -7,9 +7,7 @@ import { formatReadingTime } from "~/utils/readingTime";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
-const sortedPosts = posts.sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime()
-);
+const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
 ---
 
 <BaseLayout {...blogIndexMeta} backgroundImage={false} menu>
@@ -36,6 +34,9 @@ const sortedPosts = posts.sort(
         <ul class="flex flex-col gap-6">
           {sortedPosts.map((post) => {
             const readingTime = formatReadingTime(post.body);
+            const postTransitionName = `post-title-${post.slug}`;
+            const publishedTransitionName = `publish-read-${post.slug}`;
+            const updateTransitionName = `update-${post.slug}`;
 
             return (
               <li>
@@ -45,10 +46,27 @@ const sortedPosts = posts.sort(
                 >
                   <div class="flex flex-col items-baseline gap-x-3 gap-y-1">
                     <h2 class="text-2xl font-bold block">
-                      <Underline direction="right">{post.data.title}</Underline>
+                      <Underline direction="right">
+                        <span transition:name={postTransitionName}>
+                          {post.data.title}
+                        </span>
+                      </Underline>
                     </h2>
-                    <span class="text-sm text-neutral-600 dark:text-neutral-300">
-                      {post.data.pubDate.toLocaleDateString()} | {readingTime}
+                    <span
+                      class="text-sm text-neutral-600 dark:text-neutral-300"
+                      transition:name={publishedTransitionName}
+                    >
+                      Published: {post.data.pubDate.toLocaleDateString()} |{" "}
+                      {readingTime}
+                      {post.data.updatedDate && (
+                        <span
+                          class="opacity-0 invisible"
+                          transition:name={updateTransitionName}
+                        >
+                          | Updated:{" "}
+                          {post.data.updatedDate.toLocaleDateString()}
+                        </span>
+                      )}
                     </span>
                   </div>
                   <p class="text-neutral-700 dark:text-neutral-200">

@@ -26,8 +26,7 @@ export const blogIndexMeta = {
   title: "Kasper Rynning-Tønnesen | Blog",
   description:
     "Posts, notes and rants from Kasper Rynning-Tønnesen on software, code, architecture, and building products.",
-  keywords:
-    "Kasper Rynning-Tønnesen, blog, software engineering, architecture, web development",
+  keywords: "Kasper Rynning-Tønnesen, blog, software engineering, architecture, web development",
   robots: "index, follow",
   ogImage: "/me-small.png",
   ogUrl: "https://kasperrt.me/blog",

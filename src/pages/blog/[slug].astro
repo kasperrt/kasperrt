@@ -19,6 +19,9 @@ const pageDescription = post.data.description;
 const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
 const keywords = `blog, ${post.data.title}`;
 const readingTime = formatReadingTime(post.body);
+const postTransitionName = `post-title-${post.slug}`;
+const publishedTransitionName = `publish-read-${post.slug}`;
+const updateTransitionName = `update-${post.slug}`;
 ---
 
 <BaseLayout
@@ -40,12 +43,20 @@ const readingTime = formatReadingTime(post.body);
           </span>
         )
       }
-      <h1 class="text-3xl text-red-600 dark:text-red-400">{post.data.title}</h1>
+      <h1 class="text-3xl text-red-600 dark:text-red-400">
+        <span transition:name={postTransitionName}>
+          {post.data.title}
+        </span>
+      </h1>
       <p class="text-sm text-neutral-600 dark:text-neutral-300">
-        Published: {post.data.pubDate.toLocaleDateString()} | {readingTime}
+        <span transition:name={publishedTransitionName}>
+          Published: {post.data.pubDate.toLocaleDateString()} | {readingTime}
+        </span>
         {
           post.data.updatedDate && (
-            <span>| Updated: {post.data.updatedDate.toLocaleDateString()}</span>
+            <span class="opacity-100" transition:name={updateTransitionName}>
+              | Updated: {post.data.updatedDate.toLocaleDateString()}
+            </span>
           )
         }
       </p>
