@@ -15,6 +15,9 @@ export default defineConfig({
     },
   },
   vite: {
+    build: {
+      minify: true,
+    },
     plugins: [
       tailwind(),
       sentryVitePlugin({
