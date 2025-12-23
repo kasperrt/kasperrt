@@ -28,6 +28,13 @@ export default defineConfig({
         silent: true,
         org: "kasperrt",
         project: "kasperrtme",
+        bundleSizeOptimizations: {
+          excludeDebugStatements: true,
+          excludeReplayIframe: true,
+          excludeReplayShadowDom: true,
+          excludeReplayWorker: true,
+          excludeTracing: true,
+        },
       }),
     ],
   },

@@ -34,7 +34,9 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : "";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 ---
 
@@ -128,13 +130,6 @@ const ogUrl = ogUrlProp ?? canonicalUrl;
         Sentry.init({
           dsn: sentryDsn,
           environment: sentryEnv,
-          tracesSampleRate: 0.1,
-          integrations: [
-            Sentry.browserTracingIntegration(),
-            Sentry.captureConsoleIntegration({ levels: ["error"] }),
-            Sentry.extraErrorDataIntegration(),
-            Sentry.httpClientIntegration(),
-          ],
         });
 
         sentryInitialized = true;
