@@ -10,10 +10,7 @@ interface Props {
 const { activePath } = Astro.props;
 const isHome = activePath === "/";
 const isMore = activePath === "/more" || activePath === "/more/";
-const isBlog =
-  activePath === "/blog" ||
-  activePath === "/blog/" ||
-  activePath.startsWith("/blog/");
+const isBlog = activePath === "/blog" || activePath === "/blog/" || activePath.startsWith("/blog/");
 const publishedPosts = await getCollection("blog", ({ data }) => !data.draft);
 const hasPublishedPosts = publishedPosts.length > 0;
 ---

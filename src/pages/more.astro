@@ -8,31 +8,22 @@ import type { Education, Experience, Skills } from "../schemas/more";
 const collection = await getCollection("more");
 
 const experienceEntries = collection
-  .filter(
-    (entry): entry is CollectionEntry<"more"> & { data: Experience } =>
-      entry.data.type === "experience"
-  )
+  .filter((entry): entry is CollectionEntry<"more"> & { data: Experience } => entry.data.type === "experience")
   .sort((a, b) => a.data.order - b.data.order);
 
 const experiences = await Promise.all(
   experienceEntries.map(async (entry) => {
     const { Content } = await entry.render();
     return { ...entry, Content };
-  })
+  }),
 );
 
 const skills = collection
-  .filter(
-    (entry): entry is CollectionEntry<"more"> & { data: Skills } =>
-      entry.data.type === "skills"
-  )
+  .filter((entry): entry is CollectionEntry<"more"> & { data: Skills } => entry.data.type === "skills")
   .sort((a, b) => a.data.order - b.data.order);
 
 const educations = collection
-  .filter(
-    (entry): entry is CollectionEntry<"more"> & { data: Education } =>
-      entry.data.type === "education"
-  )
+  .filter((entry): entry is CollectionEntry<"more"> & { data: Education } => entry.data.type === "education")
   .sort((a, b) => a.data.order - b.data.order);
 ---
 
