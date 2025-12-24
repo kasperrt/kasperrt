@@ -23,7 +23,10 @@ html {
 body {
   @apply flex;
   @apply flex-col;
-  padding-bottom: calc(env(safe-area-inset-bottom) + 2rem);
+}
+
+main {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-overlay, 0px) + 2rem);
 }
 
 @page {
