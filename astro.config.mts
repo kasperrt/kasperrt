@@ -26,7 +26,7 @@ export default defineConfig({
   ],
   vite: {
     build: {
-      minify: true,
+      minify: "terser",
     },
     plugins: [tailwind()],
   },

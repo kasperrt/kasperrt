@@ -31,7 +31,12 @@
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3"
   },
-  "onlyBuiltDependencies": ["esbuild"],
+  "peerDependencies": {
+    "terser": "5.44.1"
+  },
+  "onlyBuiltDependencies": [
+    "esbuild"
+  ],
   "pnpm": {
     "overrides": {
       "vite": "7.3.0"
