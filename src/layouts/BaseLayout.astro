@@ -121,28 +121,8 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
     </main>
 
     <script>
-      import * as Sentry from "@sentry/browser";
       import { rotateElement, getRotateElements } from "~/utils/rotate";
       import { hasTouchSupport } from "~/utils/touch";
-
-      const sentryDsn = import.meta.env.PUBLIC_SENTRY_DSN;
-      const sentryEnv = import.meta.env.PUBLIC_SENTRY_ENV;
-      let sentryInitialized = false;
-
-      function initSentry() {
-        if (sentryInitialized || !sentryDsn) {
-          return;
-        }
-
-        Sentry.init({
-          dsn: sentryDsn,
-          environment: sentryEnv,
-        });
-
-        sentryInitialized = true;
-      }
-
-      initSentry();
 
       let elements = getRotateElements();
       function onMouseMove(event: MouseEvent) {

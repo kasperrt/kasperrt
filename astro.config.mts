@@ -1,6 +1,5 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@tailwindcss/vite";
-import { sentryVitePlugin } from "@sentry/vite-plugin";
 import sitemap from "@astrojs/sitemap";
 import { createSitemapSerialize } from "./src/utils/sitemap.ts";
 
@@ -18,6 +17,8 @@ export default defineConfig({
       },
     },
   },
+  compressHTML: true,
+  output: "static",
   integrations: [
     sitemap({
       serialize: createSitemapSerialize({ site }),
@@ -27,25 +28,7 @@ export default defineConfig({
     build: {
       minify: true,
     },
-    plugins: [
-      tailwind(),
-      sentryVitePlugin({
-        sourcemaps: {
-          filesToDeleteAfterUpload: ["./build/**/*.map"],
-          disable: false,
-        },
-        silent: true,
-        org: "kasperrt",
-        project: "kasperrtme",
-        bundleSizeOptimizations: {
-          excludeDebugStatements: true,
-          excludeReplayIframe: true,
-          excludeReplayShadowDom: true,
-          excludeReplayWorker: true,
-          excludeTracing: true,
-        },
-      }),
-    ],
+    plugins: [tailwind()],
   },
   outDir: "build",
 });

@@ -7,10 +7,7 @@ import type { Experience, Skills, Education } from "~/schemas/more";
 const BLOG_DIR = "./src/content/blog/";
 const MORE_DIR = "./src/content/more/";
 
-function getLatestDate(
-  current: Date | null,
-  next?: Date | null | string
-): Date | null {
+function getLatestDate(current: Date | null, next?: Date | null | string): Date | null {
   if (!next) {
     return current;
   }
