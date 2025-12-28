@@ -40,7 +40,11 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <script
       defer
       is:inline
@@ -226,8 +230,14 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
           return;
         }
 
-        const overlap = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-        document.documentElement.style.setProperty("--bottom-overlay", overlap + "px");
+        const overlap = Math.max(
+          0,
+          window.innerHeight - vv.height - vv.offsetTop
+        );
+        document.documentElement.style.setProperty(
+          "--bottom-overlay",
+          overlap + "px"
+        );
       }
 
       setBottomOverlay();

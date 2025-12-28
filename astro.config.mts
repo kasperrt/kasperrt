@@ -1,9 +1,13 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@tailwindcss/vite";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import sitemap from "@astrojs/sitemap";
+import { createSitemapSerialize } from "./src/utils/sitemap.ts";
+
+const site = "https://kasperrt.me";
 
 export default defineConfig({
-  site: "https://kasperrt.me",
+  site,
   markdown: {
     syntaxHighlight: "shiki",
     shikiConfig: {
@@ -14,6 +18,11 @@ export default defineConfig({
       },
     },
   },
+  integrations: [
+    sitemap({
+      serialize: createSitemapSerialize({ site }),
+    }),
+  ],
   vite: {
     build: {
       minify: true,
