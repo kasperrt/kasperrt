@@ -1,6 +1,7 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
+import svelte from "@astrojs/svelte";
 import { createSitemapSerialize } from "./src/utils/sitemap.ts";
 
 const site = "https://kasperrt.me";
@@ -20,6 +21,7 @@ export default defineConfig({
   compressHTML: true,
   output: "static",
   integrations: [
+    svelte(),
     sitemap({
       serialize: createSitemapSerialize({ site }),
     }),

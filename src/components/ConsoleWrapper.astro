@@ -1,0 +1,49 @@
+---
+
+---
+
+<div id="console"></div>
+
+<script is:inline>
+  let done = false;
+  const compare = [
+    "ArrowUp",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowLeft",
+    "ArrowRight",
+    "b",
+    "a",
+    "Enter",
+  ];
+
+  let c = [];
+
+  async function check(e) {
+    if (e.key !== compare[c.length]) {
+      c = [];
+      return;
+    }
+
+    c.push(e.key);
+    if (compare.length !== c.length) {
+      return;
+    }
+    done = true;
+
+    if (done) {
+      return;
+    }
+    done = true;
+    const [{ mount }, { default: ConsoleMock }] = await Promise.all([
+      import("svelte"),
+      import("../components/ConsoleMock.svelte"),
+    ]);
+    mount(ConsoleMock, { target: document.getElementById("console") });
+  }
+
+  window.addEventListener("keydown", check, { once: true });
+</script>
