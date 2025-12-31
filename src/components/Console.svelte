@@ -86,7 +86,7 @@ async function handleSubmit() {
     case "help":
       commands = [
         ...commands,
-        ["", `available commands: ${allowedCommands.join(", ")}`],
+        ["", `available commands: ${allowedCommands.join(", ")}.`],
         ["", "more might come at a later time."],
       ];
       break;
