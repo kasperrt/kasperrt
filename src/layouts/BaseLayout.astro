@@ -121,6 +121,12 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
     </main>
 
     <script>
+      import { console } from "../utils/console";
+
+      console();
+    </script>
+
+    <script>
       import { rotateElement, getRotateElements } from "~/utils/rotate";
       import { hasTouchSupport } from "~/utils/touch";
 
