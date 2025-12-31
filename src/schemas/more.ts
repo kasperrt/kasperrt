@@ -1,4 +1,4 @@
-import { z } from "astro:content";
+import { z } from "astro:schema";
 
 export const experienceSchema = z.object({
   type: z.literal("experience"),
@@ -28,10 +28,18 @@ export const educationSchema = z.object({
     z.object({
       title: z.string(),
       grade: z.string().optional(),
-    }),
+    })
   ),
 });
+
+export const cvEntrySchema = z.object({
+  label: z.string(),
+  text: z.string(),
+});
+
+export const cvEntriesSchema = z.array(cvEntrySchema);
 
 export type Experience = z.infer<typeof experienceSchema>;
 export type Skills = z.infer<typeof skillsSchema>;
 export type Education = z.infer<typeof educationSchema>;
+export type CvEntry = z.infer<typeof cvEntrySchema>;

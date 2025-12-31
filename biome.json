@@ -1,7 +1,14 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
   "files": {
-    "includes": ["**", "!!build", "!!.pnpm-store", "!!.astro", "!!src/env.d.ts"]
+    "includes": [
+      "**",
+      "!!build",
+      "!!.pnpm-store",
+      "!!.astro",
+      "!!.svelte",
+      "!!src/env.d.ts"
+    ]
   },
   "linter": {
     "enabled": true,
@@ -51,7 +58,7 @@
   },
   "overrides": [
     {
-      "includes": ["**/*.astro"],
+      "includes": ["**/*.svelte", "**/*.astro"],
       "linter": {
         "rules": {
           "style": {

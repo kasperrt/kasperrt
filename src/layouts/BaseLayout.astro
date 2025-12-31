@@ -1,7 +1,6 @@
 ---
 import "../styles/app.css";
 import Header from "~/components/Header.astro";
-import Console from "~/components/ConsoleWrapper.astro";
 import { ClientRouter } from "astro:transitions";
 import Image from "~/components/Image.astro";
 
@@ -125,7 +124,11 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
       <slot />
     </main>
 
-    <Console />
+    <script>
+      import { console } from "../utils/console";
+
+      console();
+    </script>
 
     <script>
       import { rotateElement, getRotateElements } from "~/utils/rotate";
