@@ -28,6 +28,8 @@ let inputfield: HTMLInputElement;
 let input = "";
 let innerWidth = window.innerWidth;
 let loading = false;
+let partial = false;
+let queue: string[][] | null = null;
 
 $: screensize = innerWidth > 568 ? "large" : "small";
 $: intro = [
@@ -66,6 +68,13 @@ async function handleSubmit() {
   browseback = -1;
   prevCommands.push(input);
 
+  if (input === "" && (partial || queue !== null)) {
+    partial = false;
+    queue = null;
+    loading = false;
+    return;
+  }
+
   if (input.startsWith("ssh")) {
     commands = [...commands, [getDate(), `command not found: ${input}`]];
     commands = [...commands, ["", `You really think this would have ssh?`]];
@@ -103,7 +112,26 @@ async function handleSubmit() {
         break;
       }
 
-      commands = [...commands, ...cvEntries.map(({ label, text }) => [label, text])];
+      queue = [...cvEntries.map(({ label, text }) => [label, text])];
+      let pop = null;
+      for (let i = 0; i < queue.length; i++) {
+        const q = queue[i];
+        const [, text] = q;
+        if (text === " ") {
+          commands = [...commands, q];
+          partial = true;
+          pop = i;
+          break;
+        }
+
+        commands = [...commands, q];
+        pop = i;
+      }
+
+      if (pop !== null) {
+        queue = queue.slice(pop + 1);
+      }
+
       break;
     }
   }
@@ -113,6 +141,9 @@ async function handleSubmit() {
 }
 
 async function focusEnd() {
+  if (!inputfield) {
+    return;
+  }
   inputfield.focus();
   await tick();
   inputfield.focus();
@@ -154,9 +185,50 @@ function cleanString(s: string) {
 
   return s;
 }
+
+function partialContinue(e: KeyboardEvent) {
+  if (!partial) {
+    return;
+  }
+
+  if (e.key === "c" && e.ctrlKey) {
+    partial = false;
+    queue = [];
+    commands = [...commands, [getDate(), `^C${input}`]];
+    input = "";
+    return;
+  }
+
+  if (e.key !== "Enter") {
+    return;
+  }
+
+  let currentQueue = queue ?? [];
+  let pop = null;
+  for (let i = 0; i < currentQueue.length; i++) {
+    const q = currentQueue[i];
+    const [, text] = q;
+    if (text === " ") {
+      commands = [...commands, q];
+      partial = true;
+      pop = i;
+      break;
+    }
+
+    commands = [...commands, q];
+    pop = i;
+  }
+
+  if (pop !== null) {
+    queue = currentQueue.slice(pop + 1);
+    return;
+  }
+
+  partial = false;
+}
 </script>
 
-<svelte:window on:click={focusEnd} bind:innerWidth />
+<svelte:window on:click={focusEnd} bind:innerWidth on:keydown={partialContinue} />
 
 <div
   class="absolute flex justify-center items-center inset-0 m-auto bg-black/50 z-10"
@@ -169,7 +241,7 @@ function cleanString(s: string) {
       <div class="sticky bottom-0 bg-gray-700 pb-4">
         <span>$ &gt;</span>
         <!-- svelte-ignore a11y_autofocus -->
-        {#if !loading}
+        {#if !loading && !partial}
           <input
             autofocus
             class="outline-0 caret"
@@ -182,6 +254,11 @@ function cleanString(s: string) {
         {#if loading}
           <Spinner />
         {/if}
+        {#if partial}
+          <Spinner />
+            <span>(...press enter for next paragraph...)</span>
+            <Spinner />
+          {/if}
       </div>
       {#each [...commands].reverse() as [label, command]}
         <div class="grid grid-cols-[12ch_1fr] gap-x-4">
