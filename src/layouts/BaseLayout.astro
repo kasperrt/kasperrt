@@ -30,8 +30,12 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
-const rssUrl = Astro.site ? new URL("/rss.xml", Astro.site).toString() : "/rss.xml";
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : "";
+const rssUrl = Astro.site
+  ? new URL("/rss.xml", Astro.site).toString()
+  : "/rss.xml";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
@@ -186,7 +190,7 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
       document.addEventListener("astro:after-swap", initMotion);
     </script>
 
-    <script is:inline>
+    <script>
       /**
        * iOS astro view-transitions breaks back-forward-navigation
        * https://github.com/withastro/astro/issues/11919#issuecomment-2428186492
@@ -195,7 +199,11 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
         if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) {
           return false;
         }
-        const target = e.target;
+        const target = e.target as Element;
+        if (!target) {
+          return;
+        }
+
         const link = target.closest("a");
         const shouldPushState =
           link &&
