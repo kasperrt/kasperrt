@@ -9,9 +9,7 @@ async function mountConsole() {
 
   mounted = true;
 
-  const [err, res] = await safeWrapAsync(() =>
-    Promise.all([import("svelte"), import("../components/Console.svelte")])
-  );
+  const [err, res] = await safeWrapAsync(() => Promise.all([import("svelte"), import("../components/Console.svelte")]));
 
   if (err) {
     mounted = false;

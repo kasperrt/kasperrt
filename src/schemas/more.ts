@@ -28,7 +28,7 @@ export const educationSchema = z.object({
     z.object({
       title: z.string(),
       grade: z.string().optional(),
-    })
+    }),
   ),
 });
 

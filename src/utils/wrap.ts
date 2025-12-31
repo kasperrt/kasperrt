@@ -4,9 +4,7 @@ export type SafeWrap<ErrorType = Error, DataType = unknown> =
   | [error: null, data: DataType];
 
 /** Async variant of {@link SafeWrap}. */
-export type SafeWrapAsync<ErrorType = Error, DataType = unknown> = Promise<
-  SafeWrap<ErrorType, DataType>
->;
+export type SafeWrapAsync<ErrorType = Error, DataType = unknown> = Promise<SafeWrap<ErrorType, DataType>>;
 
 /**
  * Gracefully handles a given Promise factory.
@@ -14,7 +12,7 @@ export type SafeWrapAsync<ErrorType = Error, DataType = unknown> = Promise<
  * const [error, data] = await safeWrapAsync(() => asyncAction());
  */
 export async function safeWrapAsync<ErrorType = Error, DataType = unknown>(
-  promise: () => Promise<DataType>
+  promise: () => Promise<DataType>,
 ): SafeWrapAsync<ErrorType, DataType> {
   try {
     const data = await promise();
@@ -25,9 +23,7 @@ export async function safeWrapAsync<ErrorType = Error, DataType = unknown>(
 }
 
 /** Wrap a synchronous function in a tuple-style result. */
-export function safeWrap<ErrorType = Error, DataType = unknown>(
-  fn: () => DataType
-): SafeWrap<ErrorType, DataType> {
+export function safeWrap<ErrorType = Error, DataType = unknown>(fn: () => DataType): SafeWrap<ErrorType, DataType> {
   try {
     const data = fn();
     return [null, data];
