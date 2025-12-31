@@ -1,5 +1,10 @@
 import { safeWrapAsync } from "~/utils/wrap";
 
+/**
+ * I know it is fun to poke around here to figure out easter eggs,
+ * but it would of course be more fun to find them on your own.
+ */
+
 let mounted = false;
 
 async function mountConsole() {
