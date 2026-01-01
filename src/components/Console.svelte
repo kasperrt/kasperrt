@@ -4,10 +4,10 @@
  * but it would of course be more fun to find them on your own.
  */
 
-import { tick } from "svelte";
+import { onMount, tick } from "svelte";
 import type { CvEntry } from "~/schemas/more";
 import { classNames } from "~/utils/classNames";
-import { httpClient } from "~/utils/http";
+import { httpClient, trackingClient } from "~/utils/http";
 import Spinner from "./Spinner.svelte";
 
 const largeAscii = [
@@ -93,6 +93,13 @@ async function handleSubmit() {
   commands = [...commands, [getDate(), input]];
   switch (input) {
     case "help":
+      trackingClient.post("/api/event", null, {
+        d: "kasperrt.me",
+        n: "pageview",
+        r: null,
+        u: "https://analytics.kasperrt.me/console.help",
+      });
+
       commands = [
         ...commands,
         ["", `available commands: ${allowedCommands.join(", ")}.`],
@@ -100,12 +107,33 @@ async function handleSubmit() {
       ];
       break;
     case "clear":
+      trackingClient.post("/api/event", null, {
+        d: "kasperrt.me",
+        n: "pageview",
+        r: null,
+        u: "https://analytics.kasperrt.me/console.clear",
+      });
+
       commands = [[getDate(), input]];
       break;
     case "exit":
+      trackingClient.post("/api/event", null, {
+        d: "kasperrt.me",
+        n: "pageview",
+        r: null,
+        u: "https://analytics.kasperrt.me/console.exit",
+      });
+
       window.location.reload();
       return;
     case "cv": {
+      trackingClient.post("/api/event", null, {
+        d: "kasperrt.me",
+        n: "pageview",
+        r: null,
+        u: "https://analytics.kasperrt.me/console.cv",
+      });
+
       const cvEntries = await getCvEntries();
       if (!cvEntries.length) {
         commands = [...commands, ["", "cv doesn't seem to be available at this time..."]];
@@ -226,6 +254,15 @@ function partialContinue(e: KeyboardEvent) {
 
   partial = false;
 }
+
+onMount(() => {
+  trackingClient.post("/api/event", null, {
+    d: "kasperrt.me",
+    n: "pageview",
+    r: document.referrer,
+    u: "https://analytics.kasperrt.me/console",
+  });
+});
 </script>
 
 <svelte:window on:click={focusEnd} bind:innerWidth on:keydown={partialContinue} />
