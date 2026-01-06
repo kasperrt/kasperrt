@@ -83,6 +83,20 @@ async function handleSubmit() {
     return;
   }
 
+  if (input.includes("/etc/passwd")) {
+    commands = [...commands, [getDate(), `no, but good try`]];
+    input = "";
+    loading = false;
+    return;
+  }
+
+  if (input.startsWith("sudo") || input.startsWith("su ")) {
+    commands = [...commands, [getDate(), `not granted (obviously)`]];
+    input = "";
+    loading = false;
+    return;
+  }
+
   if (!allowedCommands.includes(input)) {
     commands = [...commands, [getDate(), `command not found: ${input}`]];
     input = "";
@@ -272,7 +286,7 @@ onMount(() => {
 >
   <div class="bg-gray-700 flex w-full h-full flex-col-reverse p-8">
     <form
-      class="font-mono flex flex-col-reverse px-4 pt-4 border-2 border-white h-full overflow-auto"
+      class="font-mono flex flex-col-reverse px-4 pt-4 border-2 border-white h-full overflow-auto text-white"
       on:submit|preventDefault={handleSubmit}
     >
       <div class="sticky bottom-0 bg-gray-700 pb-4">
