@@ -293,19 +293,32 @@ function partialContinue(e: KeyboardEvent) {
 }
 
 onMount(() => {
+  const html = document.documentElement;
+  const body = document.body;
+  const prevHtmlOverflow = html.style.overflow;
+  const prevBodyOverflow = body.style.overflow;
+
+  html.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+
   trackingClient.post("/api/event", null, {
     d: "kasperrt.me",
     n: "pageview",
     r: document.referrer,
     u: "https://analytics.kasperrt.me/console",
   });
+
+  return () => {
+    html.style.overflow = prevHtmlOverflow;
+    body.style.overflow = prevBodyOverflow;
+  };
 });
 </script>
 
 <svelte:window on:click={focusEnd} on:keydown={partialContinue} />
 
 <div
-  class="absolute flex justify-center items-center inset-0 m-auto bg-black/50 z-10"
+  class="fixed inset-0 z-10 flex items-center justify-center bg-black/50"
 >
   <div class="bg-gray-700 flex w-full h-full flex-col-reverse p-8">
     <form

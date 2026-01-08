@@ -47,7 +47,7 @@
     }
   }
 
-  function init() {
+  function bindTrigger() {
     const trigger = document.querySelector<HTMLButtonElement>(
       "[data-console-trigger]"
     );
@@ -55,6 +55,11 @@
     if (!(trigger instanceof HTMLButtonElement)) {
       return;
     }
+
+    if (trigger.dataset.consoleBound === "true") {
+      return;
+    }
+    trigger.dataset.consoleBound = "true";
 
     const prompt = trigger.querySelector("[data-console-trigger-prompt]");
     const spinner = trigger.querySelector("[data-console-trigger-spinner]");
@@ -115,5 +120,7 @@
     trigger.addEventListener("click", handleClick);
   }
 
-  init();
+  bindTrigger();
+  document.addEventListener("astro:page-load", bindTrigger);
+  document.addEventListener("astro:after-swap", bindTrigger);
 </script>
