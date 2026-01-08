@@ -80,7 +80,7 @@ export function getAsciiLines() {
 
 export function getIntroLines() {
   return [
-    "Hey, I'm Kasper and this is my (shitty) website terminal.",
+    "Hey, I'm Kasper and this is my website terminal.",
     "\n",
     "I tried to add some easter eggs here (such as this),",
     "but seeing everything is publicly available on GitHub, checking there is kinda boring.",
