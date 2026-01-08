@@ -1,0 +1,119 @@
+---
+
+---
+
+<button
+  type="button"
+  class="group font-mono font-bold text-2xl bg-transparent border-0 p-0 cursor-pointer disabled:cursor-default disabled:opacity-70"
+  aria-label="Open console"
+  title="Open console"
+  aria-busy="false"
+  data-console-trigger
+>
+  <span data-console-trigger-prompt>
+    <span>&gt; </span>
+    <span
+      class="inline-block animate-[console-blink_1s_steps(1,end)_infinite] motion-reduce:animate-none group-hover:text-red-400 group-focus:text-red-400"
+      >_</span
+    >
+  </span>
+  <span data-console-trigger-spinner class="hidden" aria-hidden="true">-</span>
+</button>
+
+<script>
+  import { safeWrapAsync } from "../utils/wrap";
+
+  function toggleHidden(element: Element | null, isHidden: boolean) {
+    if (!(element instanceof HTMLElement)) {
+      return;
+    }
+
+    if (isHidden) {
+      element.classList.add("hidden");
+    }
+
+    if (!isHidden) {
+      element.classList.remove("hidden");
+    }
+  }
+
+  function setAriaBusy(element: HTMLButtonElement, isBusy: boolean) {
+    if (isBusy) {
+      element.setAttribute("aria-busy", "true");
+    }
+
+    if (!isBusy) {
+      element.setAttribute("aria-busy", "false");
+    }
+  }
+
+  function init() {
+    const trigger = document.querySelector<HTMLButtonElement>(
+      "[data-console-trigger]"
+    );
+
+    if (!(trigger instanceof HTMLButtonElement)) {
+      return;
+    }
+
+    const prompt = trigger.querySelector("[data-console-trigger-prompt]");
+    const spinner = trigger.querySelector("[data-console-trigger-spinner]");
+    const frames = ["-", "\\", "|", "/"];
+    let spinnerTimer: number | null = null;
+    let frameIndex = 0;
+
+    function setLoading(isLoading: boolean) {
+      if (trigger) {
+        trigger.disabled = isLoading;
+        setAriaBusy(trigger, isLoading);
+      }
+      toggleHidden(prompt, isLoading);
+      toggleHidden(spinner, !isLoading);
+    }
+
+    function startSpinner() {
+      if (!(spinner instanceof HTMLElement)) {
+        return;
+      }
+
+      frameIndex = 0;
+      spinner.textContent = frames[frameIndex];
+      spinnerTimer = window.setInterval(() => {
+        frameIndex += 1;
+        if (frameIndex >= frames.length) {
+          frameIndex = 0;
+        }
+        spinner.textContent = frames[frameIndex];
+      }, 100);
+    }
+
+    function stopSpinner() {
+      if (spinnerTimer === null) {
+        return;
+      }
+      clearInterval(spinnerTimer);
+      spinnerTimer = null;
+    }
+
+    async function handleClick() {
+      if (trigger?.disabled) {
+        return;
+      }
+
+      setLoading(true);
+      startSpinner();
+      const [importErr, consoleModule] = await safeWrapAsync(
+        () => import("../utils/console")
+      );
+      if (!importErr && consoleModule?.openConsole) {
+        await safeWrapAsync(() => consoleModule.openConsole());
+      }
+      stopSpinner();
+      setLoading(false);
+    }
+
+    trigger.addEventListener("click", handleClick);
+  }
+
+  init();
+</script>

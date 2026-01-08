@@ -5,59 +5,31 @@
  */
 
 import { onMount, tick } from "svelte";
-import type { CvEntry } from "~/schemas/more";
 import { classNames } from "~/utils/classNames";
-import { httpClient, trackingClient } from "~/utils/http";
+import {
+  consumeQueue,
+  getAsciiLines,
+  getIntroLines,
+  runCommand,
+  type ConsoleCommand,
+  type ConsoleLine,
+} from "~/utils/console";
+import { trackingClient } from "~/utils/http";
+import { safeWrapAsync } from "~/utils/wrap";
 import Spinner from "./Spinner.svelte";
-
-const largeAscii = [
-  "██╗  ██╗ █████╗ ███████╗██████╗ ███████╗██████╗",
-  "██║ ██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝██╔══██╗",
-  "█████╔╝ ███████║███████╗██████╔╝█████╗  ██████╔╝",
-  "██╔═██╗ ██╔══██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗",
-  "██║  ██╗██║  ██║███████║██║     ███████╗██║  ██║",
-  "╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝",
-  "\n",
-];
+import ConsoleUptime from "./ConsoleUptime.svelte";
 
 let browseback = -1;
 let prevCommands: string[] = [];
-let commands: string[][] = [];
-let allowedCommands = ["help", "cv", "clear", "exit"];
+let commands: ConsoleLine[] = [];
 let inputfield: HTMLInputElement;
 let input = "";
-let innerWidth = window.innerWidth;
 let loading = false;
 let partial = false;
-let queue: string[][] | null = null;
+let queue: ConsoleLine[] | null = null;
 
-$: screensize = innerWidth > 568 ? "large" : "small";
-$: intro = [
-  ...(screensize === "large" ? largeAscii : []),
-  "Hey, I'm Kasper and this is my (shitty) website terminal.",
-  "\n",
-  "I tried to add some easter eggs here (such as this),",
-  "but seeing everything is publicly available on GitHub, checking there is kinda boring.",
-  "\n",
-];
-
-async function getCvEntries(): Promise<CvEntry[]> {
-  const [err, data] = await httpClient.get("/cv.json", null, {
-    cacheRequest: true,
-    cacheTimeToLive: 864000,
-  });
-  if (err) {
-    // Shouldn't happen, so, well, let's try again
-    return getCvEntries();
-  }
-
-  return data
-    .filter((entry) => typeof entry === "object" && entry !== null)
-    .map((entry) => ({
-      label: typeof entry.label === "string" ? entry.label : "",
-      text: typeof entry.text === "string" ? entry.text : "",
-    }));
-}
+const intro = getIntroLines();
+const asciiLines = getAsciiLines();
 
 function getDate() {
   return new Date().toTimeString().split(" ")[0];
@@ -66,7 +38,6 @@ function getDate() {
 async function handleSubmit() {
   loading = true;
   browseback = -1;
-  prevCommands.push(input);
 
   if (input === "" && (partial || queue !== null)) {
     partial = false;
@@ -75,107 +46,47 @@ async function handleSubmit() {
     return;
   }
 
-  if (input.startsWith("ssh")) {
-    commands = [...commands, [getDate(), `command not found: ${input}`]];
-    commands = [...commands, ["", `You really think this would have ssh?`]];
+  if (input.trim() !== "") {
+    prevCommands.push(input);
+  }
+
+  const [err, result] = await safeWrapAsync(() => runCommand({ input, getDate }));
+
+  if (err || !result) {
+    commands = [...commands, [getDate(), "something went wrong, try again."]];
     input = "";
     loading = false;
     return;
   }
 
-  if (input.includes("/etc/passwd")) {
-    commands = [...commands, [getDate(), `no, but good try`]];
+  if (result.type === "replace") {
+    commands = result.lines;
     input = "";
     loading = false;
     return;
   }
 
-  if (input.startsWith("sudo") || input.startsWith("su ")) {
-    commands = [...commands, [getDate(), `not granted (obviously)`]];
-    input = "";
-    loading = false;
-    return;
+  if (result.echoInput) {
+    commands = [...commands, [getDate(), input]];
   }
 
-  if (!allowedCommands.includes(input)) {
-    commands = [...commands, [getDate(), `command not found: ${input}`]];
-    input = "";
-    loading = false;
-    return;
-  }
-
-  commands = [...commands, [getDate(), input]];
-  switch (input) {
-    case "help":
-      trackingClient.post("/api/event", null, {
-        d: "kasperrt.me",
-        n: "pageview",
-        r: null,
-        u: "https://analytics.kasperrt.me/console.help",
-      });
-
-      commands = [
-        ...commands,
-        ["", `available commands: ${allowedCommands.join(", ")}.`],
-        ["", "more might come at a later time."],
-      ];
+  switch (result.type) {
+    case "append":
+      commands = [...commands, ...result.lines];
       break;
-    case "clear":
-      trackingClient.post("/api/event", null, {
-        d: "kasperrt.me",
-        n: "pageview",
-        r: null,
-        u: "https://analytics.kasperrt.me/console.clear",
-      });
-
-      commands = [[getDate(), input]];
-      break;
-    case "exit":
-      trackingClient.post("/api/event", null, {
-        d: "kasperrt.me",
-        n: "pageview",
-        r: null,
-        u: "https://analytics.kasperrt.me/console.exit",
-      });
-
-      window.location.reload();
-      return;
-    case "cv": {
-      trackingClient.post("/api/event", null, {
-        d: "kasperrt.me",
-        n: "pageview",
-        r: null,
-        u: "https://analytics.kasperrt.me/console.cv",
-      });
-
-      const cvEntries = await getCvEntries();
-      if (!cvEntries.length) {
-        commands = [...commands, ["", "cv doesn't seem to be available at this time..."]];
-        break;
+    case "queue": {
+      commands = [...commands, ...result.lines];
+      let nextQueue: ConsoleLine[] | null = null;
+      if (result.remaining.length) {
+        nextQueue = result.remaining;
       }
-
-      queue = [...cvEntries.map(({ label, text }) => [label, text])];
-      let pop = null;
-      for (let i = 0; i < queue.length; i++) {
-        const q = queue[i];
-        const [, text] = q;
-        if (text === " ") {
-          commands = [...commands, q];
-          partial = true;
-          pop = i;
-          break;
-        }
-
-        commands = [...commands, q];
-        pop = i;
-      }
-
-      if (pop !== null) {
-        queue = queue.slice(pop + 1);
-      }
-
+      queue = nextQueue;
+      partial = result.partial;
       break;
     }
+    case "exit":
+      window.location.reload();
+      return;
   }
 
   input = "";
@@ -207,15 +118,47 @@ async function handleKeyPress(e: KeyboardEvent) {
   e.preventDefault();
 
   switch (e.key) {
-    case "ArrowUp":
-      browseback = Math.min(browseback + 1, prevCommands.length - 1);
+    case "ArrowUp": {
+      if (prevCommands.length === 0) {
+        return;
+      }
+
+      if (browseback === -1) {
+        browseback = prevCommands.length - 1;
+        break;
+      }
+
+      if (browseback !== -1) {
+        browseback = Math.max(0, browseback - 1);
+        break;
+      }
       break;
-    case "ArrowDown":
-      browseback = Math.max(browseback - 1, -1);
+    }
+    case "ArrowDown": {
+      if (browseback === -1) {
+        return;
+      }
+
+      if (browseback >= prevCommands.length - 1) {
+        browseback = -1;
+        break;
+      }
+
+      if (browseback < prevCommands.length - 1) {
+        browseback = browseback + 1;
+        break;
+      }
+
       break;
+    }
   }
 
-  input = browseback === -1 ? "" : prevCommands[browseback];
+  let nextInput = "";
+  if (browseback !== -1) {
+    nextInput = prevCommands[browseback];
+  }
+
+  input = nextInput;
 
   await focusEnd();
 }
@@ -228,6 +171,95 @@ function cleanString(s: string) {
   return s;
 }
 
+function isLink(value: ConsoleCommand): value is string {
+  return (
+    typeof value === "string" &&
+    (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("mailto:"))
+  );
+}
+
+function isExternalLink(value: string) {
+  return value.startsWith("http://") || value.startsWith("https://");
+}
+
+function isUptime(value: ConsoleCommand): value is { type: "uptime" } {
+  return typeof value === "object" && value !== null && value.type === "uptime";
+}
+
+function shouldShowUptime(value: ConsoleCommand): boolean {
+  return isUptime(value);
+}
+
+function shouldShowLink(value: ConsoleCommand): boolean {
+  if (isUptime(value)) {
+    return false;
+  }
+
+  if (isLink(value)) {
+    return true;
+  }
+
+  return false;
+}
+
+function shouldShowText(value: ConsoleCommand): boolean {
+  if (isUptime(value)) {
+    return false;
+  }
+
+  if (isLink(value)) {
+    return false;
+  }
+
+  return true;
+}
+
+function getLinkValue(value: ConsoleCommand): string | null {
+  if (isLink(value)) {
+    return value;
+  }
+
+  return null;
+}
+
+function getCommandText(value: ConsoleCommand): string {
+  if (typeof value === "string") {
+    return value;
+  }
+
+  return "";
+}
+
+function isItalicCommand(value: ConsoleCommand): boolean {
+  const text = getCommandText(value);
+  return text.startsWith("*") && text.endsWith("*");
+}
+
+function isBoldCommand(value: ConsoleCommand): boolean {
+  const text = getCommandText(value);
+  return text.startsWith("_") && text.endsWith("_");
+}
+
+function isSpaceCommand(value: ConsoleCommand): boolean {
+  return getCommandText(value) === " ";
+}
+
+function getLinkTarget(value: string) {
+  if (isExternalLink(value)) {
+    return "_blank";
+  }
+
+  return undefined;
+}
+
+function getLinkRel(value: string) {
+  if (isExternalLink(value)) {
+    return "noreferrer";
+  }
+
+  return undefined;
+}
+
 function partialContinue(e: KeyboardEvent) {
   if (!partial) {
     return;
@@ -235,7 +267,7 @@ function partialContinue(e: KeyboardEvent) {
 
   if (e.key === "c" && e.ctrlKey) {
     partial = false;
-    queue = [];
+    queue = null;
     commands = [...commands, [getDate(), `^C${input}`]];
     input = "";
     return;
@@ -245,28 +277,19 @@ function partialContinue(e: KeyboardEvent) {
     return;
   }
 
-  let currentQueue = queue ?? [];
-  let pop = null;
-  for (let i = 0; i < currentQueue.length; i++) {
-    const q = currentQueue[i];
-    const [, text] = q;
-    if (text === " ") {
-      commands = [...commands, q];
-      partial = true;
-      pop = i;
-      break;
-    }
+  const currentQueue = queue ?? [];
+  const { lines, remaining, partial: stillPartial } = consumeQueue(currentQueue);
 
-    commands = [...commands, q];
-    pop = i;
+  if (lines.length) {
+    commands = [...commands, ...lines];
   }
 
-  if (pop !== null) {
-    queue = currentQueue.slice(pop + 1);
-    return;
+  let nextQueue: ConsoleLine[] | null = null;
+  if (remaining.length) {
+    nextQueue = remaining;
   }
-
-  partial = false;
+  queue = nextQueue;
+  partial = stillPartial;
 }
 
 onMount(() => {
@@ -279,7 +302,7 @@ onMount(() => {
 });
 </script>
 
-<svelte:window on:click={focusEnd} bind:innerWidth on:keydown={partialContinue} />
+<svelte:window on:click={focusEnd} on:keydown={partialContinue} />
 
 <div
   class="absolute flex justify-center items-center inset-0 m-auto bg-black/50 z-10"
@@ -317,23 +340,42 @@ onMount(() => {
             {label}
           </span>
           <span class="flex min-w-0 gap-x-2">
-            <span
-              class={classNames(
-                command.startsWith("*") && command.endsWith("*") && "italic",
-                command.startsWith("_") && command.endsWith("_") && "font-bold"
-              )}
-            >
-              {cleanString(command)}
-              {#if command === " "}
-                &nbsp;
-              {/if}
-            </span>
+            {#if shouldShowUptime(command)}
+              <ConsoleUptime />
+            {:else if shouldShowLink(command)}
+              <a
+                class="text-red-400 hover:text-red-300 underline underline-offset-2 break-all"
+                href={getLinkValue(command)}
+                target={getLinkTarget(getCommandText(command))}
+                rel={getLinkRel(getCommandText(command))}
+              >
+                {getLinkValue(command)}
+              </a>
+            {:else if shouldShowText(command)}
+              <span
+                class={classNames(
+                  isItalicCommand(command) && "italic",
+                  isBoldCommand(command) && "font-bold"
+                )}
+              >
+                {cleanString(getCommandText(command))}
+                {#if isSpaceCommand(command)}
+                  &nbsp;
+                {/if}
+              </span>
+            {/if}
           </span>
         </div>
       {/each}
       {#each [...intro].reverse() as text}
         <div>
           <pre class="text-wrap">{text}</pre>
+        </div>
+      {/each}
+
+      {#each [...asciiLines].reverse() as text}
+        <div>
+          <pre class="text-wrap text-[8px] sm:text-base">{text}</pre>
         </div>
       {/each}
     </form>

@@ -30,8 +30,12 @@ const {
   ogUrl: ogUrlProp,
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
-const rssUrl = Astro.site ? new URL("/rss.xml", Astro.site).toString() : "/rss.xml";
+const canonicalUrl = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).toString()
+  : "";
+const rssUrl = Astro.site
+  ? new URL("/rss.xml", Astro.site).toString()
+  : "/rss.xml";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
@@ -119,12 +123,6 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
     <main class="relative flex flex-1 lg:min-h-svh">
       <slot />
     </main>
-
-    <script>
-      import { console } from "../utils/console";
-
-      console();
-    </script>
 
     <script>
       import { rotateElement, getRotateElements } from "~/utils/rotate";
