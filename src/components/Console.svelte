@@ -332,6 +332,10 @@ onMount(() => {
           <input
             autofocus
             class="outline-0 caret"
+            autocapitalize="off"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck={false}
             bind:value={input}
             on:keydown={handleKeyPress}
             bind:this={inputfield}
