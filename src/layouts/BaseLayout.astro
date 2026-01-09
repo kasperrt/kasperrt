@@ -15,6 +15,8 @@ interface Props {
   twitterHandle: string;
   author?: string;
   ogUrl?: string;
+  htmlClass?: string;
+  bodyClass?: string;
 }
 
 const {
@@ -28,20 +30,18 @@ const {
   twitterHandle,
   author = "Kasper Rynning-Tønnesen",
   ogUrl: ogUrlProp,
+  htmlClass = "",
+  bodyClass = "",
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
-const canonicalUrl = Astro.site
-  ? new URL(Astro.url.pathname, Astro.site).toString()
-  : "";
-const rssUrl = Astro.site
-  ? new URL("/rss.xml", Astro.site).toString()
-  : "/rss.xml";
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
+const rssUrl = Astro.site ? new URL("/rss.xml", Astro.site).toString() : "/rss.xml";
 const ogUrl = ogUrlProp ?? canonicalUrl;
 const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class={htmlClass}>
   <head>
     <meta charset="utf-8" />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -100,7 +100,7 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
     />
   </head>
 
-  <body>
+  <body class={bodyClass}>
     {
       backgroundImage && (
         <Image

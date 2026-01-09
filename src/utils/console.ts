@@ -11,6 +11,7 @@ export type ConsoleLine = [string, ConsoleCommand];
  */
 
 let mounted = false;
+let invalidCommandCount = 0;
 
 export async function openConsole() {
   if (mounted) {
@@ -56,7 +57,7 @@ const asciiLines = [
   "██╔═██╗ ██╔══██║╚════██║██╔═══╝ ██╔══╝  ██╔══██╗",
   "██║  ██╗██║  ██║███████║██║     ███████╗██║  ██║",
   "╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝     ╚══════╝╚═╝  ╚═╝",
-  "\n",
+  " ",
 ];
 
 const helpEntries = [
@@ -81,10 +82,10 @@ export function getAsciiLines() {
 export function getIntroLines() {
   return [
     "Hey, I'm Kasper and this is my website terminal.",
-    "\n",
+    " ",
     "I tried to add some easter eggs here (such as this),",
     "but seeing everything is publicly available on GitHub, checking there is kinda boring.",
-    "\n",
+    " ",
   ];
 }
 
@@ -156,10 +157,11 @@ export async function runCommand({
   if (!allowedCommands.has(command)) {
     return {
       type: "append",
-      lines: [[getDate(), `command not found: ${input}`]],
+      lines: handleUnknownCommand(input, getDate),
     };
   }
 
+  invalidCommandCount = 0;
   trackCommand(command);
 
   switch (command) {
@@ -241,7 +243,7 @@ export async function runCommand({
 
   return {
     type: "append",
-    lines: [[getDate(), `command not found: ${input}`]],
+    lines: handleUnknownCommand(input, getDate),
   };
 }
 
@@ -261,6 +263,27 @@ function trackCommand(command: string) {
     r: null,
     u: `https://analytics.kasperrt.me/console.${command}`,
   });
+}
+
+function handleUnknownCommand(
+  input: string,
+  getDate: () => string
+): ConsoleLine[] {
+  invalidCommandCount += 1;
+  const lines: ConsoleLine[] = [
+    [getDate(), `command not found: ${input}`],
+    ...hint(),
+  ];
+  return lines;
+}
+
+function hint(): ConsoleLine[] {
+  if (invalidCommandCount < 3) {
+    return [];
+  }
+
+  invalidCommandCount = 0;
+  return [["", "(have you tried help?)"]];
 }
 
 async function getCvEntries(): Promise<CvEntry[]> {

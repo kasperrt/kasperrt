@@ -12,6 +12,12 @@ body {
   @apply min-h-svh;
 }
 
+html.console-page,
+body.console-page {
+  overflow: hidden;
+  height: 100%;
+}
+
 html {
   color-scheme: light dark;
 }

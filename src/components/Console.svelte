@@ -14,7 +14,6 @@ import {
   type ConsoleCommand,
   type ConsoleLine,
 } from "~/utils/console";
-import { trackingClient } from "~/utils/http";
 import { safeWrapAsync } from "~/utils/wrap";
 import Spinner from "./Spinner.svelte";
 import ConsoleUptime from "./ConsoleUptime.svelte";
@@ -85,7 +84,7 @@ async function handleSubmit() {
       break;
     }
     case "exit":
-      window.location.reload();
+      window.location.href = "/";
       return;
   }
 
@@ -301,13 +300,6 @@ onMount(() => {
   html.style.overflow = "hidden";
   body.style.overflow = "hidden";
 
-  trackingClient.post("/api/event", null, {
-    d: "kasperrt.me",
-    n: "pageview",
-    r: document.referrer,
-    u: "https://analytics.kasperrt.me/console",
-  });
-
   return () => {
     html.style.overflow = prevHtmlOverflow;
     body.style.overflow = prevBodyOverflow;
@@ -320,7 +312,8 @@ onMount(() => {
 <div
   class="fixed inset-0 z-10 flex items-center justify-center bg-black/50"
 >
-  <div class="bg-gray-700 flex w-full h-full flex-col-reverse p-8">
+  <div class="bg-gray-700 flex w-full h-full flex-col-reverse p-8 relative">
+    <span class="bg-gray-700 px-4 top-5 left-0 right-0 m-auto absolute text-white font-mono w-fit">kasperrt</span>
     <form
       class="font-mono flex flex-col-reverse px-4 pt-4 border-2 border-white h-full overflow-auto text-white"
       on:submit|preventDefault={handleSubmit}
