@@ -1,4 +1,3 @@
-import { safeWrapAsync } from "~/utils/wrap";
 import type { CvEntry } from "~/schemas/more";
 import { httpClient, trackingClient } from "~/utils/http";
 
@@ -10,28 +9,7 @@ export type ConsoleLine = [string, ConsoleCommand];
  * but it would of course be more fun to find them on your own.
  */
 
-let mounted = false;
 let invalidCommandCount = 0;
-
-export async function openConsole() {
-  if (mounted) {
-    return;
-  }
-
-  mounted = true;
-
-  const [err, res] = await safeWrapAsync(() =>
-    Promise.all([import("svelte"), import("../components/Console.svelte")])
-  );
-
-  if (err) {
-    mounted = false;
-    return;
-  }
-
-  const [{ mount }, { default: Console }] = res;
-  mount(Console, { target: document.body });
-}
 
 export type CommandResult =
   | { type: "append"; lines: ConsoleLine[]; echoInput?: boolean }

@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Console from "../components/Console.svelte";
+import ConsoleView from "../components/Console.svelte";
 import { consoleMeta } from "../data/meta";
 ---
 
@@ -11,5 +11,5 @@ import { consoleMeta } from "../data/meta";
   htmlClass="console-page"
   bodyClass="console-page"
 >
-  <Console client:load />
+  <ConsoleView client:load />
 </BaseLayout>
