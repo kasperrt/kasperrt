@@ -44,6 +44,7 @@ const helpEntries = [
   "whoami",
   "uptime",
   "cv",
+  "projects",
   "links",
   "clear",
   "exit",
@@ -180,6 +181,19 @@ export async function runCommand({
           ["LinkedIn", "https://www.linkedin.com/in/kasperrt/"],
           ["Blog", "https://kasperrt.me/blog"],
           ["Email", "mailto:kasper@rynning-toennesen.email"],
+        ],
+      };
+    case "projects":
+      return {
+        type: "append",
+        echoInput: true,
+        lines: [
+          ["", "https://wiretyped.io - Typed HTTP client for fetch runtimes."],
+          ["", "https://zoff.me - Virtual jukebox for shared music rooms."],
+          ["", "https://etys.no - Simple drinking game built for fun."],
+          ["", "https://lab.etys.no - Benchmark and compare code runtimes."],
+          ["", "https://unhinged.etys.no - Confession-based party game."],
+          ["", "https://henie.cool - Pink and purple is life."],
         ],
       };
     case "clear":
