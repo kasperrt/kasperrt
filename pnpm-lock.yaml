@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  lodash: '>=4.17.13'
+  lodash: 4.17.13
 
 importers:
 
@@ -1582,8 +1582,8 @@ packages:
   locate-character@3.0.0:
     resolution: {integrity: sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA==}
 
-  lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+  lodash@4.17.13:
+    resolution: {integrity: sha512-vm3/XWXfWtRua0FkUyEHBZy8kCPjErNBT9fJx8Zvs+U6zjqPbTUOpkaoum3O5uiA8sm+yNMHXfYkTUHFoMxFNA==}
 
   longest-streak@3.1.0:
     resolution: {integrity: sha512-9Ri+o0JYgehTaVBBDoMqIl8GXtbWg711O3srftcHhZ0dqnETqLaoIK0x17fUw9rFSlK/0NlsKe0Ahhyl5pXE2g==}
@@ -3915,7 +3915,7 @@ snapshots:
 
   locate-character@3.0.0: {}
 
-  lodash@4.17.21: {}
+  lodash@4.17.13: {}
 
   longest-streak@3.1.0: {}
 
@@ -4943,7 +4943,7 @@ snapshots:
       '@vscode/l10n': 0.0.18
       ajv: 8.17.1
       ajv-draft-04: 1.0.0(ajv@8.17.1)
-      lodash: 4.17.21
+      lodash: 4.17.13
       prettier: 3.7.4
       request-light: 0.5.8
       vscode-json-languageservice: 4.1.8
