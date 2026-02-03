@@ -38,21 +38,9 @@ const asciiLines = [
   " ",
 ];
 
-const helpEntries = [
-  "help",
-  "about",
-  "whoami",
-  "uptime",
-  "cv",
-  "projects",
-  "links",
-  "clear",
-  "exit",
-];
+const helpEntries = ["help", "about", "whoami", "uptime", "cv", "projects", "links", "clear", "exit"];
 
-const allowedCommands = new Set(
-  helpEntries.map((entry) => entry.split(" ")[0])
-);
+const allowedCommands = new Set(helpEntries.map((entry) => entry.split(" ")[0]));
 
 export function getAsciiLines() {
   return asciiLines;
@@ -94,10 +82,7 @@ export function consumeQueue(queue: ConsoleLine[]) {
   return { lines, remaining, partial };
 }
 
-export async function runCommand({
-  input,
-  getDate,
-}: CommandProps): Promise<CommandResult> {
+export async function runCommand({ input, getDate }: CommandProps): Promise<CommandResult> {
   const trimmed = input.trim();
   const [command = ""] = trimmed.split(" ");
 
@@ -212,15 +197,11 @@ export async function runCommand({
         return {
           type: "append",
           echoInput: true,
-          lines: toOutputLines([
-            "cv doesn't seem to be available at this time...",
-          ]),
+          lines: toOutputLines(["cv doesn't seem to be available at this time..."]),
         };
       }
 
-      const queued = cvEntries.map(
-        ({ label, text }) => [label, text] as ConsoleLine
-      );
+      const queued = cvEntries.map(({ label, text }) => [label, text] as ConsoleLine);
       const { lines, remaining, partial } = consumeQueue(queued);
 
       return {
@@ -257,15 +238,9 @@ function trackCommand(command: string) {
   });
 }
 
-function handleUnknownCommand(
-  input: string,
-  getDate: () => string
-): ConsoleLine[] {
+function handleUnknownCommand(input: string, getDate: () => string): ConsoleLine[] {
   invalidCommandCount += 1;
-  const lines: ConsoleLine[] = [
-    [getDate(), `command not found: ${input}`],
-    ...hint(),
-  ];
+  const lines: ConsoleLine[] = [[getDate(), `command not found: ${input}`], ...hint()];
   return lines;
 }
 
