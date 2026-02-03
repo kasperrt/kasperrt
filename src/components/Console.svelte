@@ -1,342 +1,329 @@
 <script lang="ts">
-  /**
-   * I know it is fun to poke around here to figure out easter eggs,
-   * but it would of course be more fun to find them on your own.
-   */
+/**
+ * I know it is fun to poke around here to figure out easter eggs,
+ * but it would of course be more fun to find them on your own.
+ */
 
-  import { onMount, tick } from "svelte";
-  import { classNames } from "~/utils/classNames";
-  import {
-    consumeQueue,
-    getAsciiLines,
-    getIntroLines,
-    runCommand,
-    type ConsoleCommand,
-    type ConsoleLine,
-  } from "~/utils/console";
-  import { safeWrapAsync } from "~/utils/wrap";
-  import Spinner from "./Spinner.svelte";
-  import ConsoleUptime from "./ConsoleUptime.svelte";
+import { onMount, tick } from "svelte";
+import { classNames } from "~/utils/classNames";
+import {
+  consumeQueue,
+  getAsciiLines,
+  getIntroLines,
+  runCommand,
+  type ConsoleCommand,
+  type ConsoleLine,
+} from "~/utils/console";
+import { safeWrapAsync } from "~/utils/wrap";
+import Spinner from "./Spinner.svelte";
+import ConsoleUptime from "./ConsoleUptime.svelte";
 
-  let browseback = -1;
-  let prevCommands: string[] = [];
-  let commands: ConsoleLine[] = [];
-  let inputfield: HTMLInputElement;
-  let input = "";
-  let loading = false;
-  let partial = false;
-  let queue: ConsoleLine[] | null = null;
+let browseback = -1;
+let prevCommands: string[] = [];
+let commands: ConsoleLine[] = [];
+let inputfield: HTMLInputElement;
+let input = "";
+let loading = false;
+let partial = false;
+let queue: ConsoleLine[] | null = null;
 
-  const intro = getIntroLines();
-  const asciiLines = getAsciiLines();
+const intro = getIntroLines();
+const asciiLines = getAsciiLines();
 
-  function getDate() {
-    return new Date().toTimeString().split(" ")[0];
+function getDate() {
+  return new Date().toTimeString().split(" ")[0];
+}
+
+async function handleSubmit() {
+  loading = true;
+  browseback = -1;
+
+  if (input === "" && (partial || queue !== null)) {
+    partial = false;
+    queue = null;
+    loading = false;
+    return;
   }
 
-  async function handleSubmit() {
-    loading = true;
-    browseback = -1;
+  if (input.trim() !== "") {
+    prevCommands.push(input);
+  }
 
-    if (input === "" && (partial || queue !== null)) {
-      partial = false;
-      queue = null;
-      loading = false;
-      return;
-    }
+  const [err, result] = await safeWrapAsync(() => runCommand({ input, getDate }));
 
-    if (input.trim() !== "") {
-      prevCommands.push(input);
-    }
-
-    const [err, result] = await safeWrapAsync(() =>
-      runCommand({ input, getDate })
-    );
-
-    if (err || !result) {
-      commands = [...commands, [getDate(), "something went wrong, try again."]];
-      input = "";
-      loading = false;
-      return;
-    }
-
-    if (result.type === "replace") {
-      commands = result.lines;
-      input = "";
-      loading = false;
-      return;
-    }
-
-    if (result.echoInput) {
-      commands = [...commands, [getDate(), input]];
-    }
-
-    switch (result.type) {
-      case "append":
-        commands = [...commands, ...result.lines];
-        break;
-      case "queue": {
-        commands = [...commands, ...result.lines];
-        let nextQueue: ConsoleLine[] | null = null;
-        if (result.remaining.length) {
-          nextQueue = result.remaining;
-        }
-        queue = nextQueue;
-        partial = result.partial;
-        break;
-      }
-      case "exit":
-        window.location.href = "/";
-        return;
-    }
-
+  if (err || !result) {
+    commands = [...commands, [getDate(), "something went wrong, try again."]];
     input = "";
     loading = false;
+    return;
   }
 
-  async function focusEnd() {
-    if (!inputfield) {
-      return;
-    }
-    inputfield.focus();
-    await tick();
-    inputfield.focus();
-    const len = inputfield.value.length;
-    inputfield.setSelectionRange(len, len);
+  if (result.type === "replace") {
+    commands = result.lines;
+    input = "";
+    loading = false;
+    return;
   }
 
-  async function handleKeyPress(e: KeyboardEvent) {
-    if (e.key === "c" && e.ctrlKey) {
-      commands = [...commands, [getDate(), `^C${input}`]];
-      input = "";
-      return;
+  if (result.echoInput) {
+    commands = [...commands, [getDate(), input]];
+  }
+
+  switch (result.type) {
+    case "append":
+      commands = [...commands, ...result.lines];
+      break;
+    case "queue": {
+      commands = [...commands, ...result.lines];
+      let nextQueue: ConsoleLine[] | null = null;
+      if (result.remaining.length) {
+        nextQueue = result.remaining;
+      }
+      queue = nextQueue;
+      partial = result.partial;
+      break;
     }
-
-    if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
+    case "exit":
+      window.location.href = "/";
       return;
-    }
+  }
 
-    e.preventDefault();
+  input = "";
+  loading = false;
+}
 
-    switch (e.key) {
-      case "ArrowUp": {
-        if (prevCommands.length === 0) {
-          return;
-        }
+async function focusEnd() {
+  if (!inputfield) {
+    return;
+  }
+  inputfield.focus();
+  await tick();
+  inputfield.focus();
+  const len = inputfield.value.length;
+  inputfield.setSelectionRange(len, len);
+}
 
-        if (browseback === -1) {
-          browseback = prevCommands.length - 1;
-          break;
-        }
+async function handleKeyPress(e: KeyboardEvent) {
+  if (e.key === "c" && e.ctrlKey) {
+    commands = [...commands, [getDate(), `^C${input}`]];
+    input = "";
+    return;
+  }
 
-        if (browseback !== -1) {
-          browseback = Math.max(0, browseback - 1);
-          break;
-        }
+  if (e.key !== "ArrowUp" && e.key !== "ArrowDown") {
+    return;
+  }
+
+  e.preventDefault();
+
+  switch (e.key) {
+    case "ArrowUp": {
+      if (prevCommands.length === 0) {
+        return;
+      }
+
+      if (browseback === -1) {
+        browseback = prevCommands.length - 1;
         break;
       }
-      case "ArrowDown": {
-        if (browseback === -1) {
-          return;
-        }
 
-        if (browseback >= prevCommands.length - 1) {
-          browseback = -1;
-          break;
-        }
-
-        if (browseback < prevCommands.length - 1) {
-          browseback = browseback + 1;
-          break;
-        }
-
+      if (browseback !== -1) {
+        browseback = Math.max(0, browseback - 1);
         break;
       }
+      break;
     }
+    case "ArrowDown": {
+      if (browseback === -1) {
+        return;
+      }
 
-    let nextInput = "";
-    if (browseback !== -1) {
-      nextInput = prevCommands[browseback];
+      if (browseback >= prevCommands.length - 1) {
+        browseback = -1;
+        break;
+      }
+
+      if (browseback < prevCommands.length - 1) {
+        browseback = browseback + 1;
+        break;
+      }
+
+      break;
     }
-
-    input = nextInput;
-
-    await focusEnd();
   }
 
-  function cleanString(s: string) {
-    if (
-      (s.startsWith("*") && s.endsWith("*")) ||
-      (s.startsWith("_") && s.endsWith("_"))
-    ) {
-      return s.substring(1, s.length - 1);
-    }
-
-    return s;
+  let nextInput = "";
+  if (browseback !== -1) {
+    nextInput = prevCommands[browseback];
   }
 
-  function isLink(value: ConsoleCommand): value is string {
-    return (
-      typeof value === "string" &&
-      (value.startsWith("http://") ||
-        value.startsWith("https://") ||
-        value.startsWith("mailto:"))
-    );
+  input = nextInput;
+
+  await focusEnd();
+}
+
+function cleanString(s: string) {
+  if ((s.startsWith("*") && s.endsWith("*")) || (s.startsWith("_") && s.endsWith("_"))) {
+    return s.substring(1, s.length - 1);
   }
 
-  function isExternalLink(value: string) {
-    return value.startsWith("http://") || value.startsWith("https://");
-  }
+  return s;
+}
 
-  function isUptime(value: ConsoleCommand): value is { type: "uptime" } {
-    return (
-      typeof value === "object" && value !== null && value.type === "uptime"
-    );
-  }
+function isLink(value: ConsoleCommand): value is string {
+  return (
+    typeof value === "string" &&
+    (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("mailto:"))
+  );
+}
 
-  function shouldShowUptime(value: ConsoleCommand): boolean {
-    return isUptime(value);
-  }
+function isExternalLink(value: string) {
+  return value.startsWith("http://") || value.startsWith("https://");
+}
 
-  function shouldShowLink(value: ConsoleCommand): boolean {
-    if (isUptime(value)) {
-      return false;
-    }
+function isUptime(value: ConsoleCommand): value is { type: "uptime" } {
+  return typeof value === "object" && value !== null && value.type === "uptime";
+}
 
-    if (isLink(value)) {
-      return true;
-    }
+function shouldShowUptime(value: ConsoleCommand): boolean {
+  return isUptime(value);
+}
 
+function shouldShowLink(value: ConsoleCommand): boolean {
+  if (isUptime(value)) {
     return false;
   }
 
-  function shouldShowText(value: ConsoleCommand): boolean {
-    if (isUptime(value)) {
-      return false;
-    }
-
-    if (isLink(value)) {
-      return false;
-    }
-
+  if (isLink(value)) {
     return true;
   }
 
-  function getLinkValue(value: ConsoleCommand): string | null {
-    if (!isLink(value)) {
-      return null;
-    }
+  return false;
+}
 
-    const parts = value.split(" ");
-    if (parts.length <= 1) {
-      return null;
-    }
-
-    return parts[0];
+function shouldShowText(value: ConsoleCommand): boolean {
+  if (isUptime(value)) {
+    return false;
   }
 
-  function getLinkSummary(value: ConsoleCommand): string | null {
-    const text = getCommandText(value);
-    if (!isLink(value)) {
-      return null;
-    }
-
-    const parts = text.split(" ");
-    if (parts.length <= 1) {
-      return null;
-    }
-
-    return text.substring(parts[0].length);
+  if (isLink(value)) {
+    return false;
   }
 
-  function getCommandText(value: ConsoleCommand): string {
-    if (typeof value === "string") {
-      return value;
-    }
+  return true;
+}
 
-    return "";
+function getLinkValue(value: ConsoleCommand): string | null {
+  if (!isLink(value)) {
+    return null;
   }
 
-  function isItalicCommand(value: ConsoleCommand): boolean {
-    const text = getCommandText(value);
-    return text.startsWith("*") && text.endsWith("*");
+  const parts = value.split(" ");
+  if (parts.length <= 1) {
+    return null;
   }
 
-  function isBoldCommand(value: ConsoleCommand): boolean {
-    const text = getCommandText(value);
-    return text.startsWith("_") && text.endsWith("_");
+  return parts[0];
+}
+
+function getLinkSummary(value: ConsoleCommand): string | null {
+  const text = getCommandText(value);
+  if (!isLink(value)) {
+    return null;
   }
 
-  function isSpaceCommand(value: ConsoleCommand): boolean {
-    return getCommandText(value) === " ";
+  const parts = text.split(" ");
+  if (parts.length <= 1) {
+    return null;
   }
 
-  function getLinkTarget(value: string) {
-    if (isExternalLink(value)) {
-      return "_blank";
-    }
+  return text.substring(parts[0].length);
+}
 
-    return undefined;
+function getCommandText(value: ConsoleCommand): string {
+  if (typeof value === "string") {
+    return value;
   }
 
-  function getLinkRel(value: string) {
-    if (isExternalLink(value)) {
-      return "noreferrer";
-    }
+  return "";
+}
 
-    return undefined;
+function isItalicCommand(value: ConsoleCommand): boolean {
+  const text = getCommandText(value);
+  return text.startsWith("*") && text.endsWith("*");
+}
+
+function isBoldCommand(value: ConsoleCommand): boolean {
+  const text = getCommandText(value);
+  return text.startsWith("_") && text.endsWith("_");
+}
+
+function isSpaceCommand(value: ConsoleCommand): boolean {
+  return getCommandText(value) === " ";
+}
+
+function getLinkTarget(value: string) {
+  if (isExternalLink(value)) {
+    return "_blank";
   }
 
-  function partialContinue(e: KeyboardEvent) {
-    if (!partial) {
-      return;
-    }
+  return undefined;
+}
 
-    if (e.key === "c" && e.ctrlKey) {
-      partial = false;
-      queue = null;
-      commands = [...commands, [getDate(), `^C${input}`]];
-      input = "";
-      return;
-    }
-
-    if (e.key !== "Enter") {
-      return;
-    }
-
-    const currentQueue = queue ?? [];
-    const {
-      lines,
-      remaining,
-      partial: stillPartial,
-    } = consumeQueue(currentQueue);
-
-    if (lines.length) {
-      commands = [...commands, ...lines];
-    }
-
-    let nextQueue: ConsoleLine[] | null = null;
-    if (remaining.length) {
-      nextQueue = remaining;
-    }
-    queue = nextQueue;
-    partial = stillPartial;
+function getLinkRel(value: string) {
+  if (isExternalLink(value)) {
+    return "noreferrer";
   }
 
-  onMount(() => {
-    const html = document.documentElement;
-    const body = document.body;
-    const prevHtmlOverflow = html.style.overflow;
-    const prevBodyOverflow = body.style.overflow;
+  return undefined;
+}
 
-    html.style.overflow = "hidden";
-    body.style.overflow = "hidden";
+function partialContinue(e: KeyboardEvent) {
+  if (!partial) {
+    return;
+  }
 
-    return () => {
-      html.style.overflow = prevHtmlOverflow;
-      body.style.overflow = prevBodyOverflow;
-    };
-  });
+  if (e.key === "c" && e.ctrlKey) {
+    partial = false;
+    queue = null;
+    commands = [...commands, [getDate(), `^C${input}`]];
+    input = "";
+    return;
+  }
+
+  if (e.key !== "Enter") {
+    return;
+  }
+
+  const currentQueue = queue ?? [];
+  const { lines, remaining, partial: stillPartial } = consumeQueue(currentQueue);
+
+  if (lines.length) {
+    commands = [...commands, ...lines];
+  }
+
+  let nextQueue: ConsoleLine[] | null = null;
+  if (remaining.length) {
+    nextQueue = remaining;
+  }
+  queue = nextQueue;
+  partial = stillPartial;
+}
+
+onMount(() => {
+  const html = document.documentElement;
+  const body = document.body;
+  const prevHtmlOverflow = html.style.overflow;
+  const prevBodyOverflow = body.style.overflow;
+
+  html.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+
+  return () => {
+    html.style.overflow = prevHtmlOverflow;
+    body.style.overflow = prevBodyOverflow;
+  };
+});
 </script>
 
 <svelte:window on:click={focusEnd} on:keydown={partialContinue} />
