@@ -19,17 +19,17 @@
   },
   "dependencies": {
     "@astrojs/svelte": "7.2.5",
-    "svelte": "5.47.1",
+    "svelte": "5.49.1",
     "wiretyped": "0.3.4"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.6",
     "@astrojs/rss": "4.0.15",
     "@astrojs/sitemap": "3.7.0",
-    "@biomejs/biome": "2.3.11",
+    "@biomejs/biome": "2.3.13",
     "@tailwindcss/vite": "4.1.18",
     "@types/node": "22",
-    "astro": "5.16.12",
+    "astro": "5.17.1",
     "front-matter": "4.0.2",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3"
@@ -37,5 +37,12 @@
   "peerDependencies": {
     "terser": "5.44.1"
   },
-  "onlyBuiltDependencies": ["esbuild"]
+  "onlyBuiltDependencies": [
+    "esbuild"
+  ],
+  "pnpm": {
+    "overrides": {
+      "lodash": ">=4.17.13"
+    }
+  }
 }
