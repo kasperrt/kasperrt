@@ -37,9 +37,7 @@
   "peerDependencies": {
     "terser": "5.44.1"
   },
-  "onlyBuiltDependencies": [
-    "esbuild"
-  ],
+  "onlyBuiltDependencies": ["esbuild"],
   "pnpm": {
     "overrides": {
       "lodash": "4.17.23"

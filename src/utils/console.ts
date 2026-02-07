@@ -179,6 +179,7 @@ export async function runCommand({ input, getDate }: CommandProps): Promise<Comm
           ["", "https://lab.etys.no - Benchmark and compare code runtimes."],
           ["", "https://unhinged.etys.no - Confession-based party game."],
           ["", "https://henie.cool - Pink and purple is life."],
+          ["", "https://degen.kasperrt.me - (de)generative art"],
         ],
       };
     case "clear":
