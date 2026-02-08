@@ -1,5 +1,4 @@
 export type CrtConfig = {
-  intensity: "authentic";
   dprMax: number;
   pixelSize: number;
   curvature: number;
@@ -16,7 +15,6 @@ export function getDefaultCrtConfig(): CrtConfig {
   // Tuned for "authentic but readable" while preserving the console's existing palette,
   // but with strong, visible CRT anomalies (scanlines/noise/tear).
   return {
-    intensity: "authentic",
     dprMax: 1.75,
     pixelSize: 1.25,
     curvature: 0.14,

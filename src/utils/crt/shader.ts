@@ -12,7 +12,6 @@ precision highp float;
 uniform sampler2D uTexture;
 uniform vec2 uResolution;
 uniform float uTime;
-uniform float uDpr;
 uniform float uOpen; // 0.0 (off) -> 1.0 (on)
 
 uniform float uCurvature;
@@ -146,54 +145,6 @@ vec2 applyTear(vec2 uv, float t) {
   uv.x -= shift;
 
   return uv;
-}
-
-// CRT opening/closing animation mapping
-vec2 applyOpenEffect(vec2 uv, float open) {
-  // We want the screen to start as a horizontal line or point in the center, 
-  // then expand horizontally, then vertically (or both, but maybe non-uniformly).
-  
-  // open goes 0->1
-  // To avoid division by zero, clamp minimum scale.
-  
-  // Nonlinear curve for "pop" effect.
-  float t = smoothstep(0.0, 1.0, open);
-  
-  // Horizontal expansion finishes faster than vertical?
-  // Or maybe a "blink" where it's a white dot, then a line, then full screen.
-  
-  // Simulating the electron beam sweep constraints.
-  // Let's vary scaleX and scaleY.
-  
-  // Phase 1: vertical line opens up (0.0 to 0.5 of open)
-  // Phase 2: horizontal sweep fills (0.2 to 1.0 of open)
-  
-  // Actually, standard CRT turn on usually:
-  // 1. Center dot appears.
-  // 2. Expands horizontally to a line.
-  // 3. Expands vertically to fill screen.
-  
-  // Let's map 'open' to these phases.
-  // But doing it all in shader might be tricky if we want perfect timing control.
-  // A simple approach: Scale UVs away from center.
-  
-  float vert = smoothstep(0.0, 0.8, open); // vertical expansion 0->0.8
-  float horz = smoothstep(0.0, 1.0, open); // horizontal expansion 0->1.0
-  // Or enable non-uniform scaling closer to real CRT:
-  // Often it's Height first then Width, or Width then Height.
-  // Let's say it expands from a thin horizontal line.
-  
-  float scaleY = vert * 0.99 + 0.01; 
-  float scaleX = horz * 0.99 + 0.01;
-  
-  // Remap uv so that [0,1] corresponds to the visible part of the "opening" screen.
-  // uv = (vUv - 0.5) / scale + 0.5
-  vec2 centered = uv - 0.5;
-  centered.y /= scaleY;
-  centered.x /= scaleX;
-  
-  // If we are outside the "beam", it's black.
-  return centered + 0.5;
 }
 
 

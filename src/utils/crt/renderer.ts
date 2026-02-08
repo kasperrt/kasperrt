@@ -1,28 +1,20 @@
+import type {
+  WebGLRenderer,
+  Scene,
+  OrthographicCamera,
+  CanvasTexture,
+  IUniform,
+  ShaderMaterial,
+  PlaneGeometry,
+  Mesh
+} from "three";
 import type { CrtConfig } from "~/utils/crt/types";
 import { fragmentShader, vertexShader } from "~/utils/crt/shader";
 import type { LinkRect } from "~/utils/crt/console2d";
 
 type ThreeModule = typeof import("three");
 
-export type PickedLink = { href: string; external: boolean };
-
-export type CrtRenderer = {
-  resize: (w: number, h: number, dpr: number) => void;
-  start: () => void;
-  stop: () => void;
-  dispose: () => void;
-  updateTexture: () => void;
-  setMotionScale: (motionScale: number) => void;
-  setLinkRects: (rects: LinkRect[]) => void;
-  pickLinkAt: (clientX: number, clientY: number) => PickedLink | null;
-  setOpen: (open: number) => void;
-};
-
-type CreateProps = {
-  canvas: HTMLCanvasElement;
-  sourceCanvas: HTMLCanvasElement;
-  config: CrtConfig;
-};
+type PickedLink = { href: string; external: boolean };
 
 function clamp01(x: number) {
   return Math.min(1, Math.max(0, x));
@@ -49,172 +41,183 @@ function barrelDistortUv(uv: { x: number; y: number }, k: number) {
   return { x: dx * 0.5 + 0.5, y: dy * 0.5 + 0.5 };
 }
 
-function mapClientToSourceUv(canvas: HTMLCanvasElement, clientX: number, clientY: number, config: CrtConfig) {
-  const r = canvas.getBoundingClientRect();
-  if (r.width <= 0 || r.height <= 0) return null;
-  const u = (clientX - r.left) / r.width;
-  const v = 1 - (clientY - r.top) / r.height;
-  const uv0 = { x: clamp01(u), y: clamp01(v) };
+export class CrtRenderer {
+  private renderer: WebGLRenderer;
+  private scene: Scene;
+  private camera: OrthographicCamera;
+  private texture: CanvasTexture;
+  private uniforms: Record<string, IUniform>;
+  private material: ShaderMaterial;
+  private geom: PlaneGeometry;
+  private mesh: Mesh;
 
-  // vUv in shader is bottom-left? Our full-screen quad uses uv as provided by three
-  // (0..1 bottom-left depends on geometry). We'll treat vUv as 0..1 with y up,
-  // but three's PlaneGeometry uv.y is typically 1 at top. We compensate by flipping
-  // to match the shader (which assumes vUv.y increases upward).
-  const uv = { x: uv0.x, y: uv0.y };
+  private running = false;
+  private raf = 0;
+  private startTime: number;
+  private linkRects: LinkRect[] = [];
 
-  let sUv = applyOverscanUv(uv, config.overscan);
-  sUv = barrelDistortUv(sUv, config.curvature);
-  return sUv;
-}
+  public constructor(
+    private THREE: ThreeModule,
+    private canvas: HTMLCanvasElement,
+    private sourceCanvas: HTMLCanvasElement,
+    private config: CrtConfig
+  ) {
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      antialias: true,
+      alpha: false,
+      powerPreference: "high-performance",
+    });
+    this.renderer.setClearColor(0x000000, 1);
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, config }: CreateProps): CrtRenderer {
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: false,
-    powerPreference: "high-performance",
-  });
-  renderer.setClearColor(0x000000, 1);
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
+    this.scene = new THREE.Scene();
+    this.camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+    this.texture = new THREE.CanvasTexture(this.sourceCanvas);
+    this.texture.colorSpace = THREE.SRGBColorSpace;
+    this.texture.wrapS = THREE.ClampToEdgeWrapping;
+    this.texture.wrapT = THREE.ClampToEdgeWrapping;
+    this.texture.minFilter = THREE.LinearFilter;
+    this.texture.magFilter = THREE.LinearFilter;
 
-  let texture = new THREE.CanvasTexture(sourceCanvas);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  texture.wrapS = THREE.ClampToEdgeWrapping;
-  texture.wrapT = THREE.ClampToEdgeWrapping;
-  texture.minFilter = THREE.LinearFilter;
-  texture.magFilter = THREE.LinearFilter;
+    this.uniforms = {
+      uTexture: { value: this.texture },
+      uResolution: { value: new THREE.Vector2(1, 1) },
+      uTime: { value: 0 },
+      uOpen: { value: 0 }, // Start closed
+      uCurvature: { value: this.config.curvature },
+      uOverscan: { value: this.config.overscan },
+      uPixelSize: { value: this.config.pixelSize },
+      uScanSpeed: { value: this.config.scanline.speed },
+      uScanDepth: { value: this.config.scanline.depth },
+      uNoiseAmount: { value: this.config.noise.amount },
+      uTearAmount: { value: this.config.tear.amount },
+      uTearFreq: { value: this.config.tear.frequency },
+      uTearPeriod: { value: this.config.tear.period },
+      uVignette: { value: this.config.vignette.amount },
+      uChroma: { value: this.config.chroma.amount },
+      uGlow: { value: this.config.glow.amount },
+      uMotionScale: { value: 1 },
+    };
 
-  const uniforms = {
-    uTexture: { value: texture },
-    uResolution: { value: new THREE.Vector2(1, 1) },
-    uTime: { value: 0 },
-    uDpr: { value: 1 },
-    uOpen: { value: 0 }, // Start closed
-    uCurvature: { value: config.curvature },
-    uOverscan: { value: config.overscan },
-    uPixelSize: { value: config.pixelSize },
-    uScanSpeed: { value: config.scanline.speed },
-    uScanDepth: { value: config.scanline.depth },
-    uNoiseAmount: { value: config.noise.amount },
-    uTearAmount: { value: config.tear.amount },
-    uTearFreq: { value: config.tear.frequency },
-    uTearPeriod: { value: config.tear.period },
-    uVignette: { value: config.vignette.amount },
-    uChroma: { value: config.chroma.amount },
-    uGlow: { value: config.glow.amount },
-    uMotionScale: { value: 1 },
+    this.material = new THREE.ShaderMaterial({
+      uniforms: this.uniforms,
+      vertexShader,
+      fragmentShader,
+    });
+
+    this.geom = new THREE.PlaneGeometry(2, 2);
+    this.mesh = new THREE.Mesh(this.geom, this.material);
+    this.scene.add(this.mesh);
+
+    this.startTime = performance.now();
+  }
+
+  public renderFrame = (now: number) => {
+    this.uniforms.uTime.value = (now - this.startTime) / 1000;
+    this.renderer.render(this.scene, this.camera);
   };
 
-  const material = new THREE.ShaderMaterial({
-    uniforms,
-    vertexShader,
-    fragmentShader,
-  });
+  private loop = (now: number) => {
+    if (!this.running) {
+      return;
+    }
+    this.renderFrame(now);
+    this.raf = requestAnimationFrame(this.loop);
+  };
 
-  const geom = new THREE.PlaneGeometry(2, 2);
-  const mesh = new THREE.Mesh(geom, material);
-  scene.add(mesh);
-
-  let running = false;
-  let raf = 0;
-  const startTime = performance.now();
-  let linkRects: LinkRect[] = [];
-
-  function renderFrame(now: number) {
-    uniforms.uTime.value = (now - startTime) / 1000;
-    renderer.render(scene, camera);
-  }
-
-  function loop(now: number) {
-    if (!running) return;
-    renderFrame(now);
-    raf = requestAnimationFrame(loop);
-  }
-
-  function resize(w: number, h: number, dpr: number) {
-    renderer.setPixelRatio(dpr);
-    renderer.setSize(w, h, false);
-    uniforms.uResolution.value.set(w * dpr, h * dpr);
-    uniforms.uDpr.value = dpr;
+  public resize = (w: number, h: number, dpr: number) => {
+    this.renderer.setPixelRatio(dpr);
+    this.renderer.setSize(w, h, false);
+    this.uniforms.uResolution.value.set(w * dpr, h * dpr);
 
     // sourceCanvas has been resized by console2d.resize() just before this call.
     // Recreate the texture to ensure it matches the new dimensions.
-    texture.dispose();
-    texture = new THREE.CanvasTexture(sourceCanvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.wrapS = THREE.ClampToEdgeWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-    texture.minFilter = THREE.LinearFilter;
-    texture.magFilter = THREE.LinearFilter;
-    uniforms.uTexture.value = texture;
+    this.texture.dispose();
+    this.texture = new this.THREE.CanvasTexture(this.sourceCanvas);
+    this.texture.colorSpace = this.THREE.SRGBColorSpace;
+    this.texture.wrapS = this.THREE.ClampToEdgeWrapping;
+    this.texture.wrapT = this.THREE.ClampToEdgeWrapping;
+    this.texture.minFilter = this.THREE.LinearFilter;
+    this.texture.magFilter = this.THREE.LinearFilter;
+    this.uniforms.uTexture.value = this.texture;
+  };
+
+  public setMotionScale = (motionScale: number) => {
+    this.uniforms.uMotionScale.value = motionScale;
+  };
+
+  public setOpen = (open: number) => {
+    this.uniforms.uOpen.value = open;
+  };
+
+  public setLinkRects = (rects: LinkRect[]) => {
+    this.linkRects = rects;
+  };
+
+  public updateTexture = () => {
+    this.texture.needsUpdate = true;
+  };
+
+  private mapClientToSourceUv(clientX: number, clientY: number) {
+    const r = this.canvas.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) {
+      return null;
+    }
+    const u = (clientX - r.left) / r.width;
+    const v = 1 - (clientY - r.top) / r.height;
+    const uv0 = { x: clamp01(u), y: clamp01(v) };
+    const uv = { x: uv0.x, y: uv0.y };
+
+    let sUv = applyOverscanUv(uv, this.config.overscan);
+    sUv = barrelDistortUv(sUv, this.config.curvature);
+    return sUv;
   }
 
-  function setMotionScale(motionScale: number) {
-    uniforms.uMotionScale.value = motionScale;
-  }
-  
-  function setOpen(open: number) {
-    uniforms.uOpen.value = open;
-  }
-
-  function setLinkRects(rects: LinkRect[]) {
-    linkRects = rects;
-  }
-
-  function updateTexture() {
-    texture.needsUpdate = true;
-  }
-
-  function pickLinkAt(clientX: number, clientY: number): PickedLink | null {
-    const uv = mapClientToSourceUv(canvas, clientX, clientY, config);
-    if (!uv) return null;
-    if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) return null;
+  public pickLinkAt = (clientX: number, clientY: number): PickedLink | null => {
+    const uv = this.mapClientToSourceUv(clientX, clientY);
+    if (!uv) {
+      return null;
+    }
+    if (uv.x < 0 || uv.x > 1 || uv.y < 0 || uv.y > 1) {
+      return null;
+    }
 
     // Map to source canvas pixels in CSS pixel space (the 2D renderer uses CSS px coordinates).
-    const x = uv.x * canvas.clientWidth;
-    const y = (1 - uv.y) * canvas.clientHeight;
+    const x = uv.x * this.canvas.clientWidth;
+    const y = (1 - uv.y) * this.canvas.clientHeight;
 
-    for (const lr of linkRects) {
+    for (const lr of this.linkRects) {
       const r = lr.rect;
       if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
         return { href: lr.href, external: lr.external };
       }
     }
     return null;
-  }
+  };
 
-  function start() {
-    if (running) return;
-    running = true;
-    raf = requestAnimationFrame(loop);
-  }
+  public start = () => {
+    if (this.running) {
+      return;
+    }
+    this.running = true;
+    this.raf = requestAnimationFrame(this.loop);
+  };
 
-  function stop() {
-    running = false;
-    if (raf) cancelAnimationFrame(raf);
-    raf = 0;
-  }
+  public stop = () => {
+    this.running = false;
+    if (this.raf) {
+      cancelAnimationFrame(this.raf);
+    }
+    this.raf = 0;
+  };
 
-  function dispose() {
-    stop();
-    geom.dispose();
-    material.dispose();
-    texture.dispose();
-    renderer.dispose();
-  }
-
-  return {
-    resize,
-    start,
-    stop,
-    dispose,
-    updateTexture,
-    setMotionScale,
-    setLinkRects,
-    pickLinkAt,
-    setOpen,
+  public dispose = () => {
+    this.stop();
+    this.geom.dispose();
+    this.material.dispose();
+    this.texture.dispose();
+    this.renderer.dispose();
   };
 }
