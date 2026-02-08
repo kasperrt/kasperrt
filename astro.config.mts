@@ -30,7 +30,10 @@ export default defineConfig({
     build: {
       minify: "terser",
     },
-    plugins: [tailwind()],
+    // Astro currently types against a different Vite major than @tailwindcss/vite.
+    // Cast to avoid type conflicts while keeping runtime behavior unchanged.
+    // biome-ignore lint/suspicious/noExplicitAny: Astro and @tailwindcss/vite currently type against different Vite majors.
+    plugins: [tailwind() as any],
   },
   outDir: "build",
 });
