@@ -155,9 +155,60 @@
     crtManager?.requestRedraw();
   }
 
+  let windowWidth = typeof window !== "undefined" ? window.innerWidth : 1024;
+  $: useCrt = canUseWebgl() && windowWidth >= 768;
+
+  let crtCleanup: (() => void) | null = null;
+  let unmounted = false;
+
+  async function initCrt() {
+    if (unmounted || !useCrt || !canvasEl || crtManager) {
+      return;
+    }
+
+    const config = getDefaultCrtConfig();
+    const [threeErr, THREE] = await safeWrapAsync(() => import("three"));
+    if (threeErr) {
+      console.error("Failed to load Three.js", threeErr);
+      // Fallback is implicit because useCrt remains false or we could force it here
+      return;
+    }
+
+    const sourceCanvas = document.createElement("canvas");
+    const console2d = new Console2dRenderer({ canvas: sourceCanvas });
+    const crt = new CrtRenderer(THREE, canvasEl, sourceCanvas, config);
+    const manager = new CrtManager(
+      canvasEl,
+      controller,
+      config,
+      crt,
+      console2d
+    );
+
+    crtManager = manager;
+    await focusInputCrt();
+
+    if (unmounted) {
+      disposeCrt();
+    }
+  }
+
+  function disposeCrt() {
+    if (crtManager) {
+      crtManager.dispose();
+      crtManager = null;
+    }
+  }
+
+  $: {
+    if (useCrt) {
+      tick().then(initCrt);
+    } else {
+      disposeCrt();
+    }
+  }
+
   onMount(() => {
-    useCrt = canUseWebgl();
-    let unmounted = false;
     // Common setup
     const html = document.documentElement;
     const body = document.body;
@@ -166,52 +217,9 @@
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
 
-    // CRT Setup
-    let crtCleanup = () => {};
-    if (useCrt) {
-      (async () => {
-        await tick();
-        if (unmounted || !useCrt || !canvasEl) {
-          return;
-        }
-
-        const config = getDefaultCrtConfig();
-        const [threeErr, THREE] = await safeWrapAsync(() => import("three"));
-        if (threeErr) {
-          console.error("Failed to load Three.js", threeErr);
-          useCrt = false;
-          return;
-        }
-
-        const sourceCanvas = document.createElement("canvas");
-        const console2d = new Console2dRenderer({ canvas: sourceCanvas });
-        const crt = new CrtRenderer(THREE, canvasEl, sourceCanvas, config);
-        const manager = new CrtManager(
-          canvasEl,
-          controller,
-          config,
-          crt,
-          console2d
-        );
-
-        crtManager = manager;
-        await focusInputCrt();
-
-        if (unmounted) {
-          crtManager?.dispose();
-          return;
-        }
-      })();
-
-      crtCleanup = () => {
-        crtManager?.dispose();
-        crtManager = null;
-      };
-    }
-
     return () => {
       unmounted = true;
-      crtCleanup();
+      disposeCrt();
       reset();
       html.style.overflow = prevHtmlOverflow;
       body.style.overflow = prevBodyOverflow;
@@ -221,7 +229,11 @@
   onDestroy(() => {});
 </script>
 
-<svelte:window on:click={handleWindowClick} on:keydown={handleWindowKey} />
+<svelte:window
+  on:click={handleWindowClick}
+  on:keydown={handleWindowKey}
+  bind:innerWidth={windowWidth}
+/>
 
 {#if useCrt}
   <!-- CRT TEMPLATE -->
@@ -254,7 +266,9 @@
 {:else}
   <!-- DOM TEMPLATE -->
   <div class="fixed inset-0 z-10 flex items-center justify-center bg-black/50">
-    <div class="bg-gray-700 flex w-full h-full flex-col-reverse p-8 relative">
+    <div
+      class="bg-gray-700 flex w-full h-full flex-col-reverse p-4 sm:p-8 relative"
+    >
       <span
         class="bg-gray-700 px-4 top-5 left-0 right-0 m-auto absolute text-white font-mono w-fit"
         >kasperrt</span
@@ -286,7 +300,9 @@
           {/if}
         </div>
         {#each [...$commands].reverse() as [label, command]}
-          <div class="grid grid-cols-[12ch_1fr] gap-x-4">
+          <div
+            class="grid grid-cols-[8ch_1fr] sm:grid-cols-[12ch_1fr] gap-x-2 sm:gap-x-4"
+          >
             <span class="text-cyan-300 whitespace-pre">{label}</span>
             <span class="flex min-w-0 gap-x-2">
               {#if shouldShowUptime(command)}
