@@ -79,7 +79,7 @@ export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, co
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
-  const texture = new THREE.CanvasTexture(sourceCanvas);
+  let texture = new THREE.CanvasTexture(sourceCanvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   texture.wrapS = THREE.ClampToEdgeWrapping;
   texture.wrapT = THREE.ClampToEdgeWrapping;
@@ -97,6 +97,9 @@ export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, co
     uScanSpeed: { value: config.scanline.speed },
     uScanDepth: { value: config.scanline.depth },
     uNoiseAmount: { value: config.noise.amount },
+    uTearAmount: { value: config.tear.amount },
+    uTearFreq: { value: config.tear.frequency },
+    uTearPeriod: { value: config.tear.period },
     uVignette: { value: config.vignette.amount },
     uChroma: { value: config.chroma.amount },
     uGlow: { value: config.glow.amount },
@@ -134,6 +137,17 @@ export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, co
     renderer.setSize(w, h, false);
     uniforms.uResolution.value.set(w * dpr, h * dpr);
     uniforms.uDpr.value = dpr;
+
+    // sourceCanvas has been resized by console2d.resize() just before this call.
+    // Recreate the texture to ensure it matches the new dimensions.
+    texture.dispose();
+    texture = new THREE.CanvasTexture(sourceCanvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.wrapS = THREE.ClampToEdgeWrapping;
+    texture.wrapT = THREE.ClampToEdgeWrapping;
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+    uniforms.uTexture.value = texture;
   }
 
   function setMotionScale(motionScale: number) {

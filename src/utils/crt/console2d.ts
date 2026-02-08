@@ -30,7 +30,8 @@ type CreateProps = {
 const MONO_STACK = 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
 const COLORS = {
-  screen: "#374151", // tailwind gray-700
+  // Dark, phosphor-y green background.
+  screen: "#5f8770",
   border: "#ffffff",
   text: "#ffffff",
   cyan: "#67e8f9", // close to cyan-300
@@ -139,11 +140,13 @@ function wrapTextToWidth(ctx: CanvasRenderingContext2D, text: string, maxWidth: 
 
 type Segment =
   | { kind: "text"; text: string; color: string; bold?: boolean; italic?: boolean }
-  | { kind: "link"; text: string; href: string; external: boolean; color: string };
+  | { kind: "link"; text: string; href: string; external: boolean; color: string }
+  | { kind: "pre"; text: string; color: string };
 
 type RenderLine = {
   label: string;
   segments: Segment[];
+  reserveLabelCol: boolean;
 };
 
 function cleanString(s: string) {
@@ -232,6 +235,8 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
   let promptH = 44;
   let fontSize = 16;
   let lineH = 22;
+  let asciiFontSize = 16;
+  let preLineH = 22;
   const labelCols = 12;
   let charW = 10;
 
@@ -253,12 +258,29 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    pad = width < 640 ? 18 : 32;
+    // Layout and font sizing
+    if (width < 480) {
+      fontSize = 13;
+      pad = 12;
+    } else if (width < 640) {
+      fontSize = 16;
+      pad = 18;
+    } else if (width < 1024) {
+      fontSize = 20;
+      pad = 24;
+    } else {
+      fontSize = 24;
+      pad = 32;
+    }
+
     border = 2;
-    titleH = width < 640 ? 28 : 34;
-    promptH = width < 640 ? 40 : 44;
-    fontSize = width < 640 ? 11 : 16;
-    lineH = Math.round(fontSize * 1.35);
+    titleH = Math.round(fontSize * 2.2); // ~28-52px
+    promptH = Math.round(fontSize * 2.8); // ~36-67px
+    lineH = Math.round(fontSize * 1.5);
+
+    // Keep ASCII header small on mobile (like the DOM version: `text-[8px] sm:text-base`).
+    asciiFontSize = width < 640 ? 10 : fontSize;
+    preLineH = Math.round(asciiFontSize * 1.25);
 
     ctx.textBaseline = "top";
     ctx.textAlign = "left";
@@ -291,14 +313,16 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
 
     // ASCII art at top, then intro, then command output.
     for (const t of state.asciiLines) {
-      lines.push({ label: "", segments: [{ kind: "text", text: t, color: COLORS.text }] });
+      // Keep ASCII lines intact (no wrapping) so they stay "correct" on mobile; we clip instead.
+      lines.push({ label: "", segments: [{ kind: "pre", text: t, color: COLORS.text }], reserveLabelCol: false });
     }
     for (const t of state.introLines) {
-      lines.push({ label: "", segments: [{ kind: "text", text: t, color: COLORS.text }] });
+      lines.push({ label: "", segments: [{ kind: "text", text: t, color: COLORS.text }], reserveLabelCol: false });
     }
 
     for (const [label, command] of state.commands) {
-      lines.push({ label, segments: commandToSegments(command) });
+      // Commands render like the DOM version: always reserve the label column, even if label is empty.
+      lines.push({ label, segments: commandToSegments(command), reserveLabelCol: true });
     }
 
     return lines;
@@ -352,13 +376,33 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
       tail = ` ${getSpinnerChar(now)}`;
     } else if (state.partial) {
       tail = ` ${getSpinnerChar(now)} (...press enter for next paragraph...) ${getSpinnerChar(now)}`;
-    } else {
-      tail = caretOn ? "_" : " ";
     }
 
     ctx.fillStyle = COLORS.text;
     ctx.font = `${fontSize}px ${MONO_STACK}`;
     ctx.fillText(prompt + state.input + tail, x, y);
+
+    // Block cursor (terminal-like) when idle.
+    if (!state.loading && !state.partial && caretOn) {
+      const promptW = ctx.measureText(prompt).width;
+      // Snap to the monospace grid for stable placement.
+      const caretX = Math.round(x + promptW + state.input.length * charW);
+      const caretW = Math.max(6, Math.round(charW));
+      const caretH = Math.max(10, Math.round(lineH * 0.92));
+
+      // Center the caret vertically relative to the text.
+      // Since we use top baseline, text starts at y and goes down to y + fontSize.
+      // Caret is taller (based on lineH), so we shift it up slightly to center the text within it.
+      // Added a small visual shift because users perceive block cursors as higher (centered on caps).
+      const visualShift = Math.round(fontSize * 0.35);
+      const caretOffset = (caretH - fontSize) / 2 + visualShift;
+
+      ctx.save();
+      ctx.globalAlpha = 0.95;
+      ctx.fillStyle = COLORS.text;
+      ctx.fillRect(caretX, y - caretOffset, caretW, caretH);
+      ctx.restore();
+    }
 
     ctx.restore();
   }
@@ -372,10 +416,11 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
     const viewport = getViewportRect();
     lastViewportHeight = viewport.h;
 
-    // Compute label column width ("12ch") and available text width.
+    // Compute label column width ("12ch") and widths for labeled vs unlabeled rows.
     const labelW = Math.round(charW * labelCols);
     const gap = 16;
-    const textW = Math.max(1, viewport.w - labelW - gap);
+    const labeledTextW = Math.max(1, viewport.w - labelW - gap);
+    const plainTextW = viewport.w;
 
     const renderLines = buildRenderLines(state);
 
@@ -385,11 +430,15 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
       label: string;
       // Each wrapped line contains segments laid out left-to-right.
       wraps: Array<{ segments: Segment[] }>;
+      lineH: number;
+      reserveLabelCol: boolean;
     };
     const laidOut: LaidOut[] = [];
 
     let yCursor = 0;
     for (const line of renderLines) {
+      const textW = line.reserveLabelCol ? labeledTextW : plainTextW;
+      const itemLineH = line.segments.length === 1 && line.segments[0]?.kind === "pre" ? preLineH : lineH;
       // Convert segments into wrapped lines with simple greedy wrapping by segment text.
       // Links are treated as atomic for wrapping (URL breaks are acceptable).
       const wrappedSegments: Segment[][] = [];
@@ -398,7 +447,7 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
       let currentW = 0;
       for (const seg of line.segments) {
         const segText = seg.text ?? "";
-        const parts = wrapTextToWidth(ctx, segText, textW);
+        const parts = seg.kind === "pre" ? [segText] : wrapTextToWidth(ctx, segText, textW);
 
         for (let pIdx = 0; pIdx < parts.length; pIdx++) {
           const part = parts[pIdx] ?? "";
@@ -429,8 +478,8 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
       if (wrappedSegments.length === 0) wrappedSegments.push([]);
 
       const wraps = wrappedSegments.map((segments) => ({ segments }));
-      laidOut.push({ y: yCursor, label: line.label, wraps });
-      yCursor += wraps.length * lineH;
+      laidOut.push({ y: yCursor, label: line.label, wraps, lineH: itemLineH, reserveLabelCol: line.reserveLabelCol });
+      yCursor += wraps.length * itemLineH;
     }
 
     lastContentHeight = yCursor;
@@ -448,13 +497,14 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
     const baseY = viewport.y - scrollY;
     for (const item of laidOut) {
       const itemTop = baseY + item.y;
-      const itemBottom = itemTop + item.wraps.length * lineH;
-      if (itemBottom < viewport.y - lineH) continue;
-      if (itemTop > viewport.y + viewport.h + lineH) continue;
+      const itemBottom = itemTop + item.wraps.length * item.lineH;
+      if (itemBottom < viewport.y - item.lineH) continue;
+      if (itemTop > viewport.y + viewport.h + item.lineH) continue;
 
       for (let i = 0; i < item.wraps.length; i++) {
-        const y = itemTop + i * lineH;
+        const y = itemTop + i * item.lineH;
         const label = i === 0 ? item.label : "";
+        const labeled = item.reserveLabelCol;
 
         // Label col
         if (label) {
@@ -463,10 +513,12 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
         }
 
         // Segments col
-        let x = viewport.x + labelW + gap;
+        let x = labeled ? viewport.x + labelW + gap : viewport.x;
         for (const seg of item.wraps[i]?.segments ?? []) {
           if (!seg.text) continue;
-          if (seg.kind === "text") {
+          if (seg.kind === "pre") {
+            ctx.font = `${asciiFontSize}px ${MONO_STACK}`;
+          } else if (seg.kind === "text") {
             const style: string[] = [];
             if (seg.italic) style.push("italic");
             if (seg.bold) style.push("bold");
@@ -484,7 +536,7 @@ export function createConsole2dRenderer({ canvas }: CreateProps) {
             lastLinkRects.push({
               href: seg.href,
               external: seg.external,
-              rect: { x, y, w: wSeg, h: lineH },
+              rect: { x, y, w: wSeg, h: item.lineH },
             });
           }
           x += wSeg;
