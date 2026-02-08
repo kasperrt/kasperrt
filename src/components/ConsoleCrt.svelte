@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { onMount, onDestroy, tick, createEventDispatcher } from "svelte";
+  import { onMount, onDestroy, tick } from "svelte";
+  import { Tween } from "svelte/motion";
+  import { cubicOut, cubicIn } from "svelte/easing";
   import {
     consumeQueue,
     getAsciiLines,
@@ -15,7 +17,7 @@
   } from "~/utils/crt/console2d";
   import { createCrtRenderer, type CrtRenderer } from "~/utils/crt/renderer";
 
-  const dispatch = createEventDispatcher<{ fail: undefined }>();
+  export let onfail: (() => void) | undefined = undefined;
 
   let canvasEl: HTMLCanvasElement;
   let inputEl: HTMLInputElement;
@@ -46,6 +48,11 @@
   let dragStartY = 0;
   let dragStartScrollY = 0;
   let dragMoved = false;
+
+  const open = new Tween(0, {
+    duration: 1000,
+    easing: cubicOut,
+  });
 
   function getDate() {
     return new Date().toTimeString().split(" ")[0];
@@ -198,6 +205,7 @@
         break;
       }
       case "exit":
+        await open.set(0, { duration: 600, easing: cubicIn });
         window.location.href = "/";
         return;
     }
@@ -375,6 +383,16 @@
     dragPointerId = null;
   }
 
+  function handleInput(e: Event) {
+    const target = e.currentTarget as HTMLInputElement;
+    if (loading || partial) {
+      target.value = input;
+      return;
+    }
+    input = target.value;
+    request2dRedraw();
+  }
+
   onMount(() => {
     let unmounted = false;
     const html = document.documentElement;
@@ -412,7 +430,7 @@
       if (unmounted) return;
       if (err) {
         console.error(err);
-        dispatch("fail");
+        onfail?.();
         return;
       }
 
@@ -430,11 +448,13 @@
 
       if (crtErr) {
         console.error(crtErr);
-        dispatch("fail");
+        onfail?.();
         return;
       }
 
       crt = renderer;
+
+      open.target = 1; // Start opening animation
 
       crt.start();
       schedulePeriodicRedraw();
@@ -448,6 +468,14 @@
       mm?.addEventListener?.("change", onReducedMotion);
       onResize();
       onReducedMotion();
+
+      let rafId = requestAnimationFrame(function loop() {
+        if (crt) crt.setOpen(open.current);
+        rafId = requestAnimationFrame(loop);
+      });
+
+      // Store rafId for cleanup
+      (window as any).__crtRafId = rafId; // Hack to pass to cleanup, or use closure scope
     })();
 
     return () => {
@@ -464,6 +492,9 @@
       crt?.dispose();
       crt = null;
       console2d = null;
+
+      if ((window as any).__crtRafId)
+        cancelAnimationFrame((window as any).__crtRafId);
 
       html.style.overflow = prevHtmlOverflow;
       body.style.overflow = prevBodyOverflow;
@@ -499,14 +530,6 @@
     enterkeyhint="send"
     readonly={loading || partial}
     value={input}
-    on:input={(e) => {
-      if (loading || partial) {
-        // Keep the DOM value in sync even if a browser emits input while readonly toggles.
-        (e.currentTarget as HTMLInputElement).value = input;
-        return;
-      }
-      input = (e.currentTarget as HTMLInputElement).value;
-      request2dRedraw();
-    }}
+    on:input={handleInput}
   />
 </div>

@@ -15,6 +15,7 @@ export type CrtRenderer = {
   setMotionScale: (motionScale: number) => void;
   setLinkRects: (rects: LinkRect[]) => void;
   pickLinkAt: (clientX: number, clientY: number) => PickedLink | null;
+  setOpen: (open: number) => void;
 };
 
 type CreateProps = {
@@ -91,6 +92,7 @@ export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, co
     uResolution: { value: new THREE.Vector2(1, 1) },
     uTime: { value: 0 },
     uDpr: { value: 1 },
+    uOpen: { value: 0 }, // Start closed
     uCurvature: { value: config.curvature },
     uOverscan: { value: config.overscan },
     uPixelSize: { value: config.pixelSize },
@@ -153,6 +155,10 @@ export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, co
   function setMotionScale(motionScale: number) {
     uniforms.uMotionScale.value = motionScale;
   }
+  
+  function setOpen(open: number) {
+    uniforms.uOpen.value = open;
+  }
 
   function setLinkRects(rects: LinkRect[]) {
     linkRects = rects;
@@ -209,5 +215,6 @@ export function createCrtRenderer(THREE: ThreeModule, { canvas, sourceCanvas, co
     setMotionScale,
     setLinkRects,
     pickLinkAt,
+    setOpen,
   };
 }

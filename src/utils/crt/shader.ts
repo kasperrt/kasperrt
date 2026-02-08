@@ -13,6 +13,7 @@ uniform sampler2D uTexture;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform float uDpr;
+uniform float uOpen; // 0.0 (off) -> 1.0 (on)
 
 uniform float uCurvature;
 uniform float uOverscan;
@@ -147,9 +148,114 @@ vec2 applyTear(vec2 uv, float t) {
   return uv;
 }
 
+// CRT opening/closing animation mapping
+vec2 applyOpenEffect(vec2 uv, float open) {
+  // We want the screen to start as a horizontal line or point in the center, 
+  // then expand horizontally, then vertically (or both, but maybe non-uniformly).
+  
+  // open goes 0->1
+  // To avoid division by zero, clamp minimum scale.
+  
+  // Nonlinear curve for "pop" effect.
+  float t = smoothstep(0.0, 1.0, open);
+  
+  // Horizontal expansion finishes faster than vertical?
+  // Or maybe a "blink" where it's a white dot, then a line, then full screen.
+  
+  // Simulating the electron beam sweep constraints.
+  // Let's vary scaleX and scaleY.
+  
+  // Phase 1: vertical line opens up (0.0 to 0.5 of open)
+  // Phase 2: horizontal sweep fills (0.2 to 1.0 of open)
+  
+  // Actually, standard CRT turn on usually:
+  // 1. Center dot appears.
+  // 2. Expands horizontally to a line.
+  // 3. Expands vertically to fill screen.
+  
+  // Let's map 'open' to these phases.
+  // But doing it all in shader might be tricky if we want perfect timing control.
+  // A simple approach: Scale UVs away from center.
+  
+  float vert = smoothstep(0.0, 0.8, open); // vertical expansion 0->0.8
+  float horz = smoothstep(0.0, 1.0, open); // horizontal expansion 0->1.0
+  // Or enable non-uniform scaling closer to real CRT:
+  // Often it's Height first then Width, or Width then Height.
+  // Let's say it expands from a thin horizontal line.
+  
+  float scaleY = vert * 0.99 + 0.01; 
+  float scaleX = horz * 0.99 + 0.01;
+  
+  // Remap uv so that [0,1] corresponds to the visible part of the "opening" screen.
+  // uv = (vUv - 0.5) / scale + 0.5
+  vec2 centered = uv - 0.5;
+  centered.y /= scaleY;
+  centered.x /= scaleX;
+  
+  // If we are outside the "beam", it's black.
+  return centered + 0.5;
+}
+
 
 void main() {
   vec2 uv = vUv;
+  
+  // 1. Apply Open/Close Logic (Geometric scaling)
+  // When uOpen < 1.0, we are "zoomed in" to a portion of the screen, 
+  // or rather, the screen content is compressed into a smaller area.
+  // Wait, if we want the content to be compressed, we should scale UVs UP?
+  // No, if the screen area is small, we are seeing the whole content *sqeezed*.
+  
+  // Let's simulate the "raster" being confined to a small box.
+  // So the *quad* is full screen, but we only draw pixels in the center.
+  // The content inside that center box should be the full texture.
+  
+  // Logic:
+  // uOpen = 0.1 -> We want the full texture (0..1) to be mapped to a small box in the center of the viewport (e.g. 0.45..0.55).
+  // So for a fragment at 0.5 (center), it samples texture at 0.5.
+  // For a fragment at 0.0 (edge), it's outside the box -> black.
+  
+  // Define the "visible box" size based on uOpen.
+  float openCurve = uOpen * uOpen * (3.0 - 2.0 * uOpen); // smoothstep-ish
+  
+  // Let's try expanding from a horizontal line.
+  float scaleX = smoothstep(0.0, 1.0, uOpen); // Width expands immediately?
+  // Maybe width expands quickly 0.0->0.4, height 0.3->1.0
+  
+  // Refined "Turn On" curve:
+  // 0.0 -> 0.2: Dot grows to short line
+  // 0.2 -> 0.6: Line hits full width
+  // 0.4 -> 1.0: Height opens up
+  
+  float animScaleX = smoothstep(0.0, 0.4, uOpen); 
+  float animScaleY = smoothstep(0.3, 1.0, uOpen); 
+  
+  // Add a tiny bit of base scale so it's not singular.
+  float sx = 0.005 + 0.995 * animScaleX;
+  float sy = 0.002 + 0.998 * animScaleY;
+  
+  // Inverse scale: we map viewport coordinate *into* texture space.
+  // if uv.y is 0.5 (center), texture.y = 0.5.
+  // if uv.y is 0.6 (slightly up), and sy is small (0.1),
+  // distance from center is 0.1. in texture space that's 0.1 / 0.1 = 1.0 (top edge).
+  
+  vec2 centered = uv - 0.5;
+  vec2 texUv = vec2(centered.x / sx, centered.y / sy) + 0.5;
+  
+  // Check bounds
+  if (texUv.x < 0.0 || texUv.x > 1.0 || texUv.y < 0.0 || texUv.y > 1.0) {
+    // We are outside the active beam area.
+    // Making it completely black is one way. 
+    // During "turn off", CRTs often have a bright white dot/line.
+    // If we want that flash:
+    
+    // Simple approach: just black for now, maybe add bloom later.
+    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    return;
+  }
+  
+  // Update uv to the "squeezed" texture coordinate
+  uv = texUv;
 
   // Overscan first, then curvature.
   uv = applyOverscan(uv, uOverscan);
@@ -161,42 +267,46 @@ void main() {
     return;
   }
 
+  // Time for effects
   float t = uTime * max(0.0, uMotionScale);
 
-  // Tear after warping so it reads as a "sync" artifact.
+  // Tear.
   uv = applyTear(uv, t);
 
+  // Sample.
   vec3 col = sampleWithChroma(uv);
   col = cheapGlow(uv, col);
 
-  // Scanlines (animated).
+  // Scanlines.
   col *= scanlines(uv, t);
 
-  // Noise (animated; reduced motion -> static).
+  // Noise.
   float n1 = hash12(uv * uResolution + vec2(t * 60.0, t * 37.0));
   float n2 = hash12(uv * (uResolution * 2.3) + vec2(t * 211.0, t * 151.0));
   float n = (n1 * 0.65 + n2 * 0.35);
   col += (n - 0.5) * uNoiseAmount;
 
-  // Subtle horizontal "sparkle" noise.
-  float hn = hash12(vec2(uv.y * uResolution.y, t * 120.0));
-  col += (hn - 0.5) * (uNoiseAmount * 0.25);
-
   // Vignette.
-  vec2 p = vUv - 0.5;
-  float r = dot(p, p);
-  float vig = smoothstep(0.85, 0.25, r);
-  col *= mix(1.0, vig, uVignette);
+  float vig = vignette(vUv); // Use original vUv for vignette? 
+  // No, vignette usually follows the screen tube, which is physically consistent.
+  // But if we are shrinking the image, does the vignette shrink too?
+  // For a "turn on" effect, the beam is illuminating a small part of the phosphor.
+  // So the vignette (corner darkness) might not apply to the center dot.
+  // Let's use the transformed 'uv' for vignette if we want "screen look" on the minimal image,
+  // OR use 'vUv' if we want the physical tube edges to be dark.
+  // Since we black out outside the beam, let's just vignette the content.
+  col *= mix(1.0, vignette(uv), uVignette); 
 
   // Shadow mask.
   col = shadowMask(vUv, col);
 
-  // Boot-up feel: brightness ramp + slight vertical jitter.
-  float boot = clamp(uTime / 0.6, 0.0, 1.0);
-  float bootEase = boot * boot * (3.0 - 2.0 * boot);
-  float jitter = (hash12(vec2(uTime * 12.0, 1.23)) - 0.5) * (1.0 - bootEase) * 0.02 * uMotionScale;
-  col *= bootEase;
-  col += vec3(jitter);
+  // Brightness boost when compressed (conservation of energy-ish)
+  float compressionBoost = 1.0 + (1.0 - animScaleX * animScaleY) * 2.0; 
+  col *= compressionBoost;
+  
+  // Fade in/out at extremes to avoid hard pop
+  float fade = smoothstep(0.0, 0.05, uOpen);
+  col *= fade;
 
   gl_FragColor = vec4(col, 1.0);
 }
