@@ -1,27 +1,27 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { formatReadingTime } from "~/utils/readingTime";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content } = await render(post);
 
 const pageTitle = `${post.data.title} | Blog`;
 const pageDescription = post.data.description;
 const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
 const keywords = `blog, ${post.data.title}`;
 const readingTime = formatReadingTime(post.body);
-const postTransitionName = `post-title-${post.slug}`;
-const publishedTransitionName = `publish-read-${post.slug}`;
-const updateTransitionName = `update-${post.slug}`;
+const postTransitionName = `post-title-${post.id}`;
+const publishedTransitionName = `publish-read-${post.id}`;
+const updateTransitionName = `update-${post.id}`;
 ---
 
 <BaseLayout

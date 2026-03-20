@@ -34,14 +34,14 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
         <ul class="flex flex-col gap-6">
           {sortedPosts.map((post) => {
             const readingTime = formatReadingTime(post.body);
-            const postTransitionName = `post-title-${post.slug}`;
-            const publishedTransitionName = `publish-read-${post.slug}`;
-            const updateTransitionName = `update-${post.slug}`;
+            const postTransitionName = `post-title-${post.id}`;
+            const publishedTransitionName = `publish-read-${post.id}`;
+            const updateTransitionName = `update-${post.id}`;
 
             return (
               <li>
                 <a
-                  href={`/blog/${post.slug}`}
+                  href={`/blog/${post.id}`}
                   class="slug-link flex flex-col gap-2 group"
                 >
                   <div class="flex flex-col items-baseline gap-x-3 gap-y-1">
