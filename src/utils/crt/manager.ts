@@ -1,9 +1,9 @@
 import { get } from "svelte/store";
 import type { ConsoleController } from "~/utils/console/controller";
 import { safeWrap } from "~/utils/wrap";
-import { Console2dRenderer, type Console2dState } from "~/utils/crt/console2d";
-import { CrtRenderer } from "~/utils/crt/renderer";
-import { type CrtConfig } from "~/utils/crt/types";
+import type { Console2dRenderer, Console2dState } from "~/utils/crt/console2d";
+import type { CrtRenderer } from "~/utils/crt/renderer";
+import type { CrtConfig } from "~/utils/crt/types";
 import { Tween } from "svelte/motion";
 import { cubicOut, cubicIn } from "svelte/easing";
 
@@ -33,7 +33,7 @@ export class CrtManager {
     controller: ConsoleController,
     config: CrtConfig,
     crt: CrtRenderer,
-    console2d: Console2dRenderer
+    console2d: Console2dRenderer,
   ) {
     this.canvasEl = canvasEl;
     this.controller = controller;

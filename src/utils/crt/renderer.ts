@@ -6,7 +6,7 @@ import type {
   IUniform,
   ShaderMaterial,
   PlaneGeometry,
-  Mesh
+  Mesh,
 } from "three";
 import type { CrtConfig } from "~/utils/crt/types";
 import { fragmentShader, vertexShader } from "~/utils/crt/shader";
@@ -60,7 +60,7 @@ export class CrtRenderer {
     private THREE: ThreeModule,
     private canvas: HTMLCanvasElement,
     private sourceCanvas: HTMLCanvasElement,
-    private config: CrtConfig
+    private config: CrtConfig,
   ) {
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,

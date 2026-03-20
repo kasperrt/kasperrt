@@ -384,7 +384,7 @@ export class Console2dRenderer {
       this.pad + this.border / 2,
       this.pad + this.border / 2,
       this.width - this.pad * 2 - this.border,
-      this.height - this.pad * 2 - this.border
+      this.height - this.pad * 2 - this.border,
     );
 
     // Title chip at top center
