@@ -1,2 +1,5 @@
 onlyBuiltDependencies:
   - esbuild
+overrides:
+  fast-xml-parser: ">=5.5.6"
+  lodash: "4.17.23"
