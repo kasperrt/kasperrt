@@ -40,7 +40,5 @@
   "peerDependencies": {
     "terser": "5.46.2"
   },
-  "onlyBuiltDependencies": [
-    "esbuild"
-  ]
+  "onlyBuiltDependencies": ["esbuild"]
 }
