@@ -1,9 +1,9 @@
 ---
 type: experience
-order: 1
+order: 3
 id: pistachio-summary
 from: "2022"
-to: "Present"
+to: "2026"
 where: Pistachio
 skills:
   - Go

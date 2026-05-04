@@ -18,26 +18,29 @@
     "fix:lint": "pnpm exec biome lint --write"
   },
   "dependencies": {
-    "@astrojs/svelte": "8.0.4",
-    "svelte": "5.55.1",
-    "three": "0.183.2",
-    "wiretyped": "0.3.7"
+    "@astrojs/svelte": "8.1.0",
+    "svelte": "5.55.5",
+    "three": "0.184.0",
+    "wiretyped": "0.3.8"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.8",
+    "@astrojs/check": "0.9.9",
     "@astrojs/rss": "4.0.18",
     "@astrojs/sitemap": "3.7.2",
-    "@biomejs/biome": "2.4.10",
-    "@tailwindcss/vite": "4.2.2",
-    "@types/node": "25.5.2",
-    "@types/three": "0.183.1",
-    "astro": "6.1.4",
+    "@biomejs/biome": "2.4.14",
+    "@tailwindcss/vite": "4.2.4",
+    "@types/node": "25.6.0",
+    "@types/three": "0.184.0",
+    "astro": "6.2.1",
     "front-matter": "4.0.2",
-    "tailwindcss": "4.2.2",
-    "typescript": "6.0.2"
+    "tailwindcss": "4.2.4",
+    "typescript": "6.0.3",
+    "vite": "7.3.2"
   },
   "peerDependencies": {
-    "terser": "5.46.1"
+    "terser": "5.46.2"
   },
-  "onlyBuiltDependencies": ["esbuild"]
+  "onlyBuiltDependencies": [
+    "esbuild"
+  ]
 }

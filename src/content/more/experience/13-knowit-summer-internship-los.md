@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 11
+order: 13
 id: knowit-summer-internship-los
 from: "2017"
 positions:

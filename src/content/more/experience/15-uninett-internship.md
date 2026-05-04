@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 13
+order: 15
 id: uninett-internship
 positions:
   - Summer intern

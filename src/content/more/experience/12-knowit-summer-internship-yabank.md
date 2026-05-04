@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 10
+order: 12
 id: knowit-summer-internship-yabank
 from: "2018"
 positions:

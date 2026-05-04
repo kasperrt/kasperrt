@@ -1,8 +1,9 @@
 ---
 type: experience
-order: 2
+order: 4
 id: pistachio-vp-engineering
 from: "2023"
+to: "2026"
 positions:
   - VP of Engineering
 ---

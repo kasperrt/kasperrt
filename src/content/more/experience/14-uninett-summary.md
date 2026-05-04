@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 12
+order: 14
 id: uninett-summary
 from: "2016"
 where: UNINETT

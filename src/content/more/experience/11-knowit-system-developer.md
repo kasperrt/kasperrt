@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 9
+order: 11
 id: knowit-system-developer
 positions:
   - System Developer

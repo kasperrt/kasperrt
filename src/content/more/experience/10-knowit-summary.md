@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 8
+order: 10
 id: knowit-summary
 from: "2019"
 to: "2020"

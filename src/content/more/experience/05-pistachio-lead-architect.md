@@ -1,6 +1,6 @@
 ---
 type: experience
-order: 3
+order: 5
 id: pistachio-lead-architect
 from: "2022"
 positions:
