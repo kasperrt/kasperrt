@@ -2,6 +2,7 @@ onlyBuiltDependencies:
   - esbuild
 overrides:
   defu: ">=6.1.6"
+  devalue: ">=5.8.1"
   fast-xml-parser: ">=5.7.0"
   fast-uri: ">=3.1.1"
   lodash: "4.17.23"
