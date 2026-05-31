@@ -1,0 +1,7 @@
+app: kasperrt-me
+namespace: kasperrt-me
+deployment: kasperrt-me
+image: ghcr.io/kasperrt/kasperrt
+hosts:
+  - kasperrt.me
+  - www.kasperrt.me
