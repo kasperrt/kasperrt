@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-sites
+  namespace: static-sites
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: static-sites
+  template:
+    metadata:
+      labels:
+        app: static-sites
+    spec:
+      containers:
+        - name: static-sites
+          image: IMAGE_PLACEHOLDER
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
