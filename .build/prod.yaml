@@ -1,7 +1,0 @@
-app: static-sites
-namespace: static-sites
-deployment: static-sites
-image: ghcr.io/kasperrt/kasperrt
-hosts:
-  - kasperrt.me
-  - www.kasperrt.me
