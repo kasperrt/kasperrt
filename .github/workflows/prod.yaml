@@ -8,9 +8,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: prod-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   deploy:
-    runs-on: [self-hosted, k3s, deployer]
+    environment: production
+    runs-on: [self-hosted, k3s, deployer, kasperrt-kasperrt]
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
