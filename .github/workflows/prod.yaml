@@ -20,9 +20,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: .build/scripts/deploy.sh
         env:
-          APP_NAME: kasperrt-me
-          NAMESPACE: kasperrt-me
-          DEPLOYMENT: kasperrt-me
+          APP_NAME: static-sites
+          NAMESPACE: static-sites
+          DEPLOYMENT: static-sites
           K3S_HOST: ${{ secrets.K3S_HOST }}
           K3S_USER: ${{ secrets.K3S_USER }}
           K3S_SSH_KEY: ${{ secrets.K3S_SSH_KEY }}

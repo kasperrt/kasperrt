@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kasperrt-me
-  namespace: kasperrt-me
+  name: static-sites
+  namespace: static-sites
 spec:
   selector:
-    app: kasperrt-me
+    app: static-sites
   ports:
     - port: 80
       targetPort: 80

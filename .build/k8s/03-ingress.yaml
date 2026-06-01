@@ -1,14 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: kasperrt-me
-  namespace: kasperrt-me
+  name: static-sites
+  namespace: static-sites
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik
   tls:
-    - secretName: kasperrt-me-tls
+    - secretName: static-sites-tls
       hosts:
         - kasperrt.me
         - www.kasperrt.me
@@ -20,7 +20,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: kasperrt-me
+                name: static-sites
                 port:
                   number: 80
     - host: www.kasperrt.me
@@ -30,6 +30,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: kasperrt-me
+                name: static-sites
                 port:
                   number: 80

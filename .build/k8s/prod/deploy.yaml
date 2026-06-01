@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kasperrt-me
-  namespace: kasperrt-me
+  name: static-sites
+  namespace: static-sites
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: kasperrt-me
+      app: static-sites
   template:
     metadata:
       labels:
-        app: kasperrt-me
+        app: static-sites
     spec:
       containers:
-        - name: kasperrt-me
+        - name: static-sites
           image: IMAGE_PLACEHOLDER
           ports:
             - containerPort: 80
