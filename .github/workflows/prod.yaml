@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, k3s, deployer]
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -24,6 +24,3 @@ jobs:
       - run: .build/scripts/deploy-static.sh
         env:
           STATIC_SITE_NAME: kasperrt.me
-          K3S_HOST: ${{ secrets.K3S_HOST }}
-          K3S_USER: ${{ secrets.K3S_USER }}
-          K3S_SSH_KEY: ${{ secrets.K3S_SSH_KEY }}
