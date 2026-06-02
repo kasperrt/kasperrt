@@ -175,9 +175,7 @@ export async function runCommand({ input, getDate }: CommandProps): Promise<Comm
         lines: [
           ["", "https://wiretyped.io - Typed HTTP client for fetch runtimes."],
           ["", "https://zoff.me - Virtual jukebox for shared music rooms."],
-          ["", "https://etys.no - Simple drinking game built for fun."],
-          ["", "https://lab.etys.no - Benchmark and compare code runtimes."],
-          ["", "https://unhinged.etys.no - Confession-based party game."],
+          ["", "https://etys.no - Playful browser games and tiny web experiments."],
           ["", "https://henie.cool - Pink and purple is life."],
           ["", "https://degen.kasperrt.me - (de)generative art"],
         ],
