@@ -2,6 +2,8 @@ import type { APIRoute } from "astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import type { CvEntry, Education, Experience, Skills } from "../schemas/more";
 
+type EducationGrade = Education["grades"][number];
+
 export const prerender = true;
 
 function splitLines(text: string) {
@@ -48,7 +50,7 @@ function buildEducationLines(entries: Array<CollectionEntry<"more"> & { data: Ed
     const lines: string[] = [];
 
     lines.push(`${entry.data.from} - ${entry.data.to} | ${entry.data.where}`);
-    lines.push(...entry.data.grades.flatMap((g) => `${g.title}${g.grade ? ` - ${g.grade}` : ""}`));
+    lines.push(...entry.data.grades.flatMap((g: EducationGrade) => `${g.title}${g.grade ? ` - ${g.grade}` : ""}`));
     lines.push(" ");
 
     return lines;

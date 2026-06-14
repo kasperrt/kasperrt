@@ -3,6 +3,7 @@
   "include": [".astro/types.d.ts", "src", "astro.config.mts"],
   "compilerOptions": {
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "~/*": ["./src/*"]
     }

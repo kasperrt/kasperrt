@@ -33,7 +33,7 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDa
       sortedPosts.length > 0 && (
         <ul class="flex flex-col gap-6">
           {sortedPosts.map((post) => {
-            const readingTime = formatReadingTime(post.body);
+            const readingTime = formatReadingTime(post.body ?? "");
             const postTransitionName = `post-title-${post.id}`;
             const publishedTransitionName = `publish-read-${post.id}`;
             const updateTransitionName = `update-${post.id}`;

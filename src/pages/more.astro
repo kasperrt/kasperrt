@@ -5,6 +5,8 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import { resumeMeta } from "../data/meta";
 import type { Education, Experience, Skills } from "../schemas/more";
 
+type EducationGrade = Education["grades"][number];
+
 const collection = await getCollection("more");
 
 const experienceEntries = collection
@@ -102,7 +104,7 @@ const educations = collection
                       {experience.data.skills.join(", ")}
                     </span>
                   )}
-                  {experience.data.positions?.map((position) => (
+                  {experience.data.positions?.map((position: string) => (
                     <h4 class="font-medium">{position}</h4>
                   ))}
                   {experience.Content && (
@@ -151,7 +153,7 @@ const educations = collection
               </div>
               <div class="col-span-8">
                 <h3 class="font-extrabold">{education.data.where}</h3>
-                {education.data.grades?.map(({ title, grade }) => (
+                {education.data.grades?.map(({ title, grade }: EducationGrade) => (
                   <h4>
                     {title}
                     {grade && `- Grade ${grade}`}

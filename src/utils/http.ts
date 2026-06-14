@@ -17,7 +17,7 @@ const trackingEndpoints = {
         d: z.literal("kasperrt.me"),
         n: z.literal("pageview"),
         r: z.string().nullable(),
-        u: z.string().url(),
+        u: z.url(),
       }),
       response: z.string(),
     },
