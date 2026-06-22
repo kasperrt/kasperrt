@@ -1,11 +1,20 @@
 import { readdirSync, readFileSync } from "node:fs";
-import frontmatter from "front-matter";
+import { load } from "js-yaml";
 import type { SitemapItem } from "@astrojs/sitemap";
 import type { BlogPost } from "~/schemas/blog";
 import type { Experience, Skills, Education } from "~/schemas/more";
 
 const BLOG_DIR = "./src/content/blog/";
 const MORE_DIR = "./src/content/more/";
+
+function parseFrontmatter<T extends object>(file: string): T {
+  const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(file);
+  if (!match) {
+    return {} as T;
+  }
+
+  return (load(match[1]) ?? {}) as T;
+}
 
 function getLatestDate(current: Date | null, next?: Date | null | string): Date | null {
   if (!next) {
@@ -38,7 +47,7 @@ function getLatestDateFromMore(): string | null {
     }
 
     const file = readFileSync(`${MORE_DIR}${fileName}`, "utf8");
-    const { attributes } = frontmatter<Experience | Skills | Education>(file);
+    const attributes = parseFrontmatter<Experience | Skills | Education>(file);
     if (!("from" in attributes || "to" in attributes)) {
       continue;
     }
@@ -66,7 +75,7 @@ function getLatestBlogDate(): string | null {
     }
 
     const file = readFileSync(`${BLOG_DIR}${fileName}`, "utf8");
-    const { attributes } = frontmatter<BlogPost>(file);
+    const attributes = parseFrontmatter<BlogPost>(file);
     lastmod = getLatestDate(lastmod, attributes.pubDate);
   }
 
@@ -79,7 +88,7 @@ function getLatestBlogDate(): string | null {
 
 function getBlogPostDate(fileName: string): string | null {
   const file = readFileSync(`${BLOG_DIR}${fileName}.md`, "utf8");
-  const { attributes } = frontmatter<BlogPost>(file);
+  const attributes = parseFrontmatter<BlogPost>(file);
   if (!attributes.pubDate) {
     return null;
   }
