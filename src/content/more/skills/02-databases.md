@@ -5,4 +5,5 @@ area: Databases
 points:
   - PostgreSQL
   - MongoDB
+  - SQLite
 ---

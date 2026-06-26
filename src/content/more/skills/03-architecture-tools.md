@@ -5,4 +5,6 @@ area: "Architecture & Tools"
 points:
   - MicroServices
   - Docker
+  - Terraform
+  - Kubernetes
 ---

@@ -13,6 +13,8 @@ skills:
   - Docker
   - TailwindCSS
   - Terraform
+  - Kubernetes
+  - SQLite
   - GCP
 ---
 Tech startup in Norway doing AI for cybersecurity.
