@@ -3,6 +3,7 @@ type: experience
 order: 1
 id: embroidery-summary
 from: "2026"
+to: ""
 where: Embroidery
 skills:
   - Go

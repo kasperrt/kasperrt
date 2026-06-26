@@ -18,7 +18,7 @@ function buildExperienceLines(entries: Array<CollectionEntry<"more"> & { data: E
     const { from, to, where, positions, skills } = entry.data;
     const lines: string[] = [];
 
-    const date = [from, to].filter(Boolean).join(" - ");
+    const date = from ? `${from}${to !== undefined ? ` - ${to}` : ""}` : "";
     const role = positions?.length ? positions.join(" / ") : "";
     const heading = [[date, where].filter(Boolean).join(" | "), role].filter(Boolean).join(" / ");
 

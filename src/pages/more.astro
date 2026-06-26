@@ -92,7 +92,7 @@ const educations = collection
                 <div class="col-span-3 text-right">
                   <p class="text-gray-600 dark:text-neutral-100">
                     {experience.data.from}
-                    {experience.data.to && ` - ${experience.data.to}`}
+                    {experience.data.to !== undefined && ` - ${experience.data.to}`}
                   </p>
                 </div>
                 <div class="col-span-8">
