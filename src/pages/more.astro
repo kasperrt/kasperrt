@@ -35,7 +35,7 @@ const educations = collection
       <Image
         pictureClass="col-span-2 m-auto lg:col-start-2 print:col-start-2"
         alt="Me smiling"
-        imageClass="min-w-18 min-h-18 max-h-18 max-w-18 lg:max-w-32 lg:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] lg:min-w-32 lg:min-h-32"
+        imageClass="min-w-18 min-h-18 max-h-18 max-w-18 opacity-100 lg:max-w-32 lg:max-h-32 overflow-hidden rounded-full object-cover object-top transition-[border] lg:min-w-32 lg:min-h-32"
         transition:name="me-picture"
         sources={[
           {
@@ -50,7 +50,9 @@ const educations = collection
       />
       <div class="col-span-8 col-start-4">
         <h1 class="mb-5 text-left font-extrabold text-2xl">
-          <span transition:name="title">Kasper Rynning-Tønnesen</span>
+          <span transition:name="title" class="site-title"
+            >Kasper Rynning-Tønnesen</span
+          >
         </h1>
         <ul
           class="mt-2 grid list-none grid-cols-2 gap-2 text-gray-700 dark:text-neutral-100"

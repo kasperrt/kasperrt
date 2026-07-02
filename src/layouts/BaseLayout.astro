@@ -98,6 +98,7 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
       content="#0f0f0f"
       media="(prefers-color-scheme: dark)"
     />
+    <ClientRouter />
   </head>
 
   <body class={bodyClass}>
@@ -234,5 +235,3 @@ const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
     </script>
   </body>
 </html>
-
-<ClientRouter />

@@ -36,6 +36,16 @@ main {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-overlay, 0px) + 2rem);
 }
 
+.site-title {
+  text-transform: lowercase;
+}
+
+::view-transition-old(me-picture),
+::view-transition-new(me-picture) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 @page {
   size: A4;
   margin-top: 50px;
