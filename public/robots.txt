@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://kasperrt.me/sitemap-index.xml

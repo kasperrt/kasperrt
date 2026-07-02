@@ -2,9 +2,16 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Intro from "../content/intro.md";
 import { rootMeta } from "../data/meta";
+import { absoluteUrl, createPersonJsonLd, createProfilePageJsonLd, createWebsiteJsonLd } from "../utils/seo";
+
+const structuredData = [
+  createPersonJsonLd(),
+  createWebsiteJsonLd(),
+  createProfilePageJsonLd(absoluteUrl("/"), rootMeta.description),
+];
 ---
 
-<BaseLayout {...rootMeta} backgroundImage menu>
+<BaseLayout {...rootMeta} backgroundImage menu ogType="profile" structuredData={structuredData}>
   <section
     data-rotate="-0.5"
     class="markdown flex flex-col gap-y-6 self-center pr-6 pl-5 font-light lg:w-2/5"

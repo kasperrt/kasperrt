@@ -4,13 +4,31 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 import { blogIndexMeta } from "~/data/meta";
 import Underline from "~/components/Underline.astro";
 import { formatReadingTime } from "~/utils/readingTime";
+import { createPersonJsonLd, createWebsiteJsonLd } from "~/utils/seo";
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
 const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+const structuredData = [
+  createPersonJsonLd(),
+  createWebsiteJsonLd(),
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "@id": "https://kasperrt.me/blog/#blog",
+    name: blogIndexMeta.title,
+    description: blogIndexMeta.description,
+    url: "https://kasperrt.me/blog/",
+    author: {
+      "@id": "https://kasperrt.me/#person",
+    },
+    inLanguage: "en",
+  },
+];
 ---
 
-<BaseLayout {...blogIndexMeta} backgroundImage={false} menu>
+<BaseLayout {...blogIndexMeta} backgroundImage={false} menu structuredData={structuredData}>
   <section
     class="markdown flex w-full flex-col gap-12 px-6 py-10 lg:w-3/5 max-w-200"
   >

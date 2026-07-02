@@ -1,9 +1,9 @@
 ---
 title: "HTTPS Does Not Mean Safe"
-description: "Expore what HTTPS secures, what it does not solve, and how to fill in the gaps."
+description: "Explore what HTTPS secures, what it does not solve, and how to spot phishing, spoofed domains, and other gaps in everyday web security."
 pubDate: 2024-01-03
 draft: false
-hero: "/me-small.png"
+hero: "/og/https-does-not-mean-safe.png"
 ---
 
 

@@ -23,6 +23,7 @@ export default defineConfig({
   integrations: [
     svelte(),
     sitemap({
+      filter: (page) => page !== `${site}/console/`,
       serialize: createSitemapSerialize({ site }),
     }),
   ],

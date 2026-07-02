@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { formatReadingTime } from "~/utils/readingTime";
+import { absoluteUrl, createBlogPostingJsonLd, createPersonJsonLd, createWebsiteJsonLd } from "~/utils/seo";
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -14,22 +15,41 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const pageTitle = `${post.data.title} | Blog`;
+const pageTitle = `${post.data.title} | Kasper Rynning-Tønnesen`;
 const pageDescription = post.data.description;
 const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
-const keywords = `blog, ${post.data.title}`;
 const readingTime = formatReadingTime(post.body ?? "");
 const postTransitionName = `post-title-${post.id}`;
 const publishedTransitionName = `publish-read-${post.id}`;
 const updateTransitionName = `update-${post.id}`;
+const canonicalUrl = absoluteUrl(`/blog/${post.id}/`);
+const imageUrl = absoluteUrl(post.data.hero);
+const dateModified = post.data.updatedDate ?? post.data.pubDate;
+const structuredData = [
+  createPersonJsonLd(),
+  createWebsiteJsonLd(),
+  createBlogPostingJsonLd({
+    canonicalUrl,
+    dateModified,
+    datePublished: post.data.pubDate,
+    description: pageDescription,
+    headline: post.data.title,
+    image: imageUrl,
+  }),
+];
 ---
 
 <BaseLayout
   title={pageTitle}
   description={pageDescription}
-  keywords={keywords}
   robots={robots}
   ogImage={post.data.hero}
+  ogImageWidth={1200}
+  ogImageHeight={630}
+  ogType="article"
+  publishedTime={post.data.pubDate}
+  modifiedTime={dateModified}
+  structuredData={structuredData}
   twitterHandle="kasper_rt"
   backgroundImage={false}
   menu
