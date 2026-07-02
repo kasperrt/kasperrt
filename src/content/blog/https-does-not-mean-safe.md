@@ -1,6 +1,5 @@
 ---
 title: "HTTPS Does Not Mean Safe"
-seoTitle: "HTTPS Does Not Mean Safe | Web Security Basics"
 description: "Explore what HTTPS secures, what it does not solve, and how to spot phishing, spoofed domains, and other gaps in everyday web security."
 pubDate: 2024-01-03
 draft: false

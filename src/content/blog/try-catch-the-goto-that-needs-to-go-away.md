@@ -1,6 +1,5 @@
 ---
 title: "Try-catch; The GOTO that Needs to GOAWAY"
-seoTitle: "Try-catch and JavaScript Error Handling | Go-Inspired Patterns"
 description: "Rethinking JavaScript error handling with Go-inspired error-first patterns for cleaner, safer, and more readable TypeScript code."
 pubDate: 2025-04-14
 updatedDate: 2025-12-22

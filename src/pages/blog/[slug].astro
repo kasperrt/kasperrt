@@ -15,7 +15,7 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
-const pageTitle = post.data.seoTitle ?? `${post.data.title} | Kasper Rynning-Tønnesen`;
+const pageTitle = `${post.data.title} | Kasper Rynning-Tønnesen`;
 const pageDescription = post.data.description;
 const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
 const readingTime = formatReadingTime(post.body ?? "");

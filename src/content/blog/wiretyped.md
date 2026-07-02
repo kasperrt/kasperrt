@@ -1,6 +1,5 @@
 ---
 title: "WireTyped"
-seoTitle: "WireTyped: Typed HTTP Client for Fetch Runtimes"
 description: "An error-first, typed HTTP client for fetch runtimes. Most HTTP clients optimize for happy-path ergonomics; I optimized for not missing failures."
 pubDate: 2025-12-23
 draft: false
