@@ -1,9 +1,10 @@
 ---
 title: "WireTyped"
+seoTitle: "WireTyped: Typed HTTP Client for Fetch Runtimes"
 description: "An error-first, typed HTTP client for fetch runtimes. Most HTTP clients optimize for happy-path ergonomics; I optimized for not missing failures."
 pubDate: 2025-12-23
 draft: false
-hero: "/wiretyped.png"
+hero: "/og/wiretyped.png"
 ---
 
 Everyone has been in that situation: you write a beautiful data-fetching function, the flow reads clean, the formatting is perfect… and then you realize you forgot the `try/catch` (or the `.catch()`), and now an error can punch straight through your call stack. Early in my career, someone I worked with had a habit of “nagging” me in PRs:

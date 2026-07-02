@@ -76,6 +76,7 @@ function getLatestBlogDate(): string | null {
 
     const file = readFileSync(`${BLOG_DIR}${fileName}`, "utf8");
     const attributes = parseFrontmatter<BlogPost>(file);
+    lastmod = getLatestDate(lastmod, attributes.updatedDate);
     lastmod = getLatestDate(lastmod, attributes.pubDate);
   }
 
@@ -89,11 +90,12 @@ function getLatestBlogDate(): string | null {
 function getBlogPostDate(fileName: string): string | null {
   const file = readFileSync(`${BLOG_DIR}${fileName}.md`, "utf8");
   const attributes = parseFrontmatter<BlogPost>(file);
-  if (!attributes.pubDate) {
+  const lastmod = attributes.updatedDate ?? attributes.pubDate;
+  if (!lastmod) {
     return null;
   }
 
-  return new Date(attributes.pubDate).toISOString();
+  return new Date(lastmod).toISOString();
 }
 
 interface SiteMapSerialize {

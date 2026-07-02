@@ -4,6 +4,7 @@ import Image from "../components/Image.astro";
 import { getCollection, render, type CollectionEntry } from "astro:content";
 import { resumeMeta } from "../data/meta";
 import type { Education, Experience, Skills } from "../schemas/more";
+import { absoluteUrl, createPersonJsonLd, createProfilePageJsonLd, createWebsiteJsonLd } from "../utils/seo";
 
 type EducationGrade = Education["grades"][number];
 
@@ -27,9 +28,15 @@ const skills = collection
 const educations = collection
   .filter((entry): entry is CollectionEntry<"more"> & { data: Education } => entry.data.type === "education")
   .sort((a, b) => a.data.order - b.data.order);
+
+const structuredData = [
+  createPersonJsonLd(),
+  createWebsiteJsonLd(),
+  createProfilePageJsonLd(absoluteUrl("/more/"), resumeMeta.description),
+];
 ---
 
-<BaseLayout {...resumeMeta} backgroundImage={false} menu={false}>
+<BaseLayout {...resumeMeta} backgroundImage={false} menu={false} ogType="profile" structuredData={structuredData}>
   <div class="mx-auto max-w-4xl p-6 text-xs">
     <section class="mb-5 grid grid-cols-12 gap-x-4">
       <Image

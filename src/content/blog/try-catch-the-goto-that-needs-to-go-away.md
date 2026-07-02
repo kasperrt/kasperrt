@@ -1,10 +1,11 @@
 ---
 title: "Try-catch; The GOTO that Needs to GOAWAY"
-description: "Rethinking JavaScript error handling by replacing try-catch with Go-inspired patterns. Cleaner, safer, and more readable code without the chaos."
+seoTitle: "Try-catch and JavaScript Error Handling | Go-Inspired Patterns"
+description: "Rethinking JavaScript error handling with Go-inspired error-first patterns for cleaner, safer, and more readable TypeScript code."
 pubDate: 2025-04-14
 updatedDate: 2025-12-22
 draft: false
-hero: "/me-small.png"
+hero: "/og/try-catch-error-handling.png"
 ---
 
 _"Do I wrap my very specific code with a try-catch and move the variable creation outside the scope, or do I just keep expanding the catch scope as I go?"_
