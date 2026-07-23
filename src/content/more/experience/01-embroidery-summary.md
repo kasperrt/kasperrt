@@ -4,7 +4,7 @@ order: 1
 id: embroidery-summary
 from: "2026"
 to: ""
-where: Embroidery
+where: embroidery
 url: https://embroidery.io
 skills:
   - Go
