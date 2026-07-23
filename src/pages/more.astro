@@ -37,7 +37,7 @@ const structuredData = [
 ---
 
 <BaseLayout {...resumeMeta} backgroundImage={false} menu={false} ogType="profile" structuredData={structuredData}>
-  <div class="mx-auto max-w-4xl p-6 text-xs">
+  <div class="cv-page mx-auto max-w-4xl p-6 text-xs">
     <section class="mb-5 grid grid-cols-12 gap-x-4">
       <Image
         pictureClass="col-span-2 m-auto lg:col-start-2 print:col-start-2"
@@ -68,7 +68,7 @@ const structuredData = [
           <li class="flex items-center">
             <a
               href="https://kasperrt.me"
-              class="hidden underline print:inline-block">website</a
+              class="hidden print:inline-block">kasperrt.me</a
             >
             <a href="/" class="underline print:hidden">website</a>
           </li>
@@ -78,14 +78,26 @@ const structuredData = [
             </a>
           </li>
           <li class="flex items-center">
-            <a href="https://github.com/kasperrt" class="underline">github</a>
+            <a
+              href="https://github.com/kasperrt"
+              class="hidden print:inline-block">github.com/kasperrt</a
+            >
+            <a
+              href="https://github.com/kasperrt"
+              class="underline print:hidden">github</a
+            >
           </li>
           <li class="flex items-center">
             <a href="tel:004797740427" class="underline">+47 977 40 427</a>
           </li>
           <li class="flex items-center">
-            <a href="https://www.linkedin.com/in/kasperrt/" class="underline"
-              >linkedin</a
+            <a
+              href="https://www.linkedin.com/in/kasperrt/"
+              class="hidden print:inline-block">linkedin.com/in/kasperrt</a
+            >
+            <a
+              href="https://www.linkedin.com/in/kasperrt/"
+              class="underline print:hidden">linkedin</a
             >
           </li>
         </ul>
