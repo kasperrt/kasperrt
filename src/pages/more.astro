@@ -37,7 +37,7 @@ const structuredData = [
 ---
 
 <BaseLayout {...resumeMeta} backgroundImage={false} menu={false} ogType="profile" structuredData={structuredData}>
-  <div class="mx-auto max-w-4xl p-6 text-xs">
+  <div class="cv-page mx-auto max-w-4xl p-6 text-xs">
     <section class="mb-5 grid grid-cols-12 gap-x-4">
       <Image
         pictureClass="col-span-2 m-auto lg:col-start-2 print:col-start-2"
@@ -68,7 +68,7 @@ const structuredData = [
           <li class="flex items-center">
             <a
               href="https://kasperrt.me"
-              class="hidden underline print:inline-block">website</a
+              class="hidden print:inline-block">kasperrt.me</a
             >
             <a href="/" class="underline print:hidden">website</a>
           </li>
@@ -78,14 +78,26 @@ const structuredData = [
             </a>
           </li>
           <li class="flex items-center">
-            <a href="https://github.com/kasperrt" class="underline">github</a>
+            <a
+              href="https://github.com/kasperrt"
+              class="hidden print:inline-block">github.com/kasperrt</a
+            >
+            <a
+              href="https://github.com/kasperrt"
+              class="underline print:hidden">github</a
+            >
           </li>
           <li class="flex items-center">
             <a href="tel:004797740427" class="underline">+47 977 40 427</a>
           </li>
           <li class="flex items-center">
-            <a href="https://www.linkedin.com/in/kasperrt/" class="underline"
-              >linkedin</a
+            <a
+              href="https://www.linkedin.com/in/kasperrt/"
+              class="hidden print:inline-block">linkedin.com/in/kasperrt</a
+            >
+            <a
+              href="https://www.linkedin.com/in/kasperrt/"
+              class="underline print:hidden">linkedin</a
             >
           </li>
         </ul>
@@ -106,7 +118,19 @@ const structuredData = [
                 </div>
                 <div class="col-span-8">
                   {experience.data.where && (
-                    <h3 class="font-extrabold">{experience.data.where}</h3>
+                    <h3 class="font-extrabold">
+                      {experience.data.url && (
+                        <a
+                          class="cv-entity-link"
+                          href={experience.data.url}
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          {experience.data.where}
+                        </a>
+                      )}
+                      {!experience.data.url && experience.data.where}
+                    </h3>
                   )}
                   {experience.data.skills && (
                     <span class="mb-2 font-light italic">
@@ -161,7 +185,19 @@ const structuredData = [
                 </p>
               </div>
               <div class="col-span-8">
-                <h3 class="font-extrabold">{education.data.where}</h3>
+                <h3 class="font-extrabold">
+                  {education.data.url && (
+                    <a
+                      class="cv-entity-link"
+                      href={education.data.url}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      {education.data.where}
+                    </a>
+                  )}
+                  {!education.data.url && education.data.where}
+                </h3>
                 {education.data.grades?.map(({ title, grade }: EducationGrade) => (
                   <h4>
                     {title}

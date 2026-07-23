@@ -4,6 +4,7 @@ order: 14
 id: uninett-summary
 from: "2016"
 where: UNINETT
+url: https://sikt.no/en/tjenester/national-research-and-education-network-uninett
 skills:
   - JavaScript
   - Docker

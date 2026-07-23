@@ -5,6 +5,7 @@ id: pistachio-summary
 from: "2022"
 to: "2026"
 where: Pistachio
+url: https://pistachioapp.com
 skills:
   - Go
   - React
