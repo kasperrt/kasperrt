@@ -5,6 +5,7 @@ id: aller-media-summary
 from: "2020"
 to: "2022"
 where: Aller Media
+url: https://www.aller.no
 skills:
   - React
   - TypeScript

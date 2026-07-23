@@ -7,6 +7,7 @@ export const experienceSchema = z.object({
   from: z.string().optional(),
   to: z.string().optional(),
   where: z.string().optional(),
+  url: z.url().optional(),
   skills: z.array(z.string()).optional(),
   positions: z.array(z.string()).optional(),
 });
@@ -24,6 +25,7 @@ export const educationSchema = z.object({
   from: z.string(),
   to: z.string(),
   where: z.string(),
+  url: z.url().optional(),
   grades: z.array(
     z.object({
       title: z.string(),

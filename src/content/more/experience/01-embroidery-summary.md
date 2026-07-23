@@ -5,6 +5,7 @@ id: embroidery-summary
 from: "2026"
 to: ""
 where: Embroidery
+url: https://embroidery.io
 skills:
   - Go
   - React

@@ -106,7 +106,20 @@ const structuredData = [
                 </div>
                 <div class="col-span-8">
                   {experience.data.where && (
-                    <h3 class="font-extrabold">{experience.data.where}</h3>
+                    <h3 class="font-extrabold">
+                      {experience.data.url ? (
+                        <a
+                          class="cv-entity-link"
+                          href={experience.data.url}
+                          target="_blank"
+                          rel="noopener"
+                        >
+                          {experience.data.where}
+                        </a>
+                      ) : (
+                        experience.data.where
+                      )}
+                    </h3>
                   )}
                   {experience.data.skills && (
                     <span class="mb-2 font-light italic">
@@ -161,7 +174,20 @@ const structuredData = [
                 </p>
               </div>
               <div class="col-span-8">
-                <h3 class="font-extrabold">{education.data.where}</h3>
+                <h3 class="font-extrabold">
+                  {education.data.url ? (
+                    <a
+                      class="cv-entity-link"
+                      href={education.data.url}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      {education.data.where}
+                    </a>
+                  ) : (
+                    education.data.where
+                  )}
+                </h3>
                 {education.data.grades?.map(({ title, grade }: EducationGrade) => (
                   <h4>
                     {title}

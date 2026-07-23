@@ -5,6 +5,7 @@ id: knowit-summary
 from: "2019"
 to: "2020"
 where: Knowit Experience
+url: https://www.knowit.no/om-oss/experience/
 skills:
   - C#
   - vue.js
