@@ -119,7 +119,7 @@ const structuredData = [
                 <div class="col-span-8">
                   {experience.data.where && (
                     <h3 class="font-extrabold">
-                      {experience.data.url ? (
+                      {experience.data.url && (
                         <a
                           class="cv-entity-link"
                           href={experience.data.url}
@@ -128,9 +128,8 @@ const structuredData = [
                         >
                           {experience.data.where}
                         </a>
-                      ) : (
-                        experience.data.where
                       )}
+                      {!experience.data.url && experience.data.where}
                     </h3>
                   )}
                   {experience.data.skills && (
@@ -187,7 +186,7 @@ const structuredData = [
               </div>
               <div class="col-span-8">
                 <h3 class="font-extrabold">
-                  {education.data.url ? (
+                  {education.data.url && (
                     <a
                       class="cv-entity-link"
                       href={education.data.url}
@@ -196,9 +195,8 @@ const structuredData = [
                     >
                       {education.data.where}
                     </a>
-                  ) : (
-                    education.data.where
                   )}
+                  {!education.data.url && education.data.where}
                 </h3>
                 {education.data.grades?.map(({ title, grade }: EducationGrade) => (
                   <h4>
