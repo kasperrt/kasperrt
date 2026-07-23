@@ -73,16 +73,6 @@ main {
   @apply text-red-600 dark:text-red-400;
 }
 
-.markdown a.company-link,
-.markdown a.company-link:link,
-.markdown a.company-link:visited,
-.markdown a.company-link:hover,
-.markdown a.company-link:focus,
-.markdown a.company-link:active {
-  color: inherit;
-  text-decoration: none;
-}
-
 .markdown article {
   ul {
     list-style: disc;
