@@ -27,37 +27,20 @@ html {
   --image-shadow-color: rgb(141, 141, 141);
 }
 
-.konami-media {
-  position: absolute;
-  top: -40%;
-  bottom: 0;
-  left: 20%;
-  width: min(40vw, 47.46svh);
-  aspect-ratio: 1166 / 1474;
-  height: auto;
-  margin: auto;
-  border-radius: 0.125rem;
-}
-
-.konami-media--active {
+.konami-player--active {
   position: relative;
   inset: auto;
+  z-index: 20;
   order: 1;
   width: calc(100% - 2.5rem);
   height: min(480px, 60svh);
   margin: 1rem auto;
   aspect-ratio: auto;
+  pointer-events: auto;
 }
 
 @media (min-width: 64rem) {
-  .konami-media {
-    position: fixed;
-    top: 0;
-    left: 50%;
-    width: min(33.333vw, 63.31svh);
-  }
-
-  .konami-media--active {
+  .konami-player--active {
     position: fixed;
     top: 0;
     bottom: 0;
@@ -78,11 +61,11 @@ main {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-overlay, 0px) + 2rem);
 }
 
-.konami-media--active ~ header {
+.konami-player--active ~ header {
   order: 0;
 }
 
-.konami-media--active ~ main {
+.konami-player--active ~ main {
   order: 2;
 }
 

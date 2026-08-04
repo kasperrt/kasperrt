@@ -150,23 +150,19 @@ const modifiedTimeIso = toIsoString(modifiedTime);
   <body class={bodyClass}>
     {
       backgroundImage && (
-        <div
-          data-konami-media
-          data-rotate="4"
-          data-shadow-multiplier="-7.5"
-          data-tilt-multiplier="1"
-          class="konami-media"
-          style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
-          transition:name="me-picture"
-        >
+        <>
           <Image
             data-konami-portrait
+            data-rotate="4"
+            data-shadow-multiplier="-7.5"
+            data-tilt-multiplier="1"
             sources={[
               { srcSet: "/me.webp", type: "image/webp" },
               { srcSet: "/me.png", type: "image/png" },
             ]}
-            pictureClass="contents"
-            imageClass="h-full w-full rounded-sm object-cover opacity-100 transition-[border,opacity]"
+            style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
+            transition:name="me-picture"
+            imageClass="absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] lg:fixed lg:top-0 lg:left-1/2 lg:max-h-4/5 lg:max-w-2/6 rounded-sm"
           />
           <iframe
             data-konami-player
@@ -176,9 +172,13 @@ const modifiedTimeIso = toIsoString(modifiedTime);
             height="480"
             loading="lazy"
             referrerpolicy="strict-origin-when-cross-origin"
-            class="hidden h-full w-full rounded-sm border-0"
+            class="konami-player hidden rounded-sm border-0"
+            data-rotate="4"
+            data-shadow-multiplier="-7.5"
+            data-tilt-multiplier="1"
+            style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
           />
-        </div>
+        </>
       )
     }
 
@@ -204,11 +204,10 @@ const modifiedTimeIso = toIsoString(modifiedTime);
       let konamiPosition = 0;
 
       function revealKonamiPlayer() {
-        const media = document.querySelector<HTMLElement>("[data-konami-media]");
-        const portrait = media?.querySelector<HTMLElement>("[data-konami-portrait]");
-        const player = media?.querySelector<HTMLIFrameElement>("[data-konami-player]");
+        const portrait = document.querySelector<HTMLElement>("[data-konami-portrait]");
+        const player = document.querySelector<HTMLIFrameElement>("[data-konami-player]");
 
-        if (!media || !portrait || !player) {
+        if (!portrait || !player) {
           return;
         }
 
@@ -219,7 +218,7 @@ const modifiedTimeIso = toIsoString(modifiedTime);
 
         portrait.classList.add("hidden");
         player.classList.remove("hidden");
-        media.classList.add("konami-media--active");
+        player.classList.add("konami-player--active");
       }
 
       document.addEventListener("keydown", (event) => {
