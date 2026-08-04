@@ -150,18 +150,35 @@ const modifiedTimeIso = toIsoString(modifiedTime);
   <body class={bodyClass}>
     {
       backgroundImage && (
-        <Image
+        <div
+          data-konami-media
           data-rotate="4"
           data-shadow-multiplier="-7.5"
           data-tilt-multiplier="1"
-          sources={[
-            { srcSet: "/me.webp", type: "image/webp" },
-            { srcSet: "/me.png", type: "image/png" },
-          ]}
+          class="konami-media"
           style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
           transition:name="me-picture"
-          imageClass="absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] lg:fixed lg:top-0 lg:left-1/2 lg:max-h-4/5 lg:max-w-2/6 rounded-sm"
-        />
+        >
+          <Image
+            data-konami-portrait
+            sources={[
+              { srcSet: "/me.webp", type: "image/webp" },
+              { srcSet: "/me.png", type: "image/png" },
+            ]}
+            pictureClass="contents"
+            imageClass="h-full w-full rounded-sm object-cover opacity-100 transition-[border,opacity]"
+          />
+          <iframe
+            data-konami-player
+            data-src="https://zoff.me/embed/electro?player=true&playlist=true&skip=true&vote=true&theme=auto"
+            title="Zoff room electro"
+            width="100%"
+            height="480"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+            class="hidden h-full w-full rounded-sm border-0"
+          />
+        </div>
       )
     }
 
@@ -170,6 +187,56 @@ const modifiedTimeIso = toIsoString(modifiedTime);
     <main class="relative flex flex-1 lg:min-h-svh">
       <slot />
     </main>
+
+    <script>
+      const konamiCode = [
+        "ArrowUp",
+        "ArrowUp",
+        "ArrowDown",
+        "ArrowDown",
+        "ArrowLeft",
+        "ArrowRight",
+        "ArrowLeft",
+        "ArrowRight",
+        "b",
+        "a",
+      ];
+      let konamiPosition = 0;
+
+      function revealKonamiPlayer() {
+        const media = document.querySelector<HTMLElement>("[data-konami-media]");
+        const portrait = media?.querySelector<HTMLElement>("[data-konami-portrait]");
+        const player = media?.querySelector<HTMLIFrameElement>("[data-konami-player]");
+
+        if (!media || !portrait || !player) {
+          return;
+        }
+
+        const playerSrc = player.dataset.src;
+        if (playerSrc && !player.src.startsWith(playerSrc)) {
+          player.src = playerSrc;
+        }
+
+        portrait.classList.add("hidden");
+        player.classList.remove("hidden");
+        media.classList.add("konami-media--active");
+      }
+
+      document.addEventListener("keydown", (event) => {
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+
+        if (key === konamiCode[konamiPosition]) {
+          konamiPosition += 1;
+          if (konamiPosition === konamiCode.length) {
+            revealKonamiPlayer();
+            konamiPosition = 0;
+          }
+          return;
+        }
+
+        konamiPosition = key === konamiCode[0] ? 1 : 0;
+      });
+    </script>
 
     <script>
       import { rotateElement, getRotateElements } from "~/utils/rotate";
