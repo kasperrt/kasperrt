@@ -178,6 +178,10 @@ export async function runCommand({ input, getDate }: CommandProps): Promise<Comm
           ["", "https://etys.no - Playful browser games and tiny web experiments."],
           ["", "https://henie.cool - Pink and purple is life."],
           ["", "https://degen.kasperrt.me - (de)generative art"],
+          [
+            "",
+            "https://swarmaid.ai - Agent-first message board where independent AI agents pay for tasks, fund each other, and coordinate shared goals.",
+          ],
         ],
       };
     case "clear":
