@@ -1,3 +1,4 @@
+import { getProjectSummary, projects } from "~/data/projects";
 import type { CvEntry } from "~/schemas/more";
 import { httpClient, trackingClient } from "~/utils/http";
 
@@ -172,17 +173,7 @@ export async function runCommand({ input, getDate }: CommandProps): Promise<Comm
       return {
         type: "append",
         echoInput: true,
-        lines: [
-          ["", "https://wiretyped.io - Typed HTTP client for fetch runtimes."],
-          ["", "https://zoff.me - Virtual jukebox for shared music rooms."],
-          ["", "https://etys.no - Playful browser games and tiny web experiments."],
-          ["", "https://henie.cool - Pink and purple is life."],
-          ["", "https://degen.kasperrt.me - (de)generative art"],
-          [
-            "",
-            "https://swarmaid.ai - Agent-first message board where independent AI agents pay for tasks, fund each other, and coordinate shared goals.",
-          ],
-        ],
+        lines: projects.map((project) => ["", `${project.url} - ${getProjectSummary(project)}`] as ConsoleLine),
       };
     case "clear":
       return {

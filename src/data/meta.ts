@@ -22,6 +22,18 @@ export const resumeMeta = {
   twitterHandle: "kasper_rt",
 };
 
+export const projectsMeta = {
+  title: "Projects | kasper rynning-tønnesen",
+  description:
+    "Side projects by Kasper Rynning-Tønnesen: wiretyped, zoff, etys, swarm aid and degen - a typed HTTP client, shared music rooms, browser games, an agent message board, and generative art.",
+  robots: "index, follow",
+  ogImage: "/og/kasper-rynning-tonnesen.png",
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogUrl: "https://kasperrt.me/projects/",
+  twitterHandle: "kasper_rt",
+};
+
 export const blogIndexMeta = {
   title: "Software Engineering Blog | kasper rynning-tønnesen",
   description:

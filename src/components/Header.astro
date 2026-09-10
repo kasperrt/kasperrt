@@ -11,6 +11,7 @@ interface Props {
 const { activePath } = Astro.props;
 const isHome = activePath === "/";
 const isMore = activePath === "/more" || activePath === "/more/";
+const isProjects = activePath === "/projects" || activePath === "/projects/";
 const isBlog = activePath === "/blog" || activePath === "/blog/" || activePath.startsWith("/blog/");
 const publishedPosts = await getCollection("blog", ({ data }) => !data.draft);
 const hasPublishedPosts = publishedPosts.length > 0;
@@ -61,6 +62,17 @@ const hasPublishedPosts = publishedPosts.length > 0;
           )}
         >
           <Underline>cv</Underline>
+        </a>
+      </li>
+      <li class="p-2.5">
+        <a
+          href="/projects"
+          class={classNames(
+            "font-bold text-2xl",
+            isProjects && "text-red-600 dark:text-red-400"
+          )}
+        >
+          <Underline>projects</Underline>
         </a>
       </li>
       <li class="p-2.5">

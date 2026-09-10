@@ -31,7 +31,11 @@ const controller = new ConsoleController();
 const { commands, input, loading, partial, introLines, asciiLines, submit, handleKeyDown, setInput, reset } =
   controller;
 
-let useCrt = true;
+// `useCrt` can only be resolved in the browser, so nothing terminal-shaped is
+// rendered until then - otherwise SSR ships the DOM fallback and it flashes
+// on screen before hydration swaps in the CRT.
+let mounted = false;
+let useCrt = false;
 
 // -- DOM Mode helpers --
 let inputfield: HTMLInputElement;
@@ -144,7 +148,7 @@ function handleCrtInput(e: Event) {
 }
 
 let windowWidth = typeof window !== "undefined" ? window.innerWidth : 1024;
-$: useCrt = canUseWebgl() && windowWidth >= 768;
+$: useCrt = mounted && canUseWebgl() && windowWidth >= 768;
 
 let crtCleanup: (() => void) | null = null;
 let unmounted = false;
@@ -191,6 +195,8 @@ $: {
 }
 
 onMount(() => {
+  mounted = true;
+
   // Common setup
   const html = document.documentElement;
   const body = document.body;
@@ -201,6 +207,7 @@ onMount(() => {
 
   return () => {
     unmounted = true;
+    mounted = false;
     disposeCrt();
     reset();
     html.style.overflow = prevHtmlOverflow;
@@ -217,7 +224,10 @@ onDestroy(() => {});
   bind:innerWidth={windowWidth}
 />
 
-{#if useCrt}
+{#if !mounted}
+  <!-- Pre-hydration placeholder, keeps the screen dark until the mode is known -->
+  <div class="fixed inset-0 z-10 bg-black"></div>
+{:else if useCrt}
   <!-- CRT TEMPLATE -->
   <div class="fixed inset-0 z-10 bg-black">
     <canvas
@@ -229,7 +239,7 @@ onDestroy(() => {});
       on:pointerup={(e) => crtManager?.handlePointerUp(e, focusInputCrt)}
       on:pointercancel={(e) => crtManager?.handlePointerCancel(e)}
       on:wheel|passive={(e) => crtManager?.handleWheel(e)}
-    />
+    ></canvas>
     <!-- Hidden input -->
     <input
       bind:this={inputElCrt}

@@ -25,6 +25,7 @@ html {
 
 :root {
   --image-shadow-color: rgb(141, 141, 141);
+  --project-shadow-color: rgb(141, 141, 141);
 }
 
 .konami-player--active {
@@ -94,6 +95,38 @@ main {
 ::view-transition-new(me-picture) {
   animation: none;
   mix-blend-mode: normal;
+}
+
+/**
+ * Pages without the portrait (/projects, /blog) leave the snapshot unpaired,
+ * and `animation: none` would pop it off screen - fade it instead.
+ */
+::view-transition-old(me-picture):only-child {
+  animation: 250ms ease both me-picture-out;
+}
+
+::view-transition-new(me-picture):only-child {
+  animation: 250ms ease both me-picture-in;
+}
+
+@keyframes me-picture-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes me-picture-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 @page {
@@ -190,6 +223,7 @@ main {
 
   :root {
     --image-shadow-color: transparent;
+    --project-shadow-color: rgb(64, 64, 64);
   }
 
   .astro-code,
