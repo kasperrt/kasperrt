@@ -4,7 +4,9 @@ ARG NODE_VERSION=26
 
 FROM node:${NODE_VERSION}-bookworm-slim AS build
 WORKDIR /app
-RUN npm install -g npm@12.0.2 pnpm@10.20.0 --force
+RUN npm install -g npm@12.0.2 pnpm@10.20.0 --force \
+    && rm -rf /usr/local/lib/node_modules/npm \
+    && rm -f /usr/local/bin/npm /usr/local/bin/npx
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
