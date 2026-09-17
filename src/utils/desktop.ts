@@ -1,6 +1,7 @@
 import { getPageProjects } from "../data/projects";
 import { formatAliveDuration } from "./uptime";
 import { initDesktop } from "./desktop/windows";
+import { getShellReply } from "./desktop/shell";
 
 let cleanup: (() => void) | undefined;
 const history: string[] = [];
@@ -15,6 +16,9 @@ function initDesktopApplication() {
   const desktop = initDesktop(signal);
   const input = document.querySelector<HTMLInputElement>("#shell-input");
   const output = document.querySelector<HTMLElement>(".terminal-output");
+  const terminal = document.querySelector<HTMLElement>('[data-window="terminal"]');
+  const promptLabel = document.querySelector<HTMLLabelElement>(".terminal-input-row label");
+  let passwordCommand: string | undefined;
   let historyIndex = history.length;
   function renderLine(line: Line) {
     const row = document.createElement("p");
@@ -78,20 +82,40 @@ function initDesktopApplication() {
     "github",
     "uptime",
     "date",
+    "cat",
+    "pwd",
+    "sudo",
+    "su",
+    "logout",
+    "uname",
+    "fortune",
+    "coffee",
     "clear",
     "exit",
   ];
-  function run(raw: string) {
-    const command = raw.trim();
-    if (!command) return;
-    history.push(command);
-    historyIndex = history.length;
-    append({ text: command, command: true });
-    const [name, ...args] = command.toLowerCase().split(/\s+/);
+  function passwordPrompt(command?: string) {
+    passwordCommand = command;
+    if (!input || !promptLabel) return;
+    input.value = "";
+    input.type = command ? "password" : "text";
+    input.autocomplete = command ? "new-password" : "off";
+    input.setAttribute("aria-label", command ? "Imaginary sudo password" : "Terminal command");
+    if (command) input.removeAttribute("name");
+    else input.name = "command";
+    promptLabel.textContent = command ? "[sudo] password for guest: " : "╰─➤ ";
+  }
+  function execute(command: string, elevated = false) {
+    const reply = getShellReply(command, elevated);
+    if (reply) {
+      append({ text: reply.text });
+      if (reply.passwordCommand) passwordPrompt(reply.passwordCommand);
+      return;
+    }
+    const [name] = command.toLowerCase().split(/\s+/);
     switch (name) {
       case "help":
         append({
-          text: "about      About Kasper\nwhoami     Current user\nls         List files\nprojects   Side projects\nwriting    Blog\ncv         Curriculum vitae\ncontact    Email\ngithub     GitHub profile\nuptime     Time since 29 August 1993\ndate       Current time in Oslo\nclear      Clear the screen\nexit       Close terminal\n\n↑ / ↓: command history. Tab: complete a command.",
+          text: "about      About Kasper\nwhoami     Current user\nls         List files\ncat        Read a file (try /etc/hosts)\npwd        Working directory\nprojects   Side projects\nwriting    Blog\ncv         Curriculum vitae\ncontact    Email\ngithub     GitHub profile\nuptime     Time since 29 August 1993\ndate       Current time in Oslo\nclear      Clear the screen\nexit       Close terminal\n\n↑ / ↓: command history. Tab: complete a command.\nCtrl+C: cancel. Ctrl+D: close an empty prompt.\nA few familiar Unix commands also work. Sort of.",
         });
         break;
       case "about":
@@ -138,31 +162,84 @@ function initDesktopApplication() {
       case "exit":
         desktop.close("terminal");
         break;
-      case "cat":
-        if (args[0] === "readme.md" || args[0] === "readme.txt")
-          append({ text: "Kasper Rynning-Tønnesen. CTO & cofounder at embroidery, Oslo." });
-        else append({ text: `No such file: ${args.join(" ") || "(missing filename)"}` });
-        break;
       default:
         append({ text: `${name}: command not found. Type help for available commands.` });
     }
+  }
+  function scrollToPrompt() {
     if (output) output.scrollTop = output.scrollHeight;
+  }
+  function run(raw: string) {
+    const command = raw.trim();
+    if (!command) return;
+    if (passwordCommand !== undefined) passwordPrompt();
+    history.push(command);
+    historyIndex = history.length;
+    append({ text: command, command: true });
+    execute(command);
+    scrollToPrompt();
   }
   document.querySelector(".terminal-input-row")?.addEventListener(
     "submit",
     (event) => {
       event.preventDefault();
       if (!input) return;
-      run(input.value);
-      input.value = "";
+      if (passwordCommand !== undefined) {
+        const command = passwordCommand;
+        passwordPrompt();
+        append({ text: "Password accepted. Suspiciously easy, wasn't it?" });
+        execute(command, true);
+      } else {
+        const command = input.value;
+        input.value = "";
+        run(command);
+      }
+      scrollToPrompt();
       input.focus();
     },
     { signal },
   );
+  document.querySelector(".terminal-body")?.addEventListener(
+    "click",
+    (event) => {
+      const target = event.target;
+      if (!(target instanceof Element) || target.closest("a, button, input")) return;
+      const selection = window.getSelection();
+      if (selection && !selection.isCollapsed) return;
+      input?.focus({ preventScroll: true });
+    },
+    { signal },
+  );
+  const terminalObserver = new MutationObserver(() => {
+    if (terminal?.hidden && passwordCommand !== undefined) passwordPrompt();
+  });
+  if (terminal) terminalObserver.observe(terminal, { attributes: true, attributeFilter: ["hidden"] });
   document.querySelector("[data-uptime-open]")?.addEventListener("click", () => run("uptime"), { signal });
   input?.addEventListener(
     "keydown",
     (event) => {
+      if (
+        (event.ctrlKey && event.key.toLowerCase() === "c") ||
+        (passwordCommand !== undefined && event.key === "Escape")
+      ) {
+        const selection = window.getSelection();
+        if (passwordCommand === undefined && selection && !selection.isCollapsed) return;
+        event.preventDefault();
+        passwordPrompt();
+        append({ text: "^C" });
+        scrollToPrompt();
+        return;
+      }
+      if (event.ctrlKey && event.key.toLowerCase() === "d" && !input.value) {
+        event.preventDefault();
+        if (passwordCommand !== undefined) passwordPrompt();
+        else desktop.close("terminal");
+        return;
+      }
+      if (passwordCommand !== undefined) {
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") event.preventDefault();
+        return;
+      }
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         event.preventDefault();
         historyIndex = Math.max(0, Math.min(history.length, historyIndex + (event.key === "ArrowUp" ? -1 : 1)));
@@ -196,6 +273,8 @@ function initDesktopApplication() {
     { signal },
   );
   cleanup = () => {
+    passwordPrompt();
+    terminalObserver.disconnect();
     controller.abort();
     clearInterval(interval);
     desktop.cleanup();
