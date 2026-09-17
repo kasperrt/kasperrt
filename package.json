@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "astro build",
+    "build": "astro build && node scripts/compress.mjs && pnpm check:size",
     "dev": "astro dev",
-    "preview": "astro preview",
+    "preview": "node scripts/preview.mjs",
+    "check:size": "node scripts/check-size.mjs",
     "sync": "astro sync",
     "check": "pnpm check:lint && pnpm check:format && pnpm check:ts",
     "check:format": "pnpm exec biome format --error-on-warnings",
@@ -18,13 +19,9 @@
     "fix:lint": "pnpm exec biome lint --write"
   },
   "dependencies": {
-    "@astrojs/svelte": "9.0.1",
     "fontkit": "2.0.4",
     "pdfkit": "0.20.2",
-    "sharp": "0.35.4",
-    "svelte": "5.56.4",
-    "three": "0.185.1",
-    "wiretyped": "0.3.9"
+    "sharp": "0.35.4"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.9",
@@ -36,7 +33,6 @@
     "@types/js-yaml": "4.0.9",
     "@types/node": "26.1.1",
     "@types/pdfkit": "0.17.6",
-    "@types/three": "0.185.0",
     "astro": "7.2.8",
     "js-yaml": "4.3.2",
     "tailwindcss": "4.3.2",

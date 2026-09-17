@@ -1,0 +1,21 @@
+---
+import DesktopWindow from "../DesktopWindow.astro";
+import { siteDomains } from "../../data/site-domains";
+---
+
+<DesktopWindow id="env" title=".env" saveable>
+  <div class="environment-file w-max min-w-full whitespace-nowrap p-5 font-mono text-xs/6">
+    <div><span class="text-purple-900">CONTACT_EMAIL</span>=<a class="cursor-pointer text-inherit no-underline visited:text-inherit hover:text-inherit" href="mailto:kasper@rynning-toennesen.email">kasper@rynning-toennesen.email</a></div>
+    <div><span class="text-purple-900">DOMAINS</span>={siteDomains.map((domain, index) => (
+      <><a class="cursor-pointer text-inherit no-underline visited:text-inherit hover:text-inherit" href={`https://${domain}`} target="_blank" rel="noopener noreferrer">{domain}</a>{index < siteDomains.length - 1 && ","}</>
+    ))}</div>
+    <div><span class="text-purple-900">GIT</span>=<a class="cursor-pointer text-inherit no-underline visited:text-inherit hover:text-inherit" href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer">kasperrt</a></div>
+    <div><span class="text-purple-900">LINKEDIN</span>=<a class="cursor-pointer text-inherit no-underline visited:text-inherit hover:text-inherit" href="https://www.linkedin.com/in/kasperrt/" target="_blank" rel="noopener noreferrer">kasperrt</a></div>
+    <div><span class="text-purple-900">X</span>=<a class="cursor-pointer text-inherit no-underline visited:text-inherit hover:text-inherit" href="https://x.com/kasper_rt" target="_blank" rel="noopener noreferrer">@kasper_rt</a></div>
+    <form class="environment-background" data-background-form novalidate>
+      <div class="flex items-center">
+        <span class="text-purple-900">BG_COLOR</span>=<label class="relative cursor-pointer focus-within:outline focus-within:outline-dotted"><span data-background-hex>#bba8de</span><input class="absolute inset-0 size-full cursor-pointer opacity-0" type="color" data-background-picker value="#bba8de" aria-label="BG_COLOR" /></label>
+      </div>
+    </form>
+  </div>
+</DesktopWindow>

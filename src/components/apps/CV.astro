@@ -6,61 +6,65 @@ const { experiences, skills, educations } = await loadCvContent();
 const experienceGroups = groupExperiences(experiences);
 ---
 
-<div class="archive-page cv-page">
-  <header class="page-heading">
-    <h1>Kasper Rynning-Tønnesen</h1>
-    <p>
+<div class="cv-page print:max-w-none print:p-0 print:text-xs mx-auto max-w-220 px-10 pt-6 pb-9 @max-lg:p-5">
+  <header class="page-heading mb-4 border-b border-neutral-300 pb-3">
+    <h1 class="print:mb-2 print:text-lg mb-3 font-desktop text-2xl/snug">Kasper Rynning-Tønnesen</h1>
+    <p class="mb-2 max-w-164 font-sans text-sm/relaxed max-sm:text-xs">
       CTO & cofounder at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a>
       · Oslo, Norway
     </p>
-    <div class="cv-heading-actions">
-      <button type="button" class="primary-action" data-print-cv>Print CV</button>
-      <a class="primary-action" href="/kasper-rynning-tonnesen-cv.pdf" download>Save PDF</a>
+    <div class="hidden print:block print:text-xs">
+      <p>kasperrt.me · kasper@rynning-toennesen.email · +47 977 40 427</p>
+      <p>github.com/kasperrt · linkedin.com/in/kasperrt</p>
+    </div>
+    <div class="cv-heading-actions print:hidden mt-4 flex items-center gap-4.5">
+      <button type="button" class="primary-action inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed" data-print-cv>Print CV</button>
+      <a class="primary-action inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed" href="/kasper-rynning-tonnesen-cv.pdf" download>Save PDF</a>
       <a href="mailto:kasper@rynning-toennesen.email">Get in touch</a>
     </div>
   </header>
   <section>
-    <h2 class="cv-section-title">Experience</h2>
+    <h2 class="cv-section-title print:mt-3 print:mb-2 mt-5 mb-3 border-b border-neutral-300 pb-1.5 font-desktop text-sm/snug">Experience</h2>
     {experienceGroups.map(({ company, roles }) => (
-      <section class="company-record">
-        <div class="company-heading">
-          <h3>
+      <section class="company-record print:mb-2 print:break-inside-avoid print:pb-1 mb-4 border-b border-neutral-300 pb-3">
+        <div class="company-heading mb-2.5 flex items-baseline justify-between gap-3.75 @max-lg:flex-wrap @max-lg:gap-1">
+          <h3 class="text-sm font-bold">
             {company.data.url && (
               <a href={company.data.url} target="_blank" rel="noopener noreferrer">{company.data.where}</a>
             )}
             {!company.data.url && company.data.where}
           </h3>
-          <span>{formatCvDateRange(company.data.from, company.data.to)}</span>
+          <span class="whitespace-nowrap text-xs text-neutral-600">{formatCvDateRange(company.data.from, company.data.to)}</span>
         </div>
-        <div class="company-overview"><company.Content /></div>
+        <div class="company-overview mb-1.5 text-xs/relaxed text-neutral-700"><company.Content /></div>
         {roles.map((role) => (
-          <div class="experience-record">
-            <div class="experience-dates">{formatCvDateRange(role.data.from, role.data.to)}</div>
-            <div class="experience-details">
-              {role.data.positions?.map((position) => <h4>{position}</h4>)}
+          <div class="experience-record print:gap-3 print:py-1 grid grid-cols-8 gap-4 py-1.5 @max-lg:grid-cols-1 @max-lg:gap-0.75">
+            <div class="experience-dates text-xs text-neutral-600">{formatCvDateRange(role.data.from, role.data.to)}</div>
+            <div class="experience-details col-span-7 @max-lg:col-span-1 font-sans text-xs/relaxed [&_p]:mb-1 [&_li]:mb-2 [&_ul]:list-disc [&_ul]:pl-5">
+              {role.data.positions?.map((position) => <h4 class="mb-2 text-sm font-bold">{position}</h4>)}
               <role.Content />
             </div>
           </div>
         ))}
-        {company.data.skills && <p class="company-skills">{company.data.skills.join(", ")}</p>}
+        {company.data.skills && <p class="company-skills mt-1.25 text-xs text-neutral-500">{company.data.skills.join(", ")}</p>}
       </section>
     ))}
   </section>
   <section>
-    <h2 class="cv-section-title">Skills</h2>
+    <h2 class="cv-section-title print:mt-3 print:mb-2 mt-5 mb-3 border-b border-neutral-300 pb-1.5 font-desktop text-sm/snug">Skills</h2>
     <dl class="skills-list">
       {skills.map((skill) => (
-        <div class="skill-row"><dt>{skill.data.area}</dt><dd>{skill.data.points.join(", ")}</dd></div>
+        <div class="skill-row grid grid-cols-6 gap-3.75 py-1.75 max-sm:grid-cols-1 max-sm:gap-0.75"><dt class="font-bold">{skill.data.area}</dt><dd class="col-span-5 max-sm:col-span-1 m-0">{skill.data.points.join(", ")}</dd></div>
       ))}
     </dl>
   </section>
   <section>
-    <h2 class="cv-section-title">Education</h2>
+    <h2 class="cv-section-title print:mt-3 print:mb-2 mt-5 mb-3 border-b border-neutral-300 pb-1.5 font-desktop text-sm/snug">Education</h2>
     {educations.map((education) => (
-      <div class="experience-record">
-        <div class="experience-dates">{education.data.from} — {education.data.to}</div>
-        <div class="experience-details">
-          <h3>
+      <div class="experience-record print:gap-3 print:py-1 grid grid-cols-8 gap-4 py-1.5 @max-lg:grid-cols-1 @max-lg:gap-0.75">
+        <div class="experience-dates text-xs text-neutral-600">{education.data.from} — {education.data.to}</div>
+        <div class="experience-details col-span-7 @max-lg:col-span-1 font-sans text-xs/relaxed [&_p]:mb-1 [&_li]:mb-2 [&_ul]:list-disc [&_ul]:pl-5">
+          <h3 class="mb-1.75 text-sm font-bold">
             {education.data.url && (
               <a href={education.data.url} target="_blank" rel="noopener noreferrer">{education.data.where} ↗</a>
             )}

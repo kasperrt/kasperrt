@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /windows/
 
 Sitemap: https://kasperrt.me/sitemap-index.xml

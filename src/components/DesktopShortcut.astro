@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { classNames } from "~/utils/classNames";
+
+interface Props extends HTMLAttributes<"a"> {
+  type?: "button";
+  label: string;
+}
+const { class: extraClass, href, label, ...attributes } = Astro.props;
+let Tag: "a" | "button" = "button";
+if (href) {
+  Tag = "a";
+}
+---
+<Tag href={href} class={classNames("desktop-item aria-busy:cursor-progress group/shortcut fixed z-1 flex min-h-16 w-20 touch-none select-none flex-col items-center gap-2 border-0 bg-transparent py-1 text-center font-desktop text-xs/snug text-black no-underline visited:text-black hover:text-black hidden:hidden max-sm:w-14 max-sm:gap-1", extraClass)} {...attributes}>
+  <slot />
+  <span class="max-w-24 truncate whitespace-nowrap border border-neutral-300 bg-neutral-300 px-1 py-px group-focus/shortcut:border-white group-focus/shortcut:bg-selection group-focus/shortcut:text-white group-[.is-selected]/shortcut:border-purple-200 group-[.is-selected]/shortcut:bg-purple-950 group-[.is-selected]/shortcut:text-white group-[.is-trash-target]/shortcut:bg-selection group-[.is-trash-target]/shortcut:text-white max-sm:px-0.5">{label}</span>
+</Tag>

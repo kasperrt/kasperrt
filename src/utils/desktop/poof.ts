@@ -17,7 +17,7 @@ export function poofWindow(element: HTMLElement, origin?: PoofOrigin) {
   }
   const rect = (element.querySelector("[data-close]") ?? element).getBoundingClientRect();
   const cloud = document.createElement("div");
-  cloud.className = "window-poof";
+  cloud.className = "window-poof pointer-events-none fixed size-0";
   cloud.setAttribute("aria-hidden", "true");
   Object.assign(cloud.style, {
     left: `${origin?.x ?? rect.left + rect.width / 2}px`,
@@ -38,7 +38,10 @@ export function poofWindow(element: HTMLElement, origin?: PoofOrigin) {
     const puff = document.createElementNS(svgNamespace, "svg");
     puff.setAttribute("viewBox", "0 0 22 16");
     puff.setAttribute("shape-rendering", "crispEdges");
-    puff.classList.add("poof-puff");
+    puff.setAttribute(
+      "class",
+      "poof-puff absolute h-auto max-w-none animate-window-poof opacity-0 [image-rendering:pixelated] motion-reduce:animate-none",
+    );
     puff.style.setProperty("--puff-x", `${dx}px`);
     puff.style.setProperty("--puff-y", `${dy}px`);
     puff.style.width = `${size}px`;

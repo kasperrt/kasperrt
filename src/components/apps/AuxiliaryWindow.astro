@@ -1,0 +1,64 @@
+---
+import WindowFrame from "../WindowFrame.astro";
+import Header from "../Header.astro";
+import DesktopIcon from "../DesktopIcon.astro";
+import { defaultMusicChannel, musicChannels, musicEmbedUrl } from "../../data/music";
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+{id === "about" && (<WindowFrame class="auxiliary-window top-32 left-50 h-84 w-104 resize-none about-window" data-window="about" aria-labelledby="about-title" hidden>
+  <Header windowId="about" title="Info" titleId="about-title" controls={false} />
+  <div class="about-content flex gap-5.5 overflow-auto px-5 pt-6 pb-1.25 font-sans max-sm:gap-3.5 max-sm:px-3 max-sm:pt-4.5 max-sm:pb-0">
+    <DesktopIcon kind="computer" size={48} />
+    <div>
+      <h2 class="mb-2.5 text-base font-bold">kasperrt.me</h2>
+      <p class="my-2.5 text-xs">Kasper Rynning-Tønnesen<br />Oslo, Norway</p>
+      <p class="my-2.5 text-xs">Astro · TypeScript</p>
+      <a href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer" class="text-xs">github.com/kasperrt</a>
+    </div>
+  </div>
+  <div class="dialog-actions mt-auto flex justify-end px-5 pt-4 pb-5"><button class="desktop-button inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed default-button outline-2 outline-neutral-700 outline-offset-2" type="button" data-close="about">OK</button></div>
+</WindowFrame>)}
+{id === "help" && (<WindowFrame class="auxiliary-window top-32 left-50 h-84 w-104 resize-none help-window" data-window="help" aria-labelledby="help-title" hidden>
+  <Header windowId="help" title="Using this desktop" titleId="help-title" controls={false} />
+  <div class="help-content overflow-auto px-5 pt-3 font-sans">
+    <p class="my-2.5 text-xs">Click an icon to open it. Drag an icon or a window's title bar to move it.</p>
+    <p class="my-2.5 text-xs">Drag the bottom-right corner to resize a window. The two buttons on the right of the title bar zoom and collapse it.</p>
+    <p class="my-2.5 text-xs">Shake a window back and forth to make it disappear. You can open it again from its icon or the menus.</p>
+    <p class="my-2.5 text-xs">Your layout is saved in this browser. Choose <b>View → Clean Up Desktop</b> to reset it.</p>
+    <p class="my-2.5 text-xs">Press <b>⌘K</b> (or Ctrl+K) for the terminal. Type <b>help</b> for commands.</p>
+    <p class="my-2.5 text-xs">Keyboard: focus a title bar and use the arrow keys to move the window. Hold Shift for larger steps.</p>
+  </div>
+  <div class="dialog-actions mt-auto flex justify-end px-5 pt-4 pb-5"><button type="button" class="desktop-button inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed default-button outline-2 outline-neutral-700 outline-offset-2" data-close="help">OK</button></div>
+</WindowFrame>)}
+{id === "music" && (<WindowFrame class="music-window h-140 w-150" data-window="music" aria-label="Music Player" hidden>
+  <Header windowId="music" title="Music Player" />
+  <div class="music-room-bar flex shrink-0 items-center gap-3 border-t border-neutral-500 px-3 py-2 font-sans inset-shadow-sm inset-shadow-white max-sm:gap-2">
+    <span class="music-note font-serif text-3xl" aria-hidden="true">♫</span>
+    <div class="music-channels flex border border-neutral-600 font-desktop text-xs/snug" role="group" aria-label="Zoff channel">
+      {musicChannels.map((channel) => (
+        <button class="min-h-8 bg-neutral-300 px-3 py-1 shadow-bevel not-first:border-l not-first:border-neutral-600 hover:bg-neutral-200 aria-pressed:bg-neutral-400 aria-pressed:shadow-bevel-pressed max-sm:px-2" type="button" data-music-channel={channel} aria-pressed={channel === defaultMusicChannel}>{channel}</button>
+      ))}
+    </div>
+  </div>
+  <iframe
+    class="music-embed block min-h-0 min-w-0 w-full flex-1 touch-auto border border-neutral-500 bg-white"
+    data-app-frame
+    data-src={musicEmbedUrl(defaultMusicChannel)}
+    title={`Zoff room ${defaultMusicChannel}`}
+    width="100%"
+    height="480"
+    loading="eager"
+    allow="autoplay; encrypted-media"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
+  <span class="resize-grip pointer-events-none absolute right-px bottom-px size-3 bg-[repeating-linear-gradient(135deg,transparent_0_2px,#666_2px_3px,#eee_3px_4px)] [clip-path:polygon(100%_0,100%_100%,0_100%)]" aria-hidden="true"></span>
+</WindowFrame>)}
+
+{id === "trash" && (<WindowFrame class="auxiliary-window top-32 left-50 h-84 w-104 resize-none" data-window="trash" aria-label="Trash" hidden>
+  <Header windowId="trash" title="Trash" />
+  <div class="workspace min-h-0 flex-1 overflow-auto overscroll-contain border border-neutral-500 border-t-neutral-600 bg-white shadow-[1px_1px_#fff] [scrollbar-color:#b8b8b8_#ddd] grid grid-cols-3 auto-rows-max gap-4 p-4 font-sans text-xs group-[.is-trash-target]/window:bg-purple-100" data-trash-list></div>
+  <div class="dialog-actions mt-auto flex justify-end px-5 pt-4 pb-5"><button type="button" class="desktop-button inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed" data-desktop-reset>Clean Up Desktop</button></div>
+</WindowFrame>)}

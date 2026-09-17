@@ -1,0 +1,16 @@
+---
+import { getCollection } from "astro:content";
+import AppWindow from "~/components/apps/AppWindow.astro";
+import { windowApps } from "~/data/window-apps";
+
+export const partial = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return [...windowApps, ...posts.map((post) => `article-${post.id}`)].map((id) => ({ params: { id } }));
+}
+
+const id = Astro.params.id ?? "main";
+---
+
+<AppWindow id={id} />

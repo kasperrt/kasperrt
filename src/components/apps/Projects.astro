@@ -4,34 +4,33 @@ import { getPageProjects } from "~/data/projects";
 const pageProjects = getPageProjects();
 ---
 
-<section class="archive-page">
-  <header class="page-heading">
-    <h1>Projects</h1>
-    <p>A bunch of side projects, tools, and experiments. I enjoy fucking around to find out. These are the ones worth having public.</p>
+<section class="archive-page px-7.5 pt-6 pb-9 max-md:p-5.5 max-sm:px-4 max-sm:py-4.5 @max-lg:p-5">
+  <header class="page-heading mb-6 border-b border-neutral-300 pb-3.75">
+    <h1 class="mb-3 font-desktop text-2xl/snug">Projects</h1>
+    <p class="mb-2 max-w-164 font-sans text-sm/relaxed max-sm:text-xs">A bunch of side projects, tools, and experiments. I enjoy fucking around to find out. These are the ones worth having public.</p>
   </header>
-  <div class="archive-tools">
-    <p data-project-count aria-live="polite">{pageProjects.length} projects</p>
-    <label class="search-box">
-      <span aria-hidden="true">⌕</span>
-      <input type="search" aria-label="Filter projects" placeholder="Find a project..." data-project-search />
+  <div class="archive-tools mb-3.5 flex items-center justify-between gap-3 max-sm:flex-wrap">
+    <p class="text-xs text-neutral-600" data-project-count aria-live="polite">{pageProjects.length} projects</p>
+    <label class="search-box flex items-center gap-1.5 max-sm:w-full">
+      <span aria-hidden="true" class="hidden">⌕</span>
+      <input type="search" aria-label="Filter projects" placeholder="Find a project..." data-project-search class="w-48 border-2 border-neutral-200 border-t-neutral-500 border-l-neutral-500 bg-white px-1.25 py-0.75 text-xs max-sm:w-full" />
     </label>
   </div>
-  <div class="project-archive">
-    {pageProjects.map((project, index) => (
-      <article class="project-record" data-project-record={`${project.name} ${project.tagline} ${project.blurb}`.toLowerCase()}>
+  <div class="project-archive grid gap-5">
+    {pageProjects.map((project) => (
+      <article class="project-record grid grid-cols-4 gap-5 border-b border-neutral-300 pb-5 hidden:hidden max-md:gap-3.5 max-sm:grid-cols-1 max-sm:gap-3 @max-lg:grid-cols-1 @max-lg:gap-3" data-project-record={`${project.name} ${project.tagline} ${project.blurb}`.toLowerCase()}>
         {project.image && (
           <a href={project.url} target="_blank" rel="noopener noreferrer" class="project-thumbnail" aria-label={`Open ${project.name}`}>
-            <img src={`/projects/${project.image}.webp`} alt={project.alt ?? project.name} width="640" height="400" loading="lazy" />
+            <img src={`/projects/${project.image}.webp`} alt={project.alt ?? project.name} width="640" height="400" loading="lazy" class="h-28 w-36 border-2 border-neutral-200 border-t-neutral-500 border-l-neutral-500 object-cover object-top-left max-md:h-25 max-md:w-30 max-sm:h-36 max-sm:w-full @max-lg:h-36 @max-lg:w-full" />
           </a>
         )}
-        <div class="project-record-content">
-          <div class="project-record-meta"><span>P—00{index + 1}</span><span>{project.host}</span></div>
-          <h2><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></h2>
-          <p>{project.blurb ?? project.tagline}</p>
-          <a class="record-link" href={project.url} target="_blank" rel="noopener noreferrer">Visit website</a>
+        <div class="project-record-content col-span-3 max-sm:col-span-1 @max-lg:col-span-1">
+          <h2 class="mb-2 font-desktop text-base/snug"><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></h2>
+          <p class="mb-2.25 text-xs/relaxed">{project.blurb ?? project.tagline}</p>
+          <a class="record-link text-xs" href={project.url} target="_blank" rel="noopener noreferrer">Visit website</a>
         </div>
       </article>
     ))}
   </div>
-  <p class="archive-empty" data-project-empty hidden>No matching files. Try another search.</p>
+  <p class="archive-empty py-5" data-project-empty hidden>No matching files. Try another search.</p>
 </section>

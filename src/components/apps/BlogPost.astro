@@ -12,10 +12,10 @@ const readingTime = formatReadingTime(post.body ?? "");
 const emailSubject = encodeURIComponent(post.data.title);
 ---
 
-<section class="article-page markdown">
-  <header class="article-heading">
-    <h1>{post.data.title}</h1>
-    <div class="article-meta">
+<section class="article-page max-w-212 px-8 pt-6 pb-10 max-md:p-5.5 max-sm:px-4 max-sm:py-4.5 @max-lg:p-5 markdown [&_article]:wrap-anywhere [&_article]:font-sans [&_article]:text-sm/relaxed max-sm:[&_article]:text-sm [&_article>*]:mb-5 [&_article_h2]:mt-7 [&_article_h2]:text-lg/snug [&_article_h2]:font-bold [&_article_h3]:mt-6 [&_article_h3]:text-base/snug [&_article_h3]:font-bold [&_article_ul]:list-disc [&_article_ul]:pl-6 [&_article_ol]:list-decimal [&_article_ol]:pl-6 [&_article_li]:my-1.25 [&_article_blockquote]:ml-2.5 [&_article_blockquote]:border-l-4 [&_article_blockquote]:border-neutral-500 [&_article_blockquote]:pl-4.5 [&_article_:not(pre)>code]:bg-neutral-200 [&_article_:not(pre)>code]:px-0.75 [&_article_:not(pre)>code]:py-px [&_article_:not(pre)>code]:font-mono [&_article_:not(pre)>code]:text-sm [&_.astro-code]:overflow-x-auto [&_.astro-code]:border-2 [&_.astro-code]:border-neutral-200 [&_.astro-code]:border-t-neutral-500 border-l-neutral-500 [&_.astro-code]:p-3 [&_.astro-code]:font-mono [&_.astro-code]:text-xs/relaxed">
+  <header class="article-heading my-6 border-b border-neutral-300 pb-4.5">
+    <h1 class="mb-4 font-desktop text-2xl/snug">{post.data.title}</h1>
+    <div class="article-meta flex flex-wrap gap-x-3.5 gap-y-2 text-xs text-neutral-600">
       <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time>
       <span>{readingTime}</span>
       {post.data.draft && <span>Draft</span>}
@@ -23,7 +23,7 @@ const emailSubject = encodeURIComponent(post.data.title);
     </div>
   </header>
   <article><Content /></article>
-  <div class="section-heading">
+  <div class="section-heading mt-7.5 flex justify-between gap-3.75 border-t border-neutral-300 pt-3 text-xs">
     <a href={`mailto:kasper@rynning-toennesen.email?subject=${emailSubject}`}>Email me about this post</a>
   </div>
 </section>

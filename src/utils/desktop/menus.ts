@@ -115,7 +115,7 @@ export function initDesktopMenus(signal: AbortSignal) {
         menu.open = true;
         const withinSubmenu = target.closest(".desktop-submenu-items");
         const choices = Array.from(
-          (withinSubmenu ?? items)?.querySelectorAll<HTMLElement>("a, button, summary") ?? [],
+          (withinSubmenu ?? items)?.querySelectorAll<HTMLElement>("a, button:not(:disabled), summary") ?? [],
         ).filter((item) => withinSubmenu || !item.closest(".desktop-submenu-items"));
         const index = choices.indexOf(target);
         const nextIndex = nextMenuIndex(index, choices.length, event.key);

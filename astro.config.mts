@@ -1,7 +1,6 @@
 import { defineConfig } from "astro/config";
 import tailwind from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
-import svelte from "@astrojs/svelte";
 import { createSitemapSerialize } from "./src/utils/sitemap.ts";
 
 const site = "https://kasperrt.me";
@@ -12,20 +11,16 @@ export default defineConfig({
   markdown: {
     syntaxHighlight: "shiki",
     shikiConfig: {
-      themes: {
-        light: "one-light",
-        dark: "one-dark-pro",
-        dim: "one-dark-pro",
-      },
+      theme: "one-light",
     },
   },
   compressHTML: true,
   output: "static",
+  redirects: { "/console": "/" },
   integrations: [
-    svelte(),
     sitemap({
-      filter: (page) => page !== `${site}/console/`,
       serialize: createSitemapSerialize({ site }),
+      filter: (url) => !url.includes("/windows/"),
     }),
   ],
   vite: {

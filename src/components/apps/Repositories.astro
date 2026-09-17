@@ -1,0 +1,32 @@
+---
+import DesktopIcon from "../DesktopIcon.astro";
+import DesktopWindow from "../DesktopWindow.astro";
+
+const repositoryGroups = [
+  { owner: "kasperrt", repositories: ["wiretyped", "kasperrt", "shottimer"] },
+  { owner: "zoff-music", repositories: ["vibes-backend", "vibes-frontend", "vibes-migrator"] },
+  { owner: "embroidery-io", repositories: [] },
+];
+---
+
+<DesktopWindow id="git" title=".git">
+  <nav class="space-y-2 px-4 py-3 font-desktop text-xs/normal" aria-label="GitHub repositories">
+    {repositoryGroups.map(({ owner, repositories }) => (
+      <details class="group/repository" open>
+        <summary class="flex w-fit cursor-pointer list-none items-center gap-2 px-2 py-1 hover:bg-selection hover:text-white [&::-webkit-details-marker]:hidden">
+          <svg class="size-2 group-open/repository:rotate-90" viewBox="0 0 6 8" aria-hidden="true"><path d="M0 0 6 4 0 8z" fill="currentColor" /></svg>
+          <DesktopIcon kind="folder" size={20} /><span>{owner}</span>
+        </summary>
+        <ul class="ml-8 list-none border-neutral-500 border-l border-dotted pl-3">
+          {repositories.map((repository) => (
+            <li class="relative before:absolute before:top-4 before:-left-3 before:w-3 before:border-neutral-500 before:border-t before:border-dotted">
+              <a class="flex w-fit items-center gap-2 px-2 py-1 text-neutral-900 no-underline visited:text-neutral-900 hover:bg-selection hover:text-white focus-visible:bg-selection focus-visible:text-white" href={`https://github.com/${owner}/${repository}`} aria-label={`${owner}/${repository}`} target="_blank" rel="noopener noreferrer">
+                <DesktopIcon kind="folder" size={20} /><span>{repository}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </details>
+    ))}
+  </nav>
+</DesktopWindow>

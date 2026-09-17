@@ -1,0 +1,19 @@
+---
+import { classNames } from "~/utils/classNames";
+
+interface Props {
+  label: string;
+  alignRight?: boolean;
+}
+
+const { label, alignRight = false } = Astro.props;
+---
+
+<details class="desktop-menu group/menu relative">
+  <summary class={classNames("flex h-7 cursor-pointer list-none items-center gap-2 whitespace-nowrap px-3 text-xs group-open/menu:bg-neutral-900 group-open/menu:text-white max-sm:px-2 [&::-webkit-details-marker]:hidden", alignRight && "border-l border-neutral-500")} aria-label={label}>
+    <slot name="label">{label}</slot>
+  </summary>
+  <div class={classNames("desktop-menu-items absolute top-7 flex min-w-60 flex-col border border-t-0 border-neutral-900 bg-neutral-200 py-1 shadow-menu max-sm:min-w-52", alignRight && "right-0", !alignRight && "left-0")}>
+    <slot />
+  </div>
+</details>

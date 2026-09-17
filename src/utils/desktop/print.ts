@@ -29,7 +29,7 @@ export function printCv() {
   }
   frame = document.createElement("iframe");
   frame.dataset.cvPrintFrame = "";
-  frame.className = "cv-print-frame";
+  frame.className = "cv-print-frame pointer-events-none fixed -left-[10000px] top-0 size-px border-0";
   frame.title = "Print curriculum vitae";
   frame.setAttribute("aria-hidden", "true");
   frame.addEventListener(

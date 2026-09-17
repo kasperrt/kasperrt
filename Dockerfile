@@ -12,6 +12,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 
-FROM nginx:1.31.5-alpine
-COPY --from=build /app/build /usr/share/nginx/html
+FROM caddy:2.11.4-alpine
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/build /srv
 EXPOSE 80

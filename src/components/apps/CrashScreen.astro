@@ -1,0 +1,13 @@
+<dialog
+  class="fixed inset-0 m-0 hidden h-dvh max-h-none w-screen max-w-none flex-col items-center justify-center gap-7 border-0 bg-neutral-300 p-6 text-center font-mono text-xs text-neutral-900 open:flex backdrop:bg-neutral-300"
+  data-crash-screen
+  aria-labelledby="crash-message"
+>
+  <svg class="size-24 [image-rendering:pixelated]" viewBox="0 0 32 32" fill="none" shape-rendering="crispEdges" aria-hidden="true">
+    <path fill="#111" d="M10 1h12v2h4v3h3v4h2v12h-2v4h-3v3h-4v2H10v-2H6v-3H3v-4H1V10h2V6h3V3h4z" />
+    <path fill="#ccc" d="M10 3h12v2h4v3h1v4h2v8h-2v4h-1v2h-4v3H10v-3H6v-2H5v-4H3v-8h2V8h1V5h4z" />
+    <path fill="#111" d="M9 10h3v5H9zM20 10h3v5h-3zM12 19h8v2h3v4h-2v-3H11v3H9v-4h3z" />
+  </svg>
+  <p id="crash-message">that wasn't so smart, now the site died</p>
+  <button type="button" class="min-h-8 cursor-pointer rounded-xs border border-neutral-800 bg-neutral-300 px-6 py-1 font-desktop text-sm shadow-button hover:bg-neutral-200 active:bg-neutral-700 active:text-white focus-visible:outline-2 focus-visible:outline-offset-2" data-desktop-reset autofocus>reload</button>
+</dialog>

@@ -1,0 +1,33 @@
+---
+import { getCollection } from "astro:content";
+import DesktopWindow from "../DesktopWindow.astro";
+import Home from "./Home.astro";
+import CV from "./CV.astro";
+import Projects from "./Projects.astro";
+import Writing from "./Writing.astro";
+import BlogPost from "./BlogPost.astro";
+import AuxiliaryWindow from "./AuxiliaryWindow.astro";
+import Repositories from "./Repositories.astro";
+import Environment from "./Environment.astro";
+import EmbeddedApps from "./EmbeddedApps.astro";
+import Terminal from "../Terminal.astro";
+
+interface Props {
+  id: string;
+  initial?: boolean;
+}
+const { id, initial = false } = Astro.props;
+const posts = await getCollection("blog");
+const post = posts.find((entry) => `article-${entry.id}` === id);
+---
+
+{id === "main" && <DesktopWindow id={id} title="kasperrt.me" initial={initial}><Home /></DesktopWindow>}
+{id === "projects" && <DesktopWindow id={id} title="Projects" initial={initial}><Projects /></DesktopWindow>}
+{id === "writing" && <DesktopWindow id={id} title="Writing" initial={initial}><Writing /></DesktopWindow>}
+{id === "cv" && <DesktopWindow id={id} title="Curriculum Vitae" initial={initial}><CV /></DesktopWindow>}
+{post && <DesktopWindow id={id} title={`${post.data.title}.txt`} source={`/blog/${post.id}`} initial={initial}><BlogPost post={post} /></DesktopWindow>}
+{id === "terminal" && <Terminal />}
+{id === "git" && <Repositories />}
+{id === "env" && <Environment />}
+<AuxiliaryWindow id={id} />
+<EmbeddedApps id={id} />

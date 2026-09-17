@@ -1,0 +1,10 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { classNames } from "~/utils/classNames";
+
+interface Props extends HTMLAttributes<"section"> {}
+const { class: extraClass, ...attributes } = Astro.props;
+---
+<section class={classNames("desktop-window group/window fixed flex min-h-44 min-w-72 resize flex-col overflow-hidden overscroll-contain border border-neutral-900 bg-neutral-300 p-0.75 shadow-window hidden:hidden in-[.desktop-starting]:invisible [&.is-shaded]:min-h-8 [&.is-shaded]:resize-none [&.is-shaded>:not(.window-titlebar)]:hidden [&.is-zoomed]:resize-none", extraClass)} {...attributes}>
+  <slot />
+</section>

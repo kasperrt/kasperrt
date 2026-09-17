@@ -1,4 +1,5 @@
 ---
+import WindowFrame from "./WindowFrame.astro";
 import Header from "./Header.astro";
 import { classNames } from "~/utils/classNames";
 
@@ -7,9 +8,11 @@ interface Props {
   title: string;
   initial?: boolean;
   source?: string;
+  saveable?: boolean;
+  editor?: boolean;
 }
 
-const { id, title, initial = false, source } = Astro.props;
+const { id, title, initial = false, source, saveable = false, editor = false } = Astro.props;
 const isMain = id === "main";
 let elementId = `${id}-window`;
 let status = title;
@@ -19,23 +22,24 @@ if (isMain) {
 }
 ---
 
-<section
-  class={classNames("desktop-window document-window", isMain && "main-window")}
+<WindowFrame
+  class={classNames("document-window top-18 left-20 h-172 w-216", isMain && "main-window", id === "cv" && "print:static! print:block! print:h-auto! print:w-full! print:min-h-0 print:resize-none print:overflow-visible print:border-0 print:bg-white print:p-0 print:shadow-none")}
   id={elementId}
   data-window={id}
   data-article-src={source}
+  data-saveable={saveable || undefined}
   aria-label={title}
   hidden={!initial}
 >
   <Header windowId={id} title={title} />
-  <div class="workspace">
-    <div class="workspace-content" {...(initial && { role: "main", id: "main-content" })}>
+  <div class={classNames("workspace min-h-0 flex-1 overflow-auto overscroll-contain border border-neutral-500 border-t-neutral-600 bg-white shadow-[1px_1px_#fff] [scrollbar-color:#b8b8b8_#ddd] print:block! print:overflow-visible print:border-0 print:shadow-none", editor && "flex")}>
+    <div class={classNames("workspace-content @container min-w-0 font-sans", editor && "flex min-h-0 flex-1")} {...(initial && { role: "main", id: "main-content" })}>
       <slot />
     </div>
   </div>
-  <footer class="window-status">
+  <footer class="window-status print:hidden flex h-5 min-h-5 items-center justify-between gap-3.75 pt-0.5 pr-5 pl-1.5 text-xs text-neutral-700">
     <span>{status}</span>
     <span>Oslo, Norway</span>
   </footer>
-  <span class="resize-grip" aria-hidden="true"></span>
-</section>
+  <span class="resize-grip print:hidden pointer-events-none absolute right-px bottom-px size-3 bg-[repeating-linear-gradient(135deg,transparent_0_2px,#666_2px_3px,#eee_3px_4px)] [clip-path:polygon(100%_0,100%_100%,0_100%)]" aria-hidden="true"></span>
+</WindowFrame>

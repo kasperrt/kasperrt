@@ -1,0 +1,32 @@
+---
+import WindowFrame from "../WindowFrame.astro";
+import DesktopShortcut from "../DesktopShortcut.astro";
+import Header from "../Header.astro";
+import DesktopIcon from "../DesktopIcon.astro";
+import DesktopWindow from "../DesktopWindow.astro";
+---
+
+<WindowFrame class="auxiliary-window top-32 left-50 h-84 w-104 resize-none" data-window="new-file" aria-label="New file" hidden>
+  <Header windowId="new-file" title="New file" />
+  <form class="new-file-form p-4 font-sans text-xs/normal" data-new-file-form>
+    <label class="mb-1 block" for="new-file-name">Name</label>
+    <input class="w-full border-2 border-neutral-300 bg-white px-1.5 py-1 border-t-neutral-500 border-l-neutral-500" id="new-file-name" name="name" value="Untitled.txt" maxlength="200" required autocomplete="off" />
+    <p class="min-h-5 text-xs text-red-800" data-new-file-error role="alert"></p>
+    <div class="dialog-actions mt-2 flex justify-end">
+      <button type="button" class="desktop-button inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed" data-close="new-file">Cancel</button>
+      <button type="submit" class="desktop-button inline-flex min-h-6 min-w-18 cursor-pointer items-center justify-center gap-1.25 rounded-xs border border-neutral-800 bg-neutral-300 px-3 py-0.75 font-desktop text-xs text-neutral-900 no-underline shadow-button hover:bg-neutral-200 visited:text-neutral-900 active:bg-neutral-700 active:text-white active:shadow-control-pressed default-button outline-2 outline-neutral-700 outline-offset-2">Create</button>
+    </div>
+  </form>
+</WindowFrame>
+
+<template data-text-file-template>
+  <DesktopWindow id="text-file-template" title="Text file" saveable editor>
+    <textarea class="text-file-editor min-w-0 flex-1 resize-none border-0 bg-white p-3.75 font-mono text-xs/loose text-neutral-900 focus:outline-none" data-file-editor aria-label="Text file contents" spellcheck="false"></textarea>
+  </DesktopWindow>
+</template>
+<template data-text-file-icon-template>
+  <DesktopShortcut label="" type="button" >
+    <DesktopIcon kind="text" />
+
+  </DesktopShortcut>
+</template>

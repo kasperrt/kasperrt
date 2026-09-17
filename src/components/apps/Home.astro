@@ -1,53 +1,20 @@
----
-import { getCollection } from "astro:content";
-import { getPageProjects } from "~/data/projects";
-
-const projects = getPageProjects();
-const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
-);
----
-
-<div class="home-document">
-  <header class="home-intro">
-    <img src="/me.webp" alt="Kasper Rynning-Tønnesen" width="118" height="144" />
-    <div>
-      <h1>Kasper Rynning-Tønnesen</h1>
-      <p>Developer in Oslo, Norway.</p>
-      <p>
-        I'm cofounder & CTO at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a>.<br />
+<div class="home-document max-w-224 px-8 pt-7 pb-6.5 font-sans text-sm/relaxed max-md:p-5.5 max-sm:px-4 max-sm:py-4.5 max-sm:text-xs @max-lg:p-5">
+  <header class="mb-6 flex flex-row-reverse justify-between gap-7 max-md:gap-3.75 max-sm:flex-row max-sm:flex-wrap max-sm:gap-3.5 @max-lg:gap-3.75">
+    <img data-app-entry="cv" class="mt-0.5 h-32 w-28 shrink-0 border-2 border-neutral-200 object-cover object-top border-t-neutral-500 border-l-neutral-500 max-md:h-28 max-md:w-20 max-sm:h-24 max-sm:w-18 @max-lg:h-24 @max-lg:w-20" src="/portrait.webp" alt="Kasper Rynning-Tønnesen" width="118" height="144" />
+    <div class="max-sm:contents">
+      <h1 class="mb-1.75 font-desktop text-2xl/snug max-sm:order-first max-sm:flex max-sm:flex-1 max-sm:items-center">Kasper Rynning-Tønnesen</h1>
+      <p class="mb-3 max-w-120 max-sm:mb-0 max-sm:w-full">
+        Cofounder & CTO at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a>.<br />
         Previously VP of Engineering at <a href="https://pistachioapp.com" target="_blank" rel="noopener noreferrer">Pistachio</a>.
       </p>
-      <p>I've worked with everything from Go, React, and PostgreSQL to Svelte, C#, and MongoDB.</p>
+      <p class="mb-3 max-w-120 max-sm:mb-0 max-sm:w-full">I've worked with everything from Go, React, and PostgreSQL to Svelte, C#, and MongoDB.</p>
+      <p class="text-xs italic max-sm:w-full">And I like easter eggs</p>
     </div>
   </header>
-  <section class="home-section">
-    <h2>Things I've made</h2>
-    <dl class="plain-projects">
-      {projects.map((project) => (
-        <div>
-          <dt><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></dt>
-          <dd>{project.tagline}</dd>
-        </div>
-      ))}
-    </dl>
-    <p class="more-link"><a href="/projects">More about the projects »</a></p>
-  </section>
-  <section class="home-section">
-    <h2>Things I've written</h2>
-    <ul class="plain-posts">
-      {posts.map((post) => (
-        <li>
-          <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time>
-          <a href={`/blog/${post.id}`}>{post.data.title}</a>
-        </li>
-      ))}
-    </ul>
-  </section>
-  <footer class="home-contact">
-    <a href="mailto:kasper@rynning-toennesen.email">Email me</a><span>·</span>
+  <footer class="flex flex-wrap gap-2.25 border-t border-neutral-300 pt-3.5 text-xs max-sm:gap-1.75">
+    <a href="mailto:kasper@rynning-toennesen.email">Email</a><span>·</span>
     <a href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer me">GitHub</a><span>·</span>
     <a href="https://www.linkedin.com/in/kasperrt/" target="_blank" rel="noopener noreferrer me">LinkedIn</a><span>·</span>
-    <a href="/more">CV</a><span>·</span><a href="/rss.xml">RSS</a>
+    <span data-app-entry="cv" class="contents"><a href="/more">CV</a><span>·</span></span><a data-app-entry="writing" href="/rss.xml">RSS</a>
   </footer>
 </div>

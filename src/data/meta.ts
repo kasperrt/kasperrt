@@ -46,14 +46,3 @@ export const blogIndexMeta = {
   ogUrl: "https://kasperrt.me/blog/",
   twitterHandle: "kasper_rt",
 };
-
-export const consoleMeta = {
-  title: "Console | kasper rynning-tønnesen",
-  description: "A small terminal playground on kasperrt.me.",
-  robots: "noindex, follow",
-  ogImage: "/og/desktop/home.png",
-  ogImageWidth: 1200,
-  ogImageHeight: 630,
-  ogUrl: "https://kasperrt.me/console/",
-  twitterHandle: "kasper_rt",
-};

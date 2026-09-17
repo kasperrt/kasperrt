@@ -1,16 +1,12 @@
 ---
 import "../styles/app.css";
-import DesktopWindow from "~/components/DesktopWindow.astro";
-import Home from "~/components/apps/Home.astro";
-import Projects from "~/components/apps/Projects.astro";
-import Writing from "~/components/apps/Writing.astro";
-import CV from "~/components/apps/CV.astro";
-import PrintCV from "~/components/apps/PrintCV.astro";
-import { ClientRouter } from "astro:transitions";
+import { getCollection } from "astro:content";
+import AppWindow from "~/components/apps/AppWindow.astro";
+import { windowApps } from "~/data/window-apps";
 import Desktop from "~/components/Desktop.astro";
-import Terminal from "~/components/Terminal.astro";
-import desktopBootstrap from "~/utils/desktop/bootstrap.js?raw";
-import BlogWindows from "~/components/apps/BlogWindows.astro";
+import desktopBootstrap from "~/utils/desktop/bootstrap.js";
+import { safeWrap } from "~/utils/wrap";
+import { backgroundStorageKey } from "~/utils/desktop/background";
 import { getInitialWindow } from "~/utils/desktop/routes";
 import { optionalIsoDate, siteUrl, structuredDataList } from "~/utils/page-meta";
 
@@ -32,8 +28,6 @@ interface Props {
   ogUrl?: string;
   structuredData?: Record<string, unknown> | Record<string, unknown>[];
   twitterCard?: "summary" | "summary_large_image";
-  htmlClass?: string;
-  bodyClass?: string;
 }
 
 const {
@@ -52,10 +46,10 @@ const {
   ogUrl: ogUrlProp,
   structuredData,
   twitterCard: twitterCardProp,
-  htmlClass = "",
-  bodyClass = "",
 }: Props = Astro.props;
 const initialWindow = getInitialWindow(Astro.url.pathname);
+const posts = await getCollection("blog");
+const windowIds = [...windowApps, ...posts.map((post) => `article-${post.id}`)].join(" ");
 const canonicalUrl = siteUrl(Astro.url.pathname, Astro.site, "");
 const rssUrl = siteUrl("/rss.xml", Astro.site);
 const authorUrl = siteUrl("/", Astro.site);
@@ -65,19 +59,19 @@ const structuredDataItems = structuredDataList(structuredData);
 const twitterCard = twitterCardProp ?? "summary_large_image";
 const publishedTimeIso = optionalIsoDate(publishedTime);
 const modifiedTimeIso = optionalIsoDate(modifiedTime);
-const isConsolePage = bodyClass === "console-page";
+const desktopBootstrapScript = `(${desktopBootstrap.toString()})(${safeWrap.toString()}, ${JSON.stringify(backgroundStorageKey)});`;
 ---
 
 <!doctype html>
 <html
+  class="min-w-80 overflow-hidden overscroll-none bg-[var(--desktop,#bba8de)] [transition:var(--desktop-transition,none)] scheme-light print:m-0 print:h-auto print:min-h-0 print:overflow-visible print:bg-white print:p-0 print:transition-none motion-reduce:transition-none"
   lang="en"
-  class={htmlClass}
   prefix="og: https://ogp.me/ns# profile: https://ogp.me/ns/profile# article: https://ogp.me/ns/article#"
 >
   <head>
     <meta charset="utf-8" />
-    <script is:inline set:html={desktopBootstrap} />
-    <link rel="preload" href="/fonts/ChicagoFLF.ttf" as="font" type="font/ttf" crossorigin />
+    <script is:inline set:html={desktopBootstrapScript} />
+    <link rel="preload" href="/fonts/ChicagoFLF-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta
       name="viewport"
@@ -144,24 +138,21 @@ const isConsolePage = bodyClass === "console-page";
       content="#b09acb"
       media="(prefers-color-scheme: dark)"
     />
-    <ClientRouter />
   </head>
 
-  <body class={bodyClass} data-initial-window={initialWindow}>
-    <a class="skip-link" href="#main-content">Skip to content</a>
-    {isConsolePage && <main id="main-content"><slot /></main>}
-    {!isConsolePage && (
-      <>
-        <Desktop />
-        <DesktopWindow id="main" title="kasperrt.me" initial={initialWindow === "main"}><Home /></DesktopWindow>
-        <DesktopWindow id="projects" title="Projects" initial={initialWindow === "projects"}><Projects /></DesktopWindow>
-        <DesktopWindow id="writing" title="Writing" initial={initialWindow === "writing"}><Writing /></DesktopWindow>
-        <DesktopWindow id="cv" title="Curriculum Vitae" initial={initialWindow === "cv"}><CV /></DesktopWindow>
-        <BlogWindows initialWindow={initialWindow} />
-        <Terminal />
-        <PrintCV />
-      </>
-    )}
+  <body
+    class="m-0 h-svh min-h-svh overflow-hidden overscroll-none bg-[var(--desktop,#bba8de)] bg-[repeating-linear-gradient(0deg,#ffffff04_0_1px,transparent_1px_2px)] p-0 font-desktop text-xs/normal text-neutral-900 [transition:var(--desktop-transition,none)] [:where(&)_a]:text-link [:where(&)_a]:underline [:where(&)_a]:underline-offset-2 [:where(&)_a:visited]:text-purple-900 [:where(&)_a:hover]:text-blue-950 selection:bg-selection selection:text-white [:where(&)_button]:cursor-pointer [&_:where(button,a,summary,[tabindex]):focus-visible]:outline [&_:where(button,a,summary,[tabindex]):focus-visible]:outline-dotted [&_:where(button,a,summary,[tabindex]):focus-visible]:-outline-offset-2 [&_input:focus-visible]:outline [&_input:focus-visible]:outline-indigo-700 [&_input:focus-visible]:outline-offset-1 [&.dragging]:cursor-grabbing [&.dragging]:select-none [&.dragging_*]:cursor-grabbing [&.dragging_*]:select-none [&.dragging_iframe]:pointer-events-none motion-reduce:transition-none print:m-0 print:h-auto print:min-h-0 print:overflow-visible print:bg-white print:bg-none print:p-0 print:transition-none print:[&>:not(#cv-window)]:hidden"
+    data-initial-window={initialWindow}
+    data-window-ids={windowIds}
+  >
+    <a class="skip-link fixed -top-20 left-5 z-20000 bg-white p-2 focus:top-7.5" href="#main-content">Skip to content</a>
+    <Desktop />
+    <AppWindow id="main" initial={initialWindow === "main"} />
+    {initialWindow !== "main" && <AppWindow id={initialWindow} initial />}
     <script>import "../utils/desktop";</script>
   </body>
 </html>
+
+<style is:global>
+  @page { size: A4; margin: 12mm; }
+</style>

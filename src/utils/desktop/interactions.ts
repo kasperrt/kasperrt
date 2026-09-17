@@ -8,6 +8,7 @@ type DesktopActions = {
   shade: (id: string) => void;
   zoom: (id: string) => void;
   reset: () => void;
+  isAvailable: (id: string) => boolean;
 };
 type MenuItem = { label: string; action: (origin?: PoofOrigin) => void } | null;
 type WindowDescription = [title: string, description: string];
@@ -22,10 +23,9 @@ function contextId(icon: HTMLElement | null, windowElement: HTMLElement | null) 
   return icon.dataset.desktopIcon ?? "main";
 }
 
-export function initDesktopInteractions(signal: AbortSignal, actions: DesktopActions) {
+export function initDesktopInteractions(signal: AbortSignal, actions: DesktopActions, icons: HTMLElement[]) {
   const menu = document.querySelector<HTMLElement>("[data-context-menu]");
   const box = document.querySelector<HTMLElement>("[data-selection-box]");
-  const icons = Array.from(document.querySelectorAll<HTMLElement>("[data-desktop-icon]"));
   let finishSelection: (() => void) | undefined;
   let priorFocus: HTMLElement | null = null;
   const descriptions: Record<string, WindowDescription | undefined> = {
@@ -37,7 +37,9 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
       "Terminal",
       "A small browser shell, with a gnzh-inspired prompt. Try uptime. It has been running for a while.",
     ],
-    music: ["Music Player", "The trip room on zoff.me. Shared music, shared questionable taste."],
+    music: ["Music Player", "trip, electro and fred on zoff.me. Shared music, shared questionable taste."],
+    git: [".git", "You found the source. No merge conflicts here."],
+    env: [".env", "Contact details, domains and a background color you can edit."],
     desktop: [
       "Desktop",
       "Pastel pink at midnight, lavender at noon. A slow daily loop on Oslo time.\n\nDrag to select. Drag the icons to rearrange them. Your layout is saved in this browser.",
@@ -77,12 +79,15 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
     for (const item of items) {
       if (!item) {
         const separator = document.createElement("hr");
+        separator.className = "mx-px my-1 border-0 border-t border-b border-t-neutral-500 border-b-white";
         separator.setAttribute("role", "separator");
         menu.append(separator);
         continue;
       }
       const button = document.createElement("button");
       button.type = "button";
+      button.className =
+        "block w-full cursor-pointer whitespace-nowrap border-0 bg-transparent px-4 py-1 text-left hover:bg-purple-950 hover:text-white focus-visible:bg-purple-950 focus-visible:text-white focus-visible:outline-none";
       button.setAttribute("role", "menuitem");
       button.textContent = item.label;
       button.addEventListener(
@@ -108,15 +113,21 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
           item.classList.toggle("is-selected", item === icon);
         }
       }
-      return [{ label: "Open", action: () => actions.open(id) }];
+      return [{ label: "Open", action: () => icon.click() }];
     }
     if (!windowElement) {
-      return [
-        { label: "Open Terminal", action: () => actions.open("terminal") },
-        { label: "Play some music…", action: () => actions.open("music") },
-        null,
-        { label: "Clean Up Desktop", action: actions.reset },
-      ];
+      const items: MenuItem[] = [{ label: "New file…", action: () => actions.open("new-file") }];
+      if (actions.isAvailable("terminal") || actions.isAvailable("music")) {
+        items.push(null);
+      }
+      if (actions.isAvailable("terminal")) {
+        items.push({ label: "Open Terminal", action: () => actions.open("terminal") });
+      }
+      if (actions.isAvailable("music")) {
+        items.push({ label: "Play some music…", action: () => actions.open("music") });
+      }
+      items.push(null, { label: "Clean Up Desktop", action: actions.reset });
+      return items;
     }
     const items: MenuItem[] = [
       { label: "Bring to Front", action: () => actions.open(id) },
@@ -135,7 +146,7 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
         return;
       }
       const target = eventElement(event);
-      if (!target || target.closest("input, textarea, .desktop-menubar")) {
+      if (!target || target.closest("input, textarea, dialog, .desktop-menubar")) {
         return;
       }
       event.preventDefault();
@@ -169,7 +180,9 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
       if (
         event.button !== 0 ||
         !box ||
-        target?.closest("[data-window], [data-desktop-icon], .desktop-menubar, [data-context-menu], .skip-link")
+        target?.closest(
+          "[data-window], [data-desktop-icon], [data-trash-can], dialog, .desktop-menubar, [data-context-menu], .skip-link",
+        )
       ) {
         return;
       }
@@ -197,6 +210,9 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
         box.hidden = false;
         Object.assign(box.style, { left: `${left}px`, top: `${top}px`, width: `${width}px`, height: `${height}px` });
         for (const icon of icons) {
+          if (icon.hidden) {
+            continue;
+          }
           const rect = icon.getBoundingClientRect();
           const intersects =
             rect.right > left && rect.left < left + width && rect.bottom > top && rect.top < top + height;

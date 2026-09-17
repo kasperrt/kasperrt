@@ -1,32 +1,121 @@
-import { z } from "astro/zod";
 import { safeWrap } from "../wrap";
+import { easterEggIdeas } from "../../data/desktop-files";
 
-const positionSchema = z.object({ x: z.number(), y: z.number() });
-const windowSchema = positionSchema.extend({
-  width: z.number().positive(),
-  height: z.number().positive(),
-  closed: z.boolean(),
-  shaded: z.boolean(),
-  zoomed: z.boolean(),
-  z: z.number(),
-  placed: z.boolean().optional(),
-  sizeVersion: z.number().optional(),
-});
-const desktopSchema = z.object({
-  windows: z.record(z.string(), windowSchema),
-  icons: z.record(z.string(), positionSchema),
-  path: z.string().optional(),
-});
+export interface Position {
+  x: number;
+  y: number;
+}
+export interface WindowState extends Position {
+  width: number;
+  height: number;
+  closed: boolean;
+  shaded: boolean;
+  zoomed: boolean;
+  z: number;
+  placed?: boolean;
+  sizeVersion?: number;
+}
+export interface DesktopState {
+  windows: Record<string, WindowState>;
+  icons: Record<string, Position>;
+  path?: string;
+  trash: string[];
+  showHidden: boolean;
+  seededTrash: boolean;
+}
 
-export type Position = z.infer<typeof positionSchema>;
-export type WindowState = z.infer<typeof windowSchema>;
-export type DesktopState = z.infer<typeof desktopSchema>;
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isPosition(value: unknown): value is Position {
+  return (
+    isRecord(value) &&
+    typeof value.x === "number" &&
+    Number.isFinite(value.x) &&
+    typeof value.y === "number" &&
+    Number.isFinite(value.y)
+  );
+}
+
+function isWindowState(value: unknown): value is WindowState {
+  if (!isRecord(value) || !isPosition(value)) {
+    return false;
+  }
+  return (
+    typeof value.width === "number" &&
+    Number.isFinite(value.width) &&
+    value.width > 0 &&
+    typeof value.height === "number" &&
+    Number.isFinite(value.height) &&
+    value.height > 0 &&
+    typeof value.z === "number" &&
+    Number.isFinite(value.z) &&
+    typeof value.closed === "boolean" &&
+    typeof value.shaded === "boolean" &&
+    typeof value.zoomed === "boolean" &&
+    (value.placed === undefined || typeof value.placed === "boolean") &&
+    (value.sizeVersion === undefined || (typeof value.sizeVersion === "number" && Number.isFinite(value.sizeVersion)))
+  );
+}
+
+function parseDesktopState(value: unknown): DesktopState | Error {
+  if (!isRecord(value) || !isRecord(value.windows) || !isRecord(value.icons)) {
+    return new Error("The saved desktop has an invalid format");
+  }
+  let trash = value.trash;
+  if (trash === undefined) {
+    trash = [];
+  }
+  if (
+    !Array.isArray(trash) ||
+    !trash.every((id) => typeof id === "string") ||
+    (value.path !== undefined && typeof value.path !== "string") ||
+    (value.showHidden !== undefined && typeof value.showHidden !== "boolean") ||
+    (value.seededTrash !== undefined && typeof value.seededTrash !== "boolean")
+  ) {
+    return new Error("The saved desktop preferences have an invalid format");
+  }
+  const windows: Record<string, WindowState> = Object.create(null);
+  const icons: Record<string, Position> = Object.create(null);
+  for (const [id, entry] of Object.entries(value.windows)) {
+    if (!isWindowState(entry)) {
+      return new Error(`The saved window ${id} has an invalid format`);
+    }
+    windows[id] = {
+      x: entry.x,
+      y: entry.y,
+      width: entry.width,
+      height: entry.height,
+      closed: entry.closed,
+      shaded: entry.shaded,
+      zoomed: entry.zoomed,
+      z: entry.z,
+      ...(entry.placed !== undefined && { placed: entry.placed }),
+      ...(entry.sizeVersion !== undefined && { sizeVersion: entry.sizeVersion }),
+    };
+  }
+  for (const [id, position] of Object.entries(value.icons)) {
+    if (!isPosition(position)) {
+      return new Error(`The saved icon ${id} has an invalid format`);
+    }
+    icons[id] = { x: position.x, y: position.y };
+  }
+  return {
+    windows,
+    icons,
+    trash,
+    showHidden: value.showHidden ?? false,
+    seededTrash: value.seededTrash ?? false,
+    ...(value.path !== undefined && { path: value.path }),
+  };
+}
 
 const storageKey = "kasperrt-desktop-v1";
 const legacyStorageKey = "kasperrt-mac-desktop-v1";
 
 export function emptyDesktopState(): DesktopState {
-  return { windows: {}, icons: {} };
+  return { windows: {}, icons: {}, trash: [easterEggIdeas.id], showHidden: false, seededTrash: true };
 }
 
 export function readDesktopState(): DesktopState | Error {
@@ -41,11 +130,15 @@ export function readDesktopState(): DesktopState | Error {
   if (parseError) {
     return new Error("Could not parse the saved desktop", { cause: parseError });
   }
-  const result = desktopSchema.safeParse(parsed);
-  if (!result.success) {
-    return new Error("The saved desktop has an invalid format", { cause: result.error });
+  const result = parseDesktopState(parsed);
+  if (result instanceof Error) {
+    return new Error("Could not restore the desktop", { cause: result });
   }
-  return result.data;
+  if (!result.seededTrash) {
+    result.trash.push(easterEggIdeas.id);
+    result.seededTrash = true;
+  }
+  return result;
 }
 
 export function saveDesktopState(state: DesktopState): Error | undefined {

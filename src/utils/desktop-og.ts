@@ -34,9 +34,9 @@ let resources: Promise<DesktopResources | Error> | undefined;
 async function readResources(): Promise<DesktopResources | Error> {
   const [readError, files] = await safeWrapAsync(() =>
     Promise.all([
-      readFile(resolve("public/fonts/ChicagoFLF.ttf")),
-      readFile(resolve("public/fonts/DepartureMono.woff2")),
-      sharp(resolve("public/me.webp")).resize(156, 198, { fit: "cover" }).png().toBuffer(),
+      readFile(resolve("src/assets/ChicagoFLF.ttf")),
+      readFile(resolve("src/assets/DepartureMono.woff2")),
+      sharp(resolve("src/assets/portrait.webp")).resize(156, 198, { fit: "cover" }).png().toBuffer(),
     ]),
   );
   if (readError) {

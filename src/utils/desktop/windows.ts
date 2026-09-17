@@ -7,9 +7,12 @@ import { createShakeDetector } from "./shake";
 import { printCv } from "./print";
 import { emptyDesktopState, readDesktopState, saveDesktopState } from "./state";
 import { createWindowState } from "./presets";
-import { loadArticle } from "./articles";
+import { fetchWindow } from "./content";
 import { getRouteWindow } from "./routes";
 import { arrowOffset, eventElement } from "./events";
+import { saveBackgroundColor } from "./background";
+import { safeWrap, safeWrapAsync } from "../wrap";
+import type { initTrash } from "./trash";
 
 type DragKind = "window" | "icon";
 interface DraggedIcon {
@@ -28,7 +31,9 @@ function restoreDesktopState() {
   return savedState;
 }
 
-export function initDesktop(signal: AbortSignal) {
+type PrepareWindow = (element: HTMLElement, signal: AbortSignal) => Promise<Error | undefined>;
+
+export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
   let state = restoreDesktopState();
   let storageWarningShown = false;
   function saveState() {
@@ -39,20 +44,122 @@ export function initDesktop(signal: AbortSignal) {
     storageWarningShown = true;
     console.warn(error);
   }
-  const compact = () => window.innerWidth < 600;
+  const compact = () => window.innerWidth < 640;
+  const availableWindows = new Set(document.body.dataset.windowIds?.split(" ") ?? []);
+  const loadingWindows = new Map<string, Promise<HTMLElement | Error>>();
+  let generation = 0;
   const windows = Array.from(document.querySelectorAll<HTMLElement>("[data-window]"));
   const icons = Array.from(document.querySelectorAll<HTMLElement>("[data-desktop-icon]"));
+  const regularIcons = icons.filter((icon) => !icon.hasAttribute("data-hidden-icon"));
+  const hiddenIcons = icons.filter((icon) => icon.hasAttribute("data-hidden-icon"));
+  const trashCan = document.querySelector<HTMLElement>("[data-trash-can]");
+  const crashScreen = document.querySelector<HTMLDialogElement>("[data-crash-screen]");
+  let showHidden = state.showHidden;
   let initial = document.body.dataset.initialWindow ?? "main";
   const routes: Record<string, string> = { main: "/", projects: "/projects", writing: "/blog", cv: "/more" };
-  for (const element of windows) {
-    if (element.dataset.articleSrc && element.dataset.window) {
-      routes[element.dataset.window] = element.dataset.articleSrc;
+  for (const id of availableWindows) {
+    if (id.startsWith("article-")) {
+      routes[id] = `/blog/${id.slice("article-".length)}`;
     }
   }
   let topZ = Math.max(10, ...Object.values(state.windows).map((entry) => entry.z));
   let suppressedClick = 0;
   let activeDrag: (() => void) | undefined;
   let resizeTimer = 0;
+  function isTrashed(id: string) {
+    if (id === "main") {
+      return state.trash.includes("home");
+    }
+    return state.trash.includes(id);
+  }
+  function syncAppEntries() {
+    for (const entry of document.querySelectorAll<HTMLElement>("[data-app-entry]")) {
+      entry.hidden = isTrashed(entry.dataset.appEntry ?? "");
+    }
+  }
+  function showCrashScreen() {
+    if (!isTrashed("main") || !crashScreen || crashScreen.open) {
+      return;
+    }
+    for (const element of windows) {
+      element.querySelector<HTMLIFrameElement>("[data-app-frame]")?.removeAttribute("src");
+    }
+    for (const menu of document.querySelectorAll<HTMLDetailsElement>(".desktop-menu[open]")) {
+      menu.open = false;
+    }
+    const [error] = safeWrap(() => crashScreen.showModal());
+    if (error) {
+      console.warn(new Error("Could not open the crash screen", { cause: error }));
+    }
+    updateLocation("/");
+  }
+  crashScreen?.addEventListener("cancel", (event) => event.preventDefault(), { signal });
+  let renderTrash: ReturnType<typeof initTrash> | undefined;
+  function showTrash() {
+    renderTrash?.(icons, state.trash);
+  }
+  function restoreTrashItem(id: string) {
+    const icon = icons.find((candidate) => candidate.dataset.desktopIcon === id);
+    if (!icon || !state.trash.includes(id)) {
+      return;
+    }
+    state.trash = state.trash.filter((item) => item !== id);
+    delete state.icons[id];
+    if (icon.hasAttribute("data-hidden-icon")) {
+      showHidden = true;
+      state.showHidden = true;
+      hiddenIcons.forEach(applyIconVisibility);
+    }
+    let windowId = id;
+    if (id === "home") {
+      windowId = "main";
+    }
+    state.windows[windowId] = { ...createWindowState(windowId, initial), closed: true, zoomed: false, placed: false };
+    const element = find(windowId);
+    if (element) {
+      applyWindow(element);
+    }
+    if (id === "env") {
+      const error = saveBackgroundColor(null);
+      if (error) {
+        console.warn(error);
+      }
+      document.dispatchEvent(new Event("desktop:environment-reset"));
+    }
+    applyIconVisibility(icon);
+    iconPosition(icon);
+    syncAppEntries();
+    showTrash();
+    saveState();
+    icon.focus({ preventScroll: true });
+  }
+  function applyIconVisibility(icon: HTMLElement) {
+    icon.hidden =
+      state.trash.includes(icon.dataset.desktopIcon ?? "") || (icon.hasAttribute("data-hidden-icon") && !showHidden);
+  }
+  function trashIcon(icon: HTMLElement) {
+    const id = icon.dataset.desktopIcon;
+    if (!id || state.trash.includes(id)) {
+      return;
+    }
+    let windowId = id;
+    if (id === "home") {
+      windowId = "main";
+    }
+    close(windowId);
+    state.trash.push(id);
+    icon.hidden = true;
+    icon.classList.remove("is-selected");
+    if (id === "env") {
+      const error = saveBackgroundColor("#000000");
+      if (error) {
+        console.warn(error);
+      }
+    }
+    showTrash();
+    syncAppEntries();
+    showCrashScreen();
+  }
 
   function frontWindow() {
     return windows
@@ -60,16 +167,28 @@ export function initDesktop(signal: AbortSignal) {
       .sort((a, b) => Number(b.style.zIndex) - Number(a.style.zIndex))
       .at(0);
   }
+  function updateSaveMenu(element?: HTMLElement) {
+    const saveButton = document.querySelector<HTMLButtonElement>("[data-save-file]");
+    if (saveButton) {
+      saveButton.disabled = !element?.hasAttribute("data-saveable");
+    }
+  }
+  function saveFile() {
+    const element = frontWindow();
+    if (element?.hasAttribute("data-saveable")) {
+      element.dispatchEvent(new Event("desktop:save-file"));
+    }
+  }
 
-  for (const id of ["music", ...desktopApps.map((app) => app.id)]) {
+  for (const id of ["main", "music", ...desktopApps.map((app) => app.id)]) {
     const entry = state.windows[id];
-    if (entry && (entry.sizeVersion ?? 1) < 3) {
-      const preset = createWindowState(id, initial);
+    const preset = createWindowState(id, initial);
+    if (entry && (entry.sizeVersion ?? 1) < (preset.sizeVersion ?? 1)) {
       entry.width = preset.width;
       entry.height = preset.height;
       entry.x = clamp(entry.x, 3, window.innerWidth - entry.width - 12);
       entry.y = clamp(entry.y, 30, window.innerHeight - entry.height - 12);
-      entry.sizeVersion = 3;
+      entry.sizeVersion = preset.sizeVersion;
     }
   }
   const initialState = state.windows[initial];
@@ -93,13 +212,16 @@ export function initDesktop(signal: AbortSignal) {
       state.windows[id] = createWindowState(id, initial);
     }
     const entry = state.windows[id];
+    if (isTrashed(id)) {
+      entry.closed = true;
+    }
     element.hidden = entry.closed;
     element.classList.toggle("is-shaded", entry.shaded);
     element.classList.toggle("is-zoomed", entry.zoomed);
     let width = clamp(entry.width, Math.min(320, window.innerWidth - 12), window.innerWidth - 12);
     let height = clamp(entry.height, 170, window.innerHeight - 36);
     if (entry.shaded) {
-      height = 27;
+      height = 32;
     }
     let x = clamp(entry.x, 3, window.innerWidth - width - 3);
     let y = clamp(entry.y, 30, window.innerHeight - height - 3);
@@ -112,7 +234,7 @@ export function initDesktop(signal: AbortSignal) {
     let shadeLabel = "Collapse window";
     let zoomLabel = "Zoom window";
     if (entry.shaded) {
-      height = 27;
+      height = 32;
       shadeLabel = "Expand window";
     }
     if (entry.zoomed) {
@@ -146,6 +268,7 @@ export function initDesktop(signal: AbortSignal) {
     }
     entry.z = ++topZ;
     element.style.zIndex = String(entry.z);
+    updateSaveMenu(element);
     for (const other of windows) {
       other.classList.toggle("inactive", other !== element);
     }
@@ -158,16 +281,101 @@ export function initDesktop(signal: AbortSignal) {
     return windows.find((element) => element.dataset.window === id);
   }
   function loadFrame(element: HTMLElement) {
+    if (isTrashed("main")) {
+      return;
+    }
     const frame = element.querySelector<HTMLIFrameElement>("[data-app-frame]");
     if (frame && !frame.getAttribute("src") && frame.dataset.src) {
       frame.src = frame.dataset.src;
     }
-    void loadArticle(element, signal);
   }
-  function open(id: string) {
-    const element = find(id);
+  function registerWindow(element: HTMLElement) {
+    if (windows.includes(element)) {
+      return;
+    }
+    windows.push(element);
+    setupWindow(element);
+    element.classList.add("inactive");
+    observer.observe(element);
+  }
+  async function ensureWindow(id: string): Promise<HTMLElement | Error> {
+    const existing = find(id);
+    if (existing) {
+      return existing;
+    }
+    if (!availableWindows.has(id)) {
+      return new Error(`Unknown desktop window: ${id}`);
+    }
+    const pending = loadingWindows.get(id);
+    if (pending) {
+      return pending;
+    }
+    const version = generation;
+    const load = async () => {
+      const element = await fetchWindow(id, signal);
+      if (element instanceof Error) {
+        return element;
+      }
+      if (signal.aborted || version !== generation) {
+        return new Error(`Loading ${id} was cancelled`);
+      }
+      document.body.append(element);
+      const windowController = new AbortController();
+      signal.addEventListener("abort", () => windowController.abort(), { once: true, signal: windowController.signal });
+      if (id === "trash") {
+        const [error, module] = await safeWrapAsync(() => import("./trash"));
+        if (error) {
+          windowController.abort();
+          element.remove();
+          return new Error("Could not load Trash", { cause: error });
+        }
+        renderTrash = module.initTrash(windowController.signal, restoreTrashItem);
+        showTrash();
+      }
+      const error = await prepareWindow(element, windowController.signal);
+      if (error) {
+        windowController.abort();
+        element.remove();
+        return new Error(`Could not initialize ${id}`, { cause: error });
+      }
+      if (signal.aborted || version !== generation) {
+        windowController.abort();
+        element.remove();
+        return new Error(`Loading ${id} was cancelled`);
+      }
+      registerWindow(element);
+      syncAppEntries();
+      return element;
+    };
+    const promise = load();
+    loadingWindows.set(id, promise);
+    const result = await promise;
+    loadingWindows.delete(id);
+    return result;
+  }
+  async function open(id: string) {
+    if (isTrashed("main") || isTrashed(id)) {
+      return;
+    }
+    const version = generation;
+    const icon = icons.find((item) => item.dataset.desktopIcon === id);
+    icon?.setAttribute("aria-busy", "true");
+    const element = await ensureWindow(id);
+    icon?.removeAttribute("aria-busy");
+    if (signal.aborted || version !== generation || isTrashed("main") || isTrashed(id)) {
+      return;
+    }
+    if (element instanceof Error) {
+      console.warn(element);
+      const content = document.querySelector("[data-info-content]");
+      if (content) {
+        content.textContent = "Couldn't open this window. Check your connection and try again.";
+      }
+      void open("info");
+      return;
+    }
     const entry = state.windows[id];
-    if (!element || !entry) {
+    if (!entry) {
       return;
     }
     if (entry.closed && !entry.placed) {
@@ -194,6 +402,9 @@ export function initDesktop(signal: AbortSignal) {
     if (id === "terminal") {
       element.querySelector<HTMLInputElement>("input")?.focus();
     }
+    if (id === "new-file") {
+      element.querySelector<HTMLInputElement>("input")?.select();
+    }
     loadFrame(element);
   }
   function close(id: string, origin?: PoofOrigin) {
@@ -204,7 +415,12 @@ export function initDesktop(signal: AbortSignal) {
       return;
     }
     poofWindow(element, origin);
-    entry.closed = true;
+    state.windows[id] = {
+      ...createWindowState(id, initial),
+      closed: true,
+      placed: false,
+      zoomed: false,
+    };
     element.querySelector<HTMLIFrameElement>("[data-app-frame]")?.removeAttribute("src");
     applyWindow(element);
     if (routes[id] === window.location.pathname) {
@@ -212,6 +428,7 @@ export function initDesktop(signal: AbortSignal) {
     }
     saveState();
     const next = frontWindow();
+    updateSaveMenu(next);
     if (next) {
       bringForward(next, false);
     }
@@ -241,11 +458,21 @@ export function initDesktop(signal: AbortSignal) {
     applyWindow(element);
     bringForward(element);
   }
-  function iconPosition(element: HTMLElement, index: number) {
+  function iconPosition(element: HTMLElement) {
     const id = element.dataset.desktopIcon ?? "home";
-    let fallback = { x: window.innerWidth - 99, y: 60 + index * 91 };
+    const gridIndex = Math.max(0, regularIcons.indexOf(element));
+    const rows = Math.max(1, Math.floor((window.innerHeight - 100) / 91));
+    let fallback = { x: window.innerWidth - 99 - Math.floor(gridIndex / rows) * 91, y: 60 + (gridIndex % rows) * 91 };
     if (compact()) {
-      fallback = { x: 4 + index * ((window.innerWidth - 10) / icons.length), y: 39 };
+      const columns = Math.max(1, Math.min(6, regularIcons.length));
+      fallback = {
+        x: 4 + (gridIndex % columns) * ((window.innerWidth - 10) / columns),
+        y: 39 + Math.floor(gridIndex / columns) * 74,
+      };
+    }
+    if (element.hasAttribute("data-hidden-icon")) {
+      const offset = hiddenIcons.indexOf(element) * 91;
+      fallback = { x: 16, y: window.innerHeight - 88 - offset };
     }
     const position = state.icons[id] ?? fallback;
     element.style.left = `${clamp(position.x, 0, window.innerWidth - 72)}px`;
@@ -291,6 +518,7 @@ export function initDesktop(signal: AbortSignal) {
         const origin = { x: event.clientX, y: event.clientY, left: rect.left, top: rect.top };
         const detectShake = createShakeDetector(event.clientX, event.clientY);
         let moved = false;
+        let overTrash = false;
         const onMove = (move: PointerEvent) => {
           const dx = move.clientX - origin.x;
           const dy = move.clientY - origin.y;
@@ -325,10 +553,17 @@ export function initDesktop(signal: AbortSignal) {
             const groupY = clamp(item.rect.top + y - origin.top, 28, window.innerHeight - item.rect.height);
             item.icon.style.left = `${groupX}px`;
             item.icon.style.top = `${groupY}px`;
+            item.icon.style.zIndex = "20000";
             state.icons[item.icon.dataset.desktopIcon ?? "home"] = { x: groupX, y: groupY };
           }
+          const target = document
+            .elementsFromPoint(move.clientX, move.clientY)
+            .find((candidate) => !candidate.closest("[data-desktop-icon]"));
+          overTrash = Boolean(target?.closest('[data-trash-can], [data-window="trash"]'));
+          trashCan?.classList.toggle("is-trash-target", overTrash);
+          find("trash")?.classList.toggle("is-trash-target", overTrash);
         };
-        const finish = () => {
+        const finish = (endEvent?: PointerEvent) => {
           handle.removeEventListener("pointermove", onMove);
           handle.removeEventListener("pointerup", finish);
           handle.removeEventListener("pointercancel", finish);
@@ -336,6 +571,14 @@ export function initDesktop(signal: AbortSignal) {
             handle.releasePointerCapture(event.pointerId);
           }
           document.body.classList.remove("dragging");
+          trashCan?.classList.remove("is-trash-target");
+          find("trash")?.classList.remove("is-trash-target");
+          for (const item of group) {
+            item.icon.style.removeProperty("z-index");
+            if (moved && overTrash && endEvent?.type === "pointerup") {
+              trashIcon(item.icon);
+            }
+          }
           if (moved) {
             suppressedClick = Date.now() + 150;
             saveState();
@@ -352,12 +595,12 @@ export function initDesktop(signal: AbortSignal) {
     );
     handle.addEventListener("dragstart", (event) => event.preventDefault(), { signal });
   }
-  for (const element of windows) {
+  function setupWindow(element: HTMLElement) {
     applyWindow(element);
     element.addEventListener("pointerdown", () => bringForward(element), { signal });
     const titlebar = element.querySelector<HTMLElement>("[data-window-drag]");
     if (!titlebar) {
-      continue;
+      return;
     }
     setupDrag(titlebar, element, "window");
     titlebar.addEventListener(
@@ -394,6 +637,7 @@ export function initDesktop(signal: AbortSignal) {
       { signal },
     );
   }
+  windows.forEach(setupWindow);
   const observer = new ResizeObserver((entries) => {
     for (const observed of entries) {
       const element = observed.target as HTMLElement;
@@ -419,22 +663,34 @@ export function initDesktop(signal: AbortSignal) {
       loadFrame(element);
     }
   }
-  icons.forEach((element, index) => {
-    iconPosition(element, index);
+  icons.forEach((element) => {
+    applyIconVisibility(element);
+    iconPosition(element);
     setupDrag(element, element, "icon");
   });
 
   function reset() {
+    generation++;
+    crashScreen?.close();
+    const backgroundError = saveBackgroundColor(null);
+    if (backgroundError) {
+      console.warn(backgroundError);
+    }
+    document.dispatchEvent(new Event("desktop:cleanup"));
     for (const element of windows) {
       element.querySelector<HTMLIFrameElement>("[data-app-frame]")?.removeAttribute("src");
     }
     state = emptyDesktopState();
+    state.showHidden = showHidden;
     initial = "main";
     windows.forEach(applyWindow);
-    icons.forEach((icon, index) => {
+    icons.forEach((icon) => {
       icon.classList.remove("is-selected");
-      iconPosition(icon, index);
+      applyIconVisibility(icon);
+      iconPosition(icon);
     });
+    showTrash();
+    syncAppEntries();
     updateLocation("/");
     const home = find("main");
     if (home) {
@@ -443,7 +699,7 @@ export function initDesktop(signal: AbortSignal) {
     }
     saveState();
   }
-  initDesktopInteractions(signal, { open, close, shade, zoom, reset });
+  initDesktopInteractions(signal, { open, close, shade, zoom, reset, isAvailable: (id) => !isTrashed(id) }, icons);
 
   document.addEventListener(
     "click",
@@ -456,6 +712,9 @@ export function initDesktop(signal: AbortSignal) {
       const target = eventElement(event);
       const button = target?.closest<HTMLElement>("button");
       if (button) {
+        if (button.hasAttribute("data-save-file")) {
+          saveFile();
+        }
         if (button.dataset.close) {
           close(button.dataset.close, poofOrigin(event));
         }
@@ -486,12 +745,22 @@ export function initDesktop(signal: AbortSignal) {
         if (button.hasAttribute("data-desktop-reset")) {
           reset();
         }
+        if (button.hasAttribute("data-desktop-exit")) {
+          window.close();
+          const heading = document.querySelector("#info-title");
+          const content = document.querySelector("[data-info-content]");
+          if (heading && content) {
+            heading.textContent = "Close tab";
+            content.textContent = "This browser requires you to close this tab yourself. Use its Close Tab command.";
+            open("info");
+          }
+        }
       }
       const anchor = target?.closest<HTMLAnchorElement>("a[href]");
       if (anchor && anchor.origin === window.location.origin && !anchor.hash && !event.metaKey && !event.ctrlKey) {
         const route = anchor.pathname.replace(/\/$/, "") || "/";
         const application = getRouteWindow(route);
-        if (application && find(application)) {
+        if (application && (availableWindows.has(application) || find(application))) {
           event.preventDefault();
           open(application);
         }
@@ -508,6 +777,37 @@ export function initDesktop(signal: AbortSignal) {
   document.addEventListener(
     "keydown",
     (event) => {
+      if (isTrashed("main")) {
+        return;
+      }
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "p") {
+        event.preventDefault();
+        printCv();
+        return;
+      }
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "s" &&
+        frontWindow()?.hasAttribute("data-saveable")
+      ) {
+        event.preventDefault();
+        saveFile();
+        return;
+      }
+      if (event.metaKey && event.shiftKey && !event.altKey && !event.ctrlKey && event.code === "Period") {
+        event.preventDefault();
+        if (event.repeat) {
+          return;
+        }
+        showHidden = !showHidden;
+        state.showHidden = showHidden;
+        for (const icon of hiddenIcons) {
+          applyIconVisibility(icon);
+          icon.classList.remove("is-selected");
+        }
+        saveState();
+        return;
+      }
       if (event.key === "Escape") {
         const front = frontWindow();
         const hasOpenMenu = document.querySelector(".desktop-menu[open]");
@@ -557,18 +857,79 @@ export function initDesktop(signal: AbortSignal) {
   }
   function focusInitialWindow() {
     const initialElement = find(initial);
-    if (!initialElement) {
+    if (!initialElement || initialElement.hidden) {
       updateLocation("/");
       return;
     }
     bringForward(initialElement);
   }
+  async function restoreWindow(id: string) {
+    const version = generation;
+    const element = await ensureWindow(id);
+    if (signal.aborted || generation !== version) {
+      return;
+    }
+    if (element instanceof Error) {
+      console.warn(element);
+      return;
+    }
+    loadFrame(element);
+    const front = frontWindow();
+    for (const item of windows) {
+      item.classList.toggle("inactive", item !== front);
+    }
+  }
+  for (const [id, entry] of Object.entries(state.windows)) {
+    if (!entry.closed && !find(id) && availableWindows.has(id) && !isTrashed("main") && !isTrashed(id)) {
+      void restoreWindow(id);
+    }
+  }
   focusInitialWindow();
+  showTrash();
+  syncAppEntries();
+  showCrashScreen();
   saveState();
   document.documentElement.classList.remove("desktop-starting");
   return {
     open,
     close,
+    removeTextFiles: () => {
+      for (const element of [...windows]) {
+        const id = element.dataset.window ?? "";
+        if (!id.startsWith("file-")) {
+          continue;
+        }
+        observer.unobserve(element);
+        windows.splice(windows.indexOf(element), 1);
+        delete state.windows[id];
+        element.remove();
+      }
+      for (const icon of [...icons]) {
+        const id = icon.dataset.desktopIcon ?? "";
+        if (!id.startsWith("file-")) {
+          continue;
+        }
+        icons.splice(icons.indexOf(icon), 1);
+        const index = regularIcons.indexOf(icon);
+        if (index >= 0) {
+          regularIcons.splice(index, 1);
+        }
+        delete state.icons[id];
+        icon.remove();
+      }
+    },
+    registerWindow,
+    registerIcon: (element: HTMLElement) => {
+      if (icons.includes(element)) {
+        return;
+      }
+      icons.push(element);
+      regularIcons.push(element);
+      applyIconVisibility(element);
+      iconPosition(element);
+      setupDrag(element, element, "icon");
+      showTrash();
+    },
     cleanup: () => {
       activeDrag?.();
       observer.disconnect();

@@ -1,8 +1,9 @@
 import type { WindowRect } from "./placement";
 import type { WindowState } from "./state";
 
-const mainPreset: WindowRect = { width: 690, height: 630, x: 45, y: 65 };
+const mainPreset: WindowRect = { width: 690, height: 360, x: 45, y: 65 };
 const articlePreset: WindowRect = { width: 820, height: 710, x: 110, y: 100 };
+const textFilePreset: WindowRect = { width: 640, height: 430, x: 70, y: 120 };
 const presets: Record<string, WindowRect | undefined> = {
   main: mainPreset,
   projects: { width: 800, height: 650, x: 95, y: 110 },
@@ -10,6 +11,10 @@ const presets: Record<string, WindowRect | undefined> = {
   cv: { width: 780, height: 680, x: 80, y: 90 },
   terminal: { width: 620, height: 350, x: 185, y: 180 },
   music: { width: 600, height: 560, x: 130, y: 110 },
+  git: { width: 430, height: 340, x: 35, y: 120 },
+  env: { width: 760, height: 460, x: 55, y: 100 },
+  "new-file": { width: 360, height: 205, x: 160, y: 150 },
+  trash: { width: 360, height: 280, x: 170, y: 140 },
   brick: { width: 960, height: 710, x: 70, y: 60 },
   idle: { width: 900, height: 710, x: 100, y: 95 },
   shot: { width: 760, height: 660, x: 145, y: 130 },
@@ -25,6 +30,9 @@ export function createWindowState(id: string, initial: string): WindowState {
   if (id.startsWith("article-")) {
     preset = articlePreset;
   }
+  if (id.startsWith("file-")) {
+    preset = textFilePreset;
+  }
   let width = Math.min(preset.width, window.innerWidth - 135);
   let height = Math.min(preset.height, window.innerHeight - 100);
   let x = Math.min(preset.x, window.innerWidth - width - 110);
@@ -39,6 +47,10 @@ export function createWindowState(id: string, initial: string): WindowState {
   if (id === initial) {
     z = 12;
   }
+  let sizeVersion = 3;
+  if (id === "main") {
+    sizeVersion = 4;
+  }
   return {
     x,
     y,
@@ -49,6 +61,6 @@ export function createWindowState(id: string, initial: string): WindowState {
     shaded: false,
     zoomed: id === "cv" && initial === "cv",
     z,
-    sizeVersion: 3,
+    sizeVersion,
   };
 }

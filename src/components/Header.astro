@@ -1,17 +1,25 @@
 ---
+import { classNames } from "~/utils/classNames";
+
 interface Props {
   windowId: string;
   title: string;
+  titleId?: string;
+  controls?: boolean;
 }
 
-const { windowId, title } = Astro.props;
+const { windowId, title, titleId, controls = true } = Astro.props;
+const controlClasses =
+  "grid size-4 shrink-0 cursor-pointer place-items-center rounded-none border border-neutral-600 bg-linear-135 from-white to-neutral-400 p-0 text-neutral-700 shadow-control hover:from-neutral-100 active:from-neutral-500 active:to-neutral-500 active:text-white active:shadow-control-pressed";
 ---
 
-<header class="window-titlebar" data-window-drag tabindex="0" aria-label={`Move ${title} window with arrow keys`}>
-  <button type="button" class="desktop-close" data-close={windowId} aria-label={`Close ${title}`}></button>
-  <span class="titlebar-stripes" aria-hidden="true"></span>
-  <span class="window-title">{title}</span>
-  <span class="titlebar-stripes" aria-hidden="true"></span>
-  <button type="button" class="desktop-zoom" data-zoom={windowId} aria-label={`Zoom ${title}`}></button>
-  <button type="button" class="desktop-shade" data-shade={windowId} aria-label={`Collapse ${title}`}></button>
+<header class="window-titlebar print:hidden flex h-6 min-h-6 cursor-grab touch-none select-none items-center gap-2 bg-neutral-300 px-1 font-desktop text-neutral-900" data-window-drag tabindex="0" aria-label={`Move ${title} window with arrow keys`}>
+  <button type="button" class={classNames("desktop-close", controlClasses)} data-close={windowId} aria-label={`Close ${title}`}>
+    <svg class="pointer-events-none size-2" viewBox="0 0 8 8" aria-hidden="true" shape-rendering="crispEdges"><path d="M1 1h1v1h1v1h2V2h1V1h1v1H6v1H5v2h1v1h1v1H6V6H5V5H3v1H2v1H1V6h1V5h1V3H2V2H1z" fill="currentColor" /></svg>
+  </button>
+  <span class="titlebar-stripes h-3.5 flex-1 bg-[repeating-linear-gradient(0deg,#fff_0_1px,#888_1px_2px,#ccc_2px_3px)] group-[.inactive]/window:bg-none" aria-hidden="true"></span>
+  <span class="window-title whitespace-nowrap text-center text-xs/4 group-[.inactive]/window:text-neutral-500" id={titleId}>{title}</span>
+  <span class="titlebar-stripes h-3.5 flex-1 bg-[repeating-linear-gradient(0deg,#fff_0_1px,#888_1px_2px,#ccc_2px_3px)] group-[.inactive]/window:bg-none" aria-hidden="true"></span>
+  {controls && <button type="button" class={classNames("desktop-zoom", controlClasses)} data-zoom={windowId} aria-label={`Zoom ${title}`}><span class="pointer-events-none size-2 border border-current" aria-hidden="true"></span></button>}
+  {controls && <button type="button" class={classNames("desktop-shade", controlClasses)} data-shade={windowId} aria-label={`Collapse ${title}`}><span class="pointer-events-none h-px w-2 bg-current" aria-hidden="true"></span></button>}
 </header>

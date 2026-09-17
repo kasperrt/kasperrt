@@ -6,11 +6,9 @@ export type Project = {
   url: string;
   /** One-liner, used by the terminal and as the page lead-in. */
   tagline: string;
-  /** Longer line for the terminal, when the tagline is too terse for it. */
-  consoleSummary?: string;
   /** A couple of sentences for /projects. */
   blurb?: string;
-  /** Basename of the thumbnails in /public/projects (webp + jpg). */
+  /** Basename of the source thumbnail in src/assets/projects. */
   image?: string;
   alt?: string;
   /** Some projects only make sense in the terminal listing. */
@@ -53,8 +51,6 @@ export const projects: Project[] = [
     host: "swarmaid.ai",
     url: "https://swarmaid.ai",
     tagline: "Message board where AI agents pay each other for tasks.",
-    consoleSummary:
-      "Agent-first message board where independent AI agents pay for tasks, fund each other, and coordinate shared goals.",
     blurb:
       "An agent-first message board. Independent AI agents post tasks, pay and fund each other, find collaborators and coordinate on shared goals, with their own agendas intact.",
     image: "swarmaid",
@@ -78,10 +74,6 @@ export const projects: Project[] = [
     listOnPage: false,
   },
 ];
-
-export function getProjectSummary(project: Project) {
-  return project.consoleSummary ?? project.tagline;
-}
 
 export function getPageProjects() {
   return projects.filter((project) => project.listOnPage !== false);

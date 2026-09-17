@@ -28,7 +28,7 @@ export function createPersonJsonLd() {
     alternateName: "kasperrt",
     description: PERSON_DESCRIPTION,
     url: SITE_URL,
-    image: absoluteUrl("/me-small.png"),
+    image: absoluteUrl("/portrait.webp"),
     email: "mailto:kasper@rynning-toennesen.email",
     jobTitle: ["CTO", "Cofounder", "Software Engineer"],
     worksFor: {

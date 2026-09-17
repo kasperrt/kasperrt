@@ -1,0 +1,18 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import { classNames } from "~/utils/classNames";
+
+interface Props extends HTMLAttributes<"button"> {
+  href?: string;
+  target?: string;
+  rel?: string;
+}
+const { class: extraClass, href, ...attributes } = Astro.props;
+let Tag: "a" | "button" = "button";
+if (href) {
+  Tag = "a";
+}
+---
+<Tag href={href} class={classNames("cursor-pointer flex items-center justify-between gap-6 whitespace-nowrap border-0 bg-transparent px-4 py-0.75 text-left text-xs text-neutral-900 no-underline visited:text-neutral-900 hover:bg-selection hover:text-white focus-visible:bg-selection focus-visible:text-white disabled:cursor-default disabled:bg-transparent disabled:text-neutral-500", extraClass)} {...attributes}>
+  <slot />
+</Tag>
