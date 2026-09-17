@@ -1,7 +1,6 @@
 ---
-import { getCollection, render } from "astro:content";
+import { getCollection } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
-import { formatReadingTime } from "~/utils/readingTime";
 import { absoluteUrl, createBlogPostingJsonLd, createPersonJsonLd, createWebsiteJsonLd } from "~/utils/seo";
 
 export async function getStaticPaths() {
@@ -13,15 +12,10 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
 
 const pageTitle = `${post.data.title} | kasper rynning-tønnesen`;
 const pageDescription = post.data.description;
 const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
-const readingTime = formatReadingTime(post.body ?? "");
-const postTransitionName = `post-title-${post.id}`;
-const publishedTransitionName = `publish-read-${post.id}`;
-const updateTransitionName = `update-${post.id}`;
 const canonicalUrl = absoluteUrl(`/blog/${post.id}/`);
 const imageUrl = absoluteUrl(post.data.hero);
 const dateModified = post.data.updatedDate ?? post.data.pubDate;
@@ -54,37 +48,4 @@ const structuredData = [
   backgroundImage={false}
   menu
 >
-  <section class="markdown flex w-full flex-col gap-6 px-6 py-10 lg:w-3/5">
-    <header class="flex flex-col gap-3">
-      {
-        post.data.draft && (
-          <span class="text-xs font-semibold uppercase tracking-wide text-red-600 dark:text-red-400">
-            Draft
-          </span>
-        )
-      }
-      <h1 class="text-3xl text-red-600 dark:text-red-400">
-        <span transition:name={postTransitionName}>
-          {post.data.title}
-        </span>
-      </h1>
-      <p class="text-sm text-neutral-600 dark:text-neutral-300">
-        <span transition:name={publishedTransitionName}>
-          Published: {post.data.pubDate.toLocaleDateString()} | {readingTime}
-        </span>
-        {
-          post.data.updatedDate && (
-            <span class="opacity-100" transition:name={updateTransitionName}>
-              <br />
-              Updated: {post.data.updatedDate.toLocaleDateString()}
-            </span>
-          )
-        }
-      </p>
-    </header>
-
-    <article class="flex flex-col gap-6">
-      <Content />
-    </article>
-  </section>
 </BaseLayout>

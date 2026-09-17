@@ -8,6 +8,7 @@ const site = "https://kasperrt.me";
 
 export default defineConfig({
   site,
+  devToolbar: { enabled: false },
   markdown: {
     syntaxHighlight: "shiki",
     shikiConfig: {

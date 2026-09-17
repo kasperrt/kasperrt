@@ -1,0 +1,16 @@
+---
+import Header from "./Header.astro";
+interface Props {
+  id: string;
+  title: string;
+  initial?: boolean;
+  source?: string;
+}
+const { id, title, initial = false, source } = Astro.props;
+---
+<section class="desktop-window document-window" class:list={{ 'main-window': id === 'main' }} id={id === 'main' ? 'site-window' : `${id}-window`} data-window={id} data-article-src={source} aria-label={title} hidden={!initial}>
+  <Header windowId={id} title={title} />
+  <div class="workspace"><div class="workspace-content" role={initial ? "main" : undefined} id={initial ? 'main-content' : undefined}><slot /></div></div>
+  <footer class="window-status"><span>{id === 'main' ? 'kasperrt.me' : title}</span><span>Oslo, Norway</span></footer>
+  <span class="resize-grip" aria-hidden="true"></span>
+</section>

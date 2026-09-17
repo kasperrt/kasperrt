@@ -1,0 +1,16 @@
+---
+import { desktopApps } from "../../data/desktop-apps";
+import Header from "../Header.astro";
+---
+
+{desktopApps.map((app) => (
+  <section class="desktop-window embedded-app-window" data-window={app.id} transition:persist={app.id} aria-label={app.title} hidden>
+    <Header windowId={app.id} title={app.title} />
+    <div class="embedded-app-bar">
+      <span>{new URL(app.url).host}</span>
+      <a href={app.url} target="_blank" rel="noopener noreferrer">Open in browser ↗</a>
+    </div>
+    <iframe class="app-embed" data-app-frame data-src={app.url} title={app.title} allow="autoplay; fullscreen; gamepad" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    <span class="resize-grip" aria-hidden="true"></span>
+  </section>
+))}

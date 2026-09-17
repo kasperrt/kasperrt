@@ -1,15 +1,7 @@
 ---
-import { getCollection } from "astro:content";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { blogIndexMeta } from "~/data/meta";
-import Underline from "~/components/Underline.astro";
-import { formatReadingTime } from "~/utils/readingTime";
 import { createPersonJsonLd, createWebsiteJsonLd } from "~/utils/seo";
-
-const posts = await getCollection("blog", ({ data }) => !data.draft);
-
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
-
 const structuredData = [
   createPersonJsonLd(),
   createWebsiteJsonLd(),
@@ -20,81 +12,9 @@ const structuredData = [
     name: blogIndexMeta.title,
     description: blogIndexMeta.description,
     url: "https://kasperrt.me/blog/",
-    author: {
-      "@id": "https://kasperrt.me/#person",
-    },
+    author: { "@id": "https://kasperrt.me/#person" },
     inLanguage: "en",
   },
 ];
 ---
-
-<BaseLayout {...blogIndexMeta} backgroundImage={false} menu structuredData={structuredData}>
-  <section
-    class="markdown flex w-full flex-col gap-12 px-6 py-10 lg:w-3/5 max-w-200"
-  >
-    <header class="flex flex-col gap-2">
-      <h1 class="text-3xl text-red-600 dark:text-red-400">Thoughts</h1>
-      <p class="text-neutral-700 dark:text-neutral-200">
-        I <s>sometimes</s> often go on rants and tangents, and once in a while, I put it in writing.
-        <br />Mostly tech, occasionally everything else.
-      </p>
-    </header>
-
-    {
-      sortedPosts.length === 0 && (
-        <p class="text-neutral-700 dark:text-neutral-200">
-          No posts (yet), seems those rants have been rather sparse so far.
-        </p>
-      )
-    }
-    {
-      sortedPosts.length > 0 && (
-        <ul class="flex flex-col gap-6">
-          {sortedPosts.map((post) => {
-            const readingTime = formatReadingTime(post.body ?? "");
-            const postTransitionName = `post-title-${post.id}`;
-            const publishedTransitionName = `publish-read-${post.id}`;
-            const updateTransitionName = `update-${post.id}`;
-
-            return (
-              <li>
-                <a
-                  href={`/blog/${post.id}`}
-                  class="slug-link flex flex-col gap-2 group"
-                >
-                  <div class="flex flex-col items-baseline gap-x-3 gap-y-1">
-                    <h2 class="text-2xl font-bold block">
-                      <Underline direction="right">
-                        <span transition:name={postTransitionName}>
-                          {post.data.title}
-                        </span>
-                      </Underline>
-                    </h2>
-                    <span
-                      class="text-sm text-neutral-600 dark:text-neutral-300"
-                      transition:name={publishedTransitionName}
-                    >
-                      Published: {post.data.pubDate.toLocaleDateString()} |{" "}
-                      {readingTime}
-                      {post.data.updatedDate && (
-                        <span
-                          class="opacity-0 invisible"
-                          transition:name={updateTransitionName}
-                        >
-                          Updated: {post.data.updatedDate.toLocaleDateString()}
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                  <p class="text-neutral-700 dark:text-neutral-200">
-                    {post.data.description}
-                  </p>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      )
-    }
-  </section>
-</BaseLayout>
+<BaseLayout {...blogIndexMeta} backgroundImage={false} menu structuredData={structuredData} />

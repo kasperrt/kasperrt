@@ -1,8 +1,16 @@
 ---
 import "../styles/app.css";
-import Header from "~/components/Header.astro";
+import DesktopWindow from "~/components/DesktopWindow.astro";
+import Home from "~/components/apps/Home.astro";
+import Projects from "~/components/apps/Projects.astro";
+import Writing from "~/components/apps/Writing.astro";
+import CV from "~/components/apps/CV.astro";
+import PrintCV from "~/components/apps/PrintCV.astro";
 import { ClientRouter } from "astro:transitions";
-import Image from "~/components/Image.astro";
+import Desktop from "~/components/Desktop.astro";
+import Terminal from "~/components/Terminal.astro";
+import desktopBootstrap from "~/utils/desktop/bootstrap.js?raw";
+import BlogWindows from "~/components/apps/BlogWindows.astro";
 
 interface Props {
   title: string;
@@ -37,8 +45,6 @@ const {
   ogType = "website",
   publishedTime,
   modifiedTime,
-  backgroundImage,
-  menu,
   twitterHandle,
   author = "Kasper Rynning-Tønnesen",
   ogUrl: ogUrlProp,
@@ -48,6 +54,15 @@ const {
   bodyClass = "",
 }: Props = Astro.props;
 const activePath = Astro.url.pathname;
+const initialWindow = activePath.startsWith("/projects")
+  ? "projects"
+  : activePath.startsWith("/more")
+    ? "cv"
+    : activePath.startsWith("/blog/") && activePath !== "/blog/"
+      ? `article-${activePath.replace(/^\/blog\//, "").replace(/\/$/, "")}`
+      : activePath.startsWith("/blog")
+        ? "writing"
+        : "main";
 const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
 const rssUrl = Astro.site ? new URL("/rss.xml", Astro.site).toString() : "/rss.xml";
 const authorUrl = Astro.site ? new URL("/", Astro.site).toString() : "/";
@@ -68,6 +83,8 @@ const modifiedTimeIso = toIsoString(modifiedTime);
 >
   <head>
     <meta charset="utf-8" />
+    <script is:inline set:html={desktopBootstrap} />
+    <link rel="preload" href="/fonts/ChicagoFLF.ttf" as="font" type="font/ttf" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta
       name="viewport"
@@ -80,16 +97,6 @@ const modifiedTimeIso = toIsoString(modifiedTime);
       src="https://analytics.kasperrt.me/js/script.js"></script>
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link
-      rel="preconnect"
-      href="https://fonts.gstatic.com"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-    />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="robots" content={robots} />
@@ -136,215 +143,31 @@ const modifiedTimeIso = toIsoString(modifiedTime);
     }
     <meta
       name="theme-color"
-      content="#ffffff"
+      content="#b09acb"
       media="(prefers-color-scheme: light)"
     />
     <meta
       name="theme-color"
-      content="#0f0f0f"
+      content="#b09acb"
       media="(prefers-color-scheme: dark)"
     />
     <ClientRouter />
   </head>
 
-  <body class={bodyClass}>
-    {
-      backgroundImage && (
-        <>
-          <Image
-            data-konami-portrait
-            data-rotate="4"
-            data-shadow-multiplier="-7.5"
-            data-tilt-multiplier="1"
-            sources={[
-              { srcSet: "/me.webp", type: "image/webp" },
-              { srcSet: "/me.png", type: "image/png" },
-            ]}
-            style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
-            transition:name="me-picture"
-            imageClass="absolute -top-2/5 bottom-0 left-1/5 m-auto h-[fit-content,min-content,auto] max-h-3/5 max-w-2/5 opacity-100 transition-[border,opacity] lg:fixed lg:top-0 lg:left-1/2 lg:max-h-4/5 lg:max-w-2/6 rounded-sm"
-          />
-          <iframe
-            data-konami-player
-            data-src="https://zoff.me/embed/electro?player=true&playlist=true&skip=true&vote=true&theme=auto"
-            title="Zoff room electro"
-            width="100%"
-            height="480"
-            loading="lazy"
-            allow="autoplay; encrypted-media"
-            referrerpolicy="strict-origin-when-cross-origin"
-            class="konami-player hidden rounded-sm border-0"
-            data-rotate="4"
-            data-shadow-multiplier="-7.5"
-            data-tilt-multiplier="1"
-            style="box-shadow: 9.91031px 9.61118px var(--image-shadow-color)"
-          />
-        </>
-      )
-    }
-
-    {menu && <Header activePath={activePath} />}
-
-    <main class="relative flex flex-1 lg:min-h-svh">
-      <slot />
-    </main>
-
-    <script>
-      const konamiCode = [
-        "ArrowUp",
-        "ArrowUp",
-        "ArrowDown",
-        "ArrowDown",
-        "ArrowLeft",
-        "ArrowRight",
-        "ArrowLeft",
-        "ArrowRight",
-        "b",
-        "a",
-      ];
-      let konamiPosition = 0;
-
-      function revealKonamiPlayer() {
-        const portrait = document.querySelector<HTMLElement>("[data-konami-portrait]");
-        const player = document.querySelector<HTMLIFrameElement>("[data-konami-player]");
-
-        if (!portrait || !player) {
-          return;
-        }
-
-        const playerSrc = player.dataset.src;
-        if (playerSrc && !player.src.startsWith(playerSrc)) {
-          player.src = playerSrc;
-        }
-
-        portrait.classList.add("hidden");
-        player.classList.remove("hidden");
-        player.classList.add("konami-player--active");
-      }
-
-      document.addEventListener("keydown", (event) => {
-        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
-
-        if (key === konamiCode[konamiPosition]) {
-          konamiPosition += 1;
-          if (konamiPosition === konamiCode.length) {
-            revealKonamiPlayer();
-            konamiPosition = 0;
-          }
-          return;
-        }
-
-        konamiPosition = key === konamiCode[0] ? 1 : 0;
-      });
-    </script>
-
-    <script>
-      import { rotateElement, getRotateElements } from "~/utils/rotate";
-      import { hasTouchSupport } from "~/utils/touch";
-
-      let elements = getRotateElements();
-      function onMouseMove(event: MouseEvent) {
-        if (!document || elements.length === 0) {
-          return;
-        }
-
-        const { clientWidth, clientHeight } = document.documentElement;
-
-        for (const { multiplier, ...element } of elements) {
-          const left = (event.clientX / clientWidth - 0.5) * multiplier;
-          const top = (event.clientY / clientHeight - 0.5) * multiplier;
-          rotateElement(element, left, top);
-        }
-      }
-
-      function onDeviceOrientation(event: DeviceOrientationEvent) {
-        if (!event || !event.beta || !event.gamma || elements.length === 0) {
-          return;
-        }
-
-        const x = Math.round(event.gamma * 10) / 10;
-        const y = Math.round(event.beta * 10) / 10;
-        const movement = 0.5;
-
-        for (const { multiplier, ...element } of elements) {
-          const left = -(x / 10) * movement * multiplier;
-          const top = (y / 10) * movement * multiplier;
-          rotateElement(element, -(left - 0.5), -(top - 0.5));
-        }
-      }
-
-      let listenersBound = false;
-      function bindListeners() {
-        if (listenersBound || hasTouchSupport()) {
-          return;
-        }
-
-        listenersBound = true;
-        window.addEventListener("deviceorientation", onDeviceOrientation, {
-          passive: true,
-        });
-
-        window.addEventListener("mousemove", onMouseMove, { passive: true });
-      }
-
-      function initMotion() {
-        elements = getRotateElements();
-        bindListeners();
-      }
-
-      initMotion();
-
-      document.addEventListener("astro:page-load", initMotion);
-      document.addEventListener("astro:after-swap", initMotion);
-    </script>
-
-    <script>
-      /**
-       * iOS astro view-transitions breaks back-forward-navigation
-       * https://github.com/withastro/astro/issues/11919#issuecomment-2428186492
-       */
-      document.addEventListener("click", (e) => {
-        if (!/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-          return false;
-        }
-        const target = e.target as Element;
-        if (!target) {
-          return;
-        }
-
-        const link = target.closest("a");
-        const shouldPushState =
-          link &&
-          link.href &&
-          link.href.startsWith(window.location.origin) &&
-          !link.href.includes("#");
-        if (!shouldPushState) {
-          return;
-        }
-
-        history.pushState(null, "", link.href);
-        window.dispatchEvent(new PopStateEvent("popstate"));
-      });
-
-      function setBottomOverlay() {
-        const vv = window.visualViewport;
-        if (!vv) {
-          return;
-        }
-
-        const overlap = Math.max(
-          0,
-          window.innerHeight - vv.height - vv.offsetTop
-        );
-        document.documentElement.style.setProperty(
-          "--bottom-overlay",
-          overlap + "px"
-        );
-      }
-
-      setBottomOverlay();
-      window.addEventListener("resize", setBottomOverlay);
-      window.visualViewport?.addEventListener("resize", setBottomOverlay);
-    </script>
+  <body class={bodyClass} data-initial-window={initialWindow}>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    {bodyClass === "console-page" ? <main id="main-content"><slot /></main> : (
+      <>
+        <Desktop />
+        <DesktopWindow id="main" title="kasperrt.me" initial={initialWindow === 'main'}><Home /></DesktopWindow>
+        <DesktopWindow id="projects" title="Projects" initial={initialWindow === 'projects'}><Projects /></DesktopWindow>
+        <DesktopWindow id="writing" title="Writing" initial={initialWindow === 'writing'}><Writing /></DesktopWindow>
+        <DesktopWindow id="cv" title="Curriculum Vitae" initial={initialWindow === 'cv'}><CV /></DesktopWindow>
+        <BlogWindows initialWindow={initialWindow} />
+        <Terminal />
+        <PrintCV />
+      </>
+    )}
+    <script>import "../utils/desktop";</script>
   </body>
 </html>

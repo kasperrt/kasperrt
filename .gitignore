@@ -6,6 +6,7 @@
 # React Router
 /.react-router/
 /build/
+/public/kasper-rynning-tonnesen-cv.pdf
 
 # Sentry Config File
 .env
