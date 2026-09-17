@@ -1,4 +1,4 @@
-type ShellReply = { text: string; passwordCommand?: string };
+type ShellReply = { text?: string; passwordCommand?: string };
 
 const files: Record<string, string> = {
   "/etc/hosts":
@@ -16,22 +16,19 @@ export function getShellReply(command: string, elevated = false): ShellReply | u
   function readFile(path: string) {
     if (path === "/etc/shadow")
       return elevated
-        ? "root:********:not-today\n\nEven imaginary root has boundaries."
+        ? "root:********:not-today\n\nEven root has boundaries."
         : "cat: /etc/shadow: Permission denied\nA little mystery is healthy.";
     return files[path] ?? `cat: ${path}: No such file or directory`;
   }
   switch (name) {
     case "sudo":
     case "su": {
-      if (elevated) return { text: "You are already as root as a website will let you be." };
+      if (elevated) return { text: "You are already root." };
       if (name === "sudo" && (!args.length || args[0] === "--help" || args[0] === "-h"))
         return { text: "usage: sudo <command>\nFor when asking politely did not work." };
-      if (args[0] === "-k") return { text: "Forgot the imaginary password. Very secure." };
+      if (args[0] === "-k") return { text: "Credentials cleared." };
       const passwordCommand = name === "su" || ["-s", "-i", "-v"].includes(args[0]) ? "whoami" : args.join(" ");
-      return {
-        text: "This is pretend sudo. Make up a password; it will not be kept.\nEsc or Ctrl+C cancels.",
-        passwordCommand,
-      };
+      return { passwordCommand };
     }
     case "cat":
     case "less":
@@ -47,7 +44,7 @@ export function getShellReply(command: string, elevated = false): ShellReply | u
       if (args.some((arg) => arg.replace(/\/$/, "") === "/etc")) return { text: "hosts   passwd   shadow   motd" };
       return;
     case "whoami":
-      if (elevated) return { text: "root\n(Decorative privileges only.)" };
+      if (elevated) return { text: "root" };
       return;
     case "pwd":
       return { text: "/home/guest" };

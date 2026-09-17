@@ -99,7 +99,7 @@ function initDesktopApplication() {
     input.value = "";
     input.type = command ? "password" : "text";
     input.autocomplete = command ? "new-password" : "off";
-    input.setAttribute("aria-label", command ? "Imaginary sudo password" : "Terminal command");
+    input.setAttribute("aria-label", command ? "Sudo password" : "Terminal command");
     if (command) input.removeAttribute("name");
     else input.name = "command";
     promptLabel.textContent = command ? "[sudo] password for guest: " : "╰─➤ ";
@@ -107,7 +107,7 @@ function initDesktopApplication() {
   function execute(command: string, elevated = false) {
     const reply = getShellReply(command, elevated);
     if (reply) {
-      append({ text: reply.text });
+      if (reply.text) append({ text: reply.text });
       if (reply.passwordCommand) passwordPrompt(reply.passwordCommand);
       return;
     }
@@ -187,7 +187,6 @@ function initDesktopApplication() {
       if (passwordCommand !== undefined) {
         const command = passwordCommand;
         passwordPrompt();
-        append({ text: "Password accepted. Suspiciously easy, wasn't it?" });
         execute(command, true);
       } else {
         const command = input.value;
