@@ -60,7 +60,6 @@ export function initDesktop(signal: AbortSignal) {
   const windows = Array.from(document.querySelectorAll<HTMLElement>("[data-window]"));
   const icons = Array.from(document.querySelectorAll<HTMLElement>("[data-desktop-icon]"));
   let initial = document.body.dataset.initialWindow ?? "main";
-  let restoring = window.location.pathname === "/" && Object.keys(state.windows).length > 0;
   const routes: Record<string, string> = { main: "/", projects: "/projects", writing: "/blog", cv: "/more" };
   for (const element of windows)
     if (element.dataset.articleSrc && element.dataset.window)
@@ -96,7 +95,7 @@ export function initDesktop(signal: AbortSignal) {
       y: compact() ? 116 : preset.y,
       width,
       height,
-      closed: restoring || (id !== "main" && id !== initial),
+      closed: id !== "main" && id !== initial,
       placed: id === "main" || id === initial,
       shaded: false,
       zoomed: id === "cv" && initial === "cv",
@@ -115,7 +114,7 @@ export function initDesktop(signal: AbortSignal) {
       entry.sizeVersion = 3;
     }
   }
-  if (state.windows[initial] && !restoring) {
+  if (state.windows[initial]) {
     state.windows[initial].closed = false;
     state.windows[initial].shaded = false;
     state.windows[initial].z = ++topZ;
@@ -433,7 +432,6 @@ export function initDesktop(signal: AbortSignal) {
   function reset() {
     for (const element of windows) element.querySelector<HTMLIFrameElement>("[data-app-frame]")?.removeAttribute("src");
     state = { windows: {}, icons: {} };
-    restoring = false;
     initial = "main";
     windows.forEach(applyWindow);
     icons.forEach((icon, index) => {
@@ -539,7 +537,7 @@ export function initDesktop(signal: AbortSignal) {
     .sort((a, b) => Number(b.style.zIndex) - Number(a.style.zIndex))[0];
   if (front) for (const element of windows) element.classList.toggle("inactive", element !== front);
   const initialElement = find(initial);
-  if (initialElement && !restoring) bringForward(initialElement);
+  if (initialElement) bringForward(initialElement);
   else updateLocation("/");
   saveState();
   document.documentElement.classList.remove("desktop-starting");
