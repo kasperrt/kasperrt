@@ -1,4 +1,11 @@
-export type WindowRect = { x: number; y: number; width: number; height: number };
+export interface ViewportSize {
+  width: number;
+  height: number;
+}
+export interface WindowRect extends ViewportSize {
+  x: number;
+  y: number;
+}
 
 function overlapArea(a: WindowRect, b: WindowRect) {
   return (
@@ -8,12 +15,7 @@ function overlapArea(a: WindowRect, b: WindowRect) {
 }
 
 /** Prefer free desktop space, and heavily penalize hiding another window's title bar. */
-export function chooseWindowPosition(
-  width: number,
-  height: number,
-  viewport: { width: number; height: number },
-  visible: WindowRect[],
-) {
+export function chooseWindowPosition(width: number, height: number, viewport: ViewportSize, visible: WindowRect[]) {
   const maxX = Math.max(8, viewport.width - width - 12);
   const maxY = Math.max(36, viewport.height - height - 12);
   const xs = new Set([12, Math.round(maxX / 2), maxX]);
@@ -34,7 +36,9 @@ export function chooseWindowPosition(
       for (const window of visible) {
         score += overlapArea(candidate, window) / (width * height);
         score += (8 * overlapArea(candidate, { ...window, height: 26 })) / (window.width * 26);
-        if (Math.abs(y - window.y) < 30) score += 2;
+        if (Math.abs(y - window.y) < 30) {
+          score += 2;
+        }
       }
       if (score < bestScore) {
         bestScore = score;

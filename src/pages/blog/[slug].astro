@@ -15,7 +15,10 @@ const { post } = Astro.props;
 
 const pageTitle = `${post.data.title} | kasper rynning-tønnesen`;
 const pageDescription = post.data.description;
-const robots = post.data.draft ? "noindex, nofollow" : "index, follow";
+let robots = "index, follow";
+if (post.data.draft) {
+  robots = "noindex, nofollow";
+}
 const canonicalUrl = absoluteUrl(`/blog/${post.id}/`);
 const imageUrl = absoluteUrl(post.data.hero);
 const dateModified = post.data.updatedDate ?? post.data.pubDate;

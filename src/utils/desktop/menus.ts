@@ -1,3 +1,5 @@
+import { nextMenuIndex } from "./events";
+
 export function initDesktopMenus(signal: AbortSignal) {
   const menus = Array.from(document.querySelectorAll<HTMLDetailsElement>(".desktop-menu"));
   for (const menu of menus) {
@@ -7,12 +9,17 @@ export function initDesktopMenus(signal: AbortSignal) {
     const submenuItems = submenu?.querySelector<HTMLElement>(".desktop-submenu-items");
     const submenuSummary = submenu?.querySelector("summary");
     function openSubmenu() {
-      if (!submenu || !submenuItems || !items) return;
+      if (!submenu || !submenuItems || !items) {
+        return;
+      }
       submenu.open = true;
       const parent = items.getBoundingClientRect();
       const row = submenu.getBoundingClientRect();
       const width = submenuItems.offsetWidth;
-      const preferred = parent.right + width <= window.innerWidth - 4 ? parent.right - 1 : parent.left - width + 1;
+      let preferred = parent.left - width + 1;
+      if (parent.right + width <= window.innerWidth - 4) {
+        preferred = parent.right - 1;
+      }
       submenuItems.style.left = `${Math.max(4, Math.min(preferred, window.innerWidth - width - 4))}px`;
       submenuItems.style.top = `${Math.max(28, Math.min(row.top - 4, window.innerHeight - submenuItems.offsetHeight - 4))}px`;
     }
@@ -20,7 +27,9 @@ export function initDesktopMenus(signal: AbortSignal) {
       "pointerenter",
       () => {
         if (!menu.open && menus.some((other) => other.open)) {
-          for (const other of menus) other.open = other === menu;
+          for (const other of menus) {
+            other.open = other === menu;
+          }
         }
       },
       { signal },
@@ -28,12 +37,20 @@ export function initDesktopMenus(signal: AbortSignal) {
     menu.addEventListener(
       "toggle",
       (event) => {
-        if (event.target !== menu) return;
-        if (!menu.open) {
-          if (submenu) submenu.open = false;
+        if (event.target !== menu) {
           return;
         }
-        for (const other of menus) if (other !== menu) other.open = false;
+        if (!menu.open) {
+          if (submenu) {
+            submenu.open = false;
+          }
+          return;
+        }
+        for (const other of menus) {
+          if (other !== menu) {
+            other.open = false;
+          }
+        }
         if (items) {
           items.style.marginLeft = "0px";
           const rect = items.getBoundingClientRect();
@@ -54,20 +71,25 @@ export function initDesktopMenus(signal: AbortSignal) {
     items?.addEventListener(
       "pointerover",
       (event) => {
-        if (submenu && event.target instanceof Element && !event.target.closest(".desktop-submenu"))
+        if (submenu && event.target instanceof Element && !event.target.closest(".desktop-submenu")) {
           submenu.open = false;
+        }
       },
       { signal },
     );
     menu.addEventListener(
       "keydown",
       (event) => {
-        const target = event.target instanceof HTMLElement ? event.target : null;
-        if (!target) return;
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) {
+          return;
+        }
         if (target === summary && ["ArrowLeft", "ArrowRight"].includes(event.key)) {
           event.preventDefault();
-          const next =
-            menus[(menus.indexOf(menu) + (event.key === "ArrowRight" ? 1 : -1) + menus.length) % menus.length];
+          const next = menus[nextMenuIndex(menus.indexOf(menu), menus.length, event.key)];
+          if (!next) {
+            return;
+          }
           menu.open = false;
           next.open = true;
           next.querySelector("summary")?.focus();
@@ -86,7 +108,9 @@ export function initDesktopMenus(signal: AbortSignal) {
           submenuSummary?.focus();
           return;
         }
-        if (!["ArrowDown", "ArrowUp"].includes(event.key)) return;
+        if (!["ArrowDown", "ArrowUp"].includes(event.key)) {
+          return;
+        }
         event.preventDefault();
         menu.open = true;
         const withinSubmenu = target.closest(".desktop-submenu-items");
@@ -94,12 +118,7 @@ export function initDesktopMenus(signal: AbortSignal) {
           (withinSubmenu ?? items)?.querySelectorAll<HTMLElement>("a, button, summary") ?? [],
         ).filter((item) => withinSubmenu || !item.closest(".desktop-submenu-items"));
         const index = choices.indexOf(target);
-        const nextIndex =
-          index < 0
-            ? event.key === "ArrowDown"
-              ? 0
-              : choices.length - 1
-            : (index + (event.key === "ArrowDown" ? 1 : -1) + choices.length) % choices.length;
+        const nextIndex = nextMenuIndex(index, choices.length, event.key);
         choices[nextIndex]?.focus();
       },
       { signal },

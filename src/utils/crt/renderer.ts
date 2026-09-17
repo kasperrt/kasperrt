@@ -7,6 +7,7 @@ import type {
   ShaderMaterial,
   PlaneGeometry,
   Mesh,
+  Vector2,
 } from "three";
 import type { CrtConfig } from "~/utils/crt/types";
 import { fragmentShader, vertexShader } from "~/utils/crt/shader";
@@ -15,13 +16,22 @@ import type { LinkRect } from "~/utils/crt/console2d";
 type ThreeModule = typeof import("three");
 
 type PickedLink = { href: string; external: boolean };
+type UvCoordinate = { x: number; y: number };
+
+interface CrtUniforms extends Record<string, IUniform> {
+  uTime: IUniform<number>;
+  uOpen: IUniform<number>;
+  uMotionScale: IUniform<number>;
+  uResolution: IUniform<Vector2>;
+  uTexture: IUniform<CanvasTexture>;
+}
 
 function clamp01(x: number) {
   return Math.min(1, Math.max(0, x));
 }
 
 // Must match the shader's mapping order: overscan then barrel distortion.
-function applyOverscanUv(uv: { x: number; y: number }, overscan: number) {
+function applyOverscanUv(uv: UvCoordinate, overscan: number) {
   const s = 1 + overscan;
   return {
     x: (uv.x - 0.5) * s + 0.5,
@@ -29,7 +39,7 @@ function applyOverscanUv(uv: { x: number; y: number }, overscan: number) {
   };
 }
 
-function barrelDistortUv(uv: { x: number; y: number }, k: number) {
+function barrelDistortUv(uv: UvCoordinate, k: number) {
   const ccx = uv.x * 2 - 1;
   const ccy = uv.y * 2 - 1;
   const r2 = ccx * ccx + ccy * ccy;
@@ -46,7 +56,7 @@ export class CrtRenderer {
   private scene: Scene;
   private camera: OrthographicCamera;
   private texture: CanvasTexture;
-  private uniforms: Record<string, IUniform>;
+  private uniforms: CrtUniforms;
   private material: ShaderMaterial;
   private geom: PlaneGeometry;
   private mesh: Mesh;

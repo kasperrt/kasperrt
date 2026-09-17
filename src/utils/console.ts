@@ -62,8 +62,7 @@ export function consumeQueue(queue: ConsoleLine[]) {
   let stopIndex = -1;
   let partial = false;
 
-  for (let i = 0; i < queue.length; i++) {
-    const line = queue[i];
+  for (const [i, line] of queue.entries()) {
     lines.push(line);
 
     if (typeof line[1] === "string" && line[1] === " ") {

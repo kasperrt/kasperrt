@@ -1,14 +1,53 @@
 ---
 import { getCollection } from "astro:content";
 import { getPageProjects } from "~/data/projects";
+
 const projects = getPageProjects();
 const posts = (await getCollection("blog", ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime(),
 );
 ---
+
 <div class="home-document">
-    <header class="home-intro"><img src="/me.webp" alt="Kasper Rynning-Tønnesen" width="118" height="144" /><div><h1>Kasper Rynning-Tønnesen</h1><p>Developer in Oslo, Norway.</p><p>I'm cofounder & CTO at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a>.<br />Previously VP of Engineering at <a href="https://pistachioapp.com" target="_blank" rel="noopener noreferrer">Pistachio</a>.</p><p>I've worked with everything from Go, React, and PostgreSQL to Svelte, C#, and MongoDB.</p></div></header>
-    <section class="home-section"><h2>Things I've made</h2><dl class="plain-projects">{projects.map((project) => <div><dt><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></dt><dd>{project.tagline}</dd></div>)}</dl><p class="more-link"><a href="/projects">More about the projects »</a></p></section>
-    <section class="home-section"><h2>Things I've written</h2><ul class="plain-posts">{posts.map((post) => <li><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time><a href={`/blog/${post.id}`}>{post.data.title}</a></li>)}</ul></section>
-    <footer class="home-contact"><a href="mailto:kasper@rynning-toennesen.email">Email me</a><span>·</span><a href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer me">GitHub</a><span>·</span><a href="https://www.linkedin.com/in/kasperrt/" target="_blank" rel="noopener noreferrer me">LinkedIn</a><span>·</span><a href="/more">CV</a><span>·</span><a href="/rss.xml">RSS</a></footer>
-  </div>
+  <header class="home-intro">
+    <img src="/me.webp" alt="Kasper Rynning-Tønnesen" width="118" height="144" />
+    <div>
+      <h1>Kasper Rynning-Tønnesen</h1>
+      <p>Developer in Oslo, Norway.</p>
+      <p>
+        I'm cofounder & CTO at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a>.<br />
+        Previously VP of Engineering at <a href="https://pistachioapp.com" target="_blank" rel="noopener noreferrer">Pistachio</a>.
+      </p>
+      <p>I've worked with everything from Go, React, and PostgreSQL to Svelte, C#, and MongoDB.</p>
+    </div>
+  </header>
+  <section class="home-section">
+    <h2>Things I've made</h2>
+    <dl class="plain-projects">
+      {projects.map((project) => (
+        <div>
+          <dt><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></dt>
+          <dd>{project.tagline}</dd>
+        </div>
+      ))}
+    </dl>
+    <p class="more-link"><a href="/projects">More about the projects »</a></p>
+  </section>
+  <section class="home-section">
+    <h2>Things I've written</h2>
+    <ul class="plain-posts">
+      {posts.map((post) => (
+        <li>
+          <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time>
+          <a href={`/blog/${post.id}`}>{post.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  </section>
+  <footer class="home-contact">
+    <a href="mailto:kasper@rynning-toennesen.email">Email me</a><span>·</span>
+    <a href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer me">GitHub</a><span>·</span>
+    <a href="https://www.linkedin.com/in/kasperrt/" target="_blank" rel="noopener noreferrer me">LinkedIn</a><span>·</span>
+    <a href="/more">CV</a><span>·</span><a href="/rss.xml">RSS</a>
+  </footer>
+</div>

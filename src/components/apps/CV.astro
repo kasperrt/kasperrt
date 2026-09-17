@@ -1,47 +1,74 @@
 ---
-import { getCollection, render, type CollectionEntry } from "astro:content";
-import type { Education, Experience, Skills } from "~/schemas/more";
+import { formatCvDateRange } from "~/utils/cv";
+import { groupExperiences, loadCvContent } from "~/utils/cv-content";
 
-type EducationGrade = Education["grades"][number];
-
-const collection = await getCollection("more");
-
-const experienceEntries = collection
-  .filter((entry): entry is CollectionEntry<"more"> & { data: Experience } => entry.data.type === "experience")
-  .sort((a, b) => a.data.order - b.data.order);
-
-const experiences = await Promise.all(
-  experienceEntries.map(async (entry) => {
-    const { Content } = await render(entry);
-    return { ...entry, Content };
-  }),
-);
-
-const experienceGroups: { company: (typeof experiences)[number]; roles: typeof experiences }[] = [];
-for (const experience of experiences) {
-  if (experience.data.where) {
-    experienceGroups.push({ company: experience, roles: [] });
-    continue;
-  }
-  experienceGroups.at(-1)?.roles.push(experience);
-}
-
-const skills = collection
-  .filter((entry): entry is CollectionEntry<"more"> & { data: Skills } => entry.data.type === "skills")
-  .sort((a, b) => a.data.order - b.data.order);
-
-const educations = collection
-  .filter((entry): entry is CollectionEntry<"more"> & { data: Education } => entry.data.type === "education")
-  .sort((a, b) => a.data.order - b.data.order);
+const { experiences, skills, educations } = await loadCvContent();
+const experienceGroups = groupExperiences(experiences);
 ---
+
 <div class="archive-page cv-page">
-    <header class="page-heading"><h1>Kasper Rynning-Tønnesen</h1><p>CTO & cofounder at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a> · Oslo, Norway</p><div class="cv-heading-actions"><button type="button" class="primary-action" data-print-cv>Print CV</button><a class="primary-action" href="/kasper-rynning-tonnesen-cv.pdf" download>Save PDF</a><a href="mailto:kasper@rynning-toennesen.email">Get in touch</a></div></header>
-    <section><h2 class="cv-section-title">Experience</h2>{experienceGroups.map(({ company, roles }) => <section class="company-record">
-      <div class="company-heading"><h3>{company.data.url ? <a href={company.data.url} target="_blank" rel="noopener noreferrer">{company.data.where}</a> : company.data.where}</h3><span>{company.data.from}{company.data.to !== undefined && ` – ${company.data.to || 'present'}`}</span></div>
-      <div class="company-overview"><company.Content /></div>
-      {roles.map((role) => <div class="experience-record"><div class="experience-dates">{role.data.from}{role.data.to !== undefined && ` – ${role.data.to || 'present'}`}</div><div class="experience-details">{role.data.positions?.map((position) => <h4>{position}</h4>)}<role.Content /></div></div>)}
-      {company.data.skills && <p class="company-skills">{company.data.skills.join(', ')}</p>}
-    </section>)}</section>
-    <section><h2 class="cv-section-title">Skills</h2><dl class="skills-list">{skills.map((skill) => <div class="skill-row"><dt>{skill.data.area}</dt><dd>{skill.data.points.join(', ')}</dd></div>)}</dl></section>
-    <section><h2 class="cv-section-title">Education</h2>{educations.map((education) => <div class="experience-record"><div class="experience-dates">{education.data.from} — {education.data.to}</div><div class="experience-details"><h3>{education.data.url ? <a href={education.data.url} target="_blank" rel="noopener noreferrer">{education.data.where} ↗</a> : education.data.where}</h3>{education.data.grades.map(({ title, grade }: EducationGrade) => <p>{title}{grade && ` — Grade ${grade}`}</p>)}</div></div>)}</section>
-  </div>
+  <header class="page-heading">
+    <h1>Kasper Rynning-Tønnesen</h1>
+    <p>
+      CTO & cofounder at <a href="https://embroidery.io" target="_blank" rel="noopener noreferrer">embroidery</a>
+      · Oslo, Norway
+    </p>
+    <div class="cv-heading-actions">
+      <button type="button" class="primary-action" data-print-cv>Print CV</button>
+      <a class="primary-action" href="/kasper-rynning-tonnesen-cv.pdf" download>Save PDF</a>
+      <a href="mailto:kasper@rynning-toennesen.email">Get in touch</a>
+    </div>
+  </header>
+  <section>
+    <h2 class="cv-section-title">Experience</h2>
+    {experienceGroups.map(({ company, roles }) => (
+      <section class="company-record">
+        <div class="company-heading">
+          <h3>
+            {company.data.url && (
+              <a href={company.data.url} target="_blank" rel="noopener noreferrer">{company.data.where}</a>
+            )}
+            {!company.data.url && company.data.where}
+          </h3>
+          <span>{formatCvDateRange(company.data.from, company.data.to)}</span>
+        </div>
+        <div class="company-overview"><company.Content /></div>
+        {roles.map((role) => (
+          <div class="experience-record">
+            <div class="experience-dates">{formatCvDateRange(role.data.from, role.data.to)}</div>
+            <div class="experience-details">
+              {role.data.positions?.map((position) => <h4>{position}</h4>)}
+              <role.Content />
+            </div>
+          </div>
+        ))}
+        {company.data.skills && <p class="company-skills">{company.data.skills.join(", ")}</p>}
+      </section>
+    ))}
+  </section>
+  <section>
+    <h2 class="cv-section-title">Skills</h2>
+    <dl class="skills-list">
+      {skills.map((skill) => (
+        <div class="skill-row"><dt>{skill.data.area}</dt><dd>{skill.data.points.join(", ")}</dd></div>
+      ))}
+    </dl>
+  </section>
+  <section>
+    <h2 class="cv-section-title">Education</h2>
+    {educations.map((education) => (
+      <div class="experience-record">
+        <div class="experience-dates">{education.data.from} — {education.data.to}</div>
+        <div class="experience-details">
+          <h3>
+            {education.data.url && (
+              <a href={education.data.url} target="_blank" rel="noopener noreferrer">{education.data.where} ↗</a>
+            )}
+            {!education.data.url && education.data.where}
+          </h3>
+          {education.data.grades.map(({ title, grade }) => <p>{title}{grade && ` — Grade ${grade}`}</p>)}
+        </div>
+      </div>
+    ))}
+  </section>
+</div>

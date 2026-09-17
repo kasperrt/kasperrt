@@ -1,5 +1,6 @@
 import { desktopApps } from "../../data/desktop-apps";
-import type { PoofOrigin } from "./poof";
+import { poofOrigin, type PoofOrigin } from "./poof";
+import { eventElement, nextMenuIndex } from "./events";
 
 type DesktopActions = {
   open: (id: string) => void;
@@ -9,6 +10,17 @@ type DesktopActions = {
   reset: () => void;
 };
 type MenuItem = { label: string; action: (origin?: PoofOrigin) => void } | null;
+type WindowDescription = [title: string, description: string];
+
+function contextId(icon: HTMLElement | null, windowElement: HTMLElement | null) {
+  if (!icon) {
+    return windowElement?.dataset.window ?? "desktop";
+  }
+  if (icon.dataset.desktopIcon === "home") {
+    return "main";
+  }
+  return icon.dataset.desktopIcon ?? "main";
+}
 
 export function initDesktopInteractions(signal: AbortSignal, actions: DesktopActions) {
   const menu = document.querySelector<HTMLElement>("[data-context-menu]");
@@ -16,7 +28,7 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
   const icons = Array.from(document.querySelectorAll<HTMLElement>("[data-desktop-icon]"));
   let finishSelection: (() => void) | undefined;
   let priorFocus: HTMLElement | null = null;
-  const descriptions: Record<string, [string, string]> = {
+  const descriptions: Record<string, WindowDescription | undefined> = {
     main: ["kasperrt.me", "Kasper Rynning-Tønnesen. Oslo, Norway."],
     projects: ["Projects", "Side projects: zoff, wiretyped, etys, swarm aid, and degen. Some more useful than others."],
     writing: ["Writing", "Notes about software. Occasionally opinionated."],
@@ -31,21 +43,36 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
       "Pastel pink at midnight, lavender at noon. A slow daily loop on Oslo time.\n\nDrag to select. Drag the icons to rearrange them. Your layout is saved in this browser.",
     ],
   };
-  for (const app of desktopApps) descriptions[app.id] = [app.title, app.description];
+  for (const app of desktopApps) {
+    descriptions[app.id] = [app.title, app.description];
+  }
   function showInfo(title: string, text: string) {
     const heading = document.querySelector("#info-title");
     const content = document.querySelector("[data-info-content]");
-    if (heading) heading.textContent = title;
-    if (content) content.textContent = text;
+    if (heading) {
+      heading.textContent = title;
+    }
+    if (content) {
+      content.textContent = text;
+    }
     actions.open("info");
   }
   function hideMenu(restoreFocus = false) {
-    if (menu) menu.hidden = true;
-    if (restoreFocus) priorFocus?.focus();
+    if (menu) {
+      menu.hidden = true;
+    }
+    if (restoreFocus) {
+      priorFocus?.focus();
+    }
   }
   function displayMenu(items: MenuItem[], x: number, y: number) {
-    if (!menu) return;
-    priorFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (!menu) {
+      return;
+    }
+    priorFocus = null;
+    if (document.activeElement instanceof HTMLElement) {
+      priorFocus = document.activeElement;
+    }
     menu.replaceChildren();
     for (const item of items) {
       if (!item) {
@@ -62,7 +89,7 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
         "click",
         (event) => {
           hideMenu();
-          item.action(event.detail > 0 ? { x: event.clientX, y: event.clientY } : undefined);
+          item.action(poofOrigin(event));
         },
         { signal },
       );
@@ -74,55 +101,60 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
     menu.style.top = `${Math.max(28, Math.min(y, window.innerHeight - rect.height - 4))}px`;
     menu.querySelector<HTMLButtonElement>("button")?.focus();
   }
+  function contextItems(icon: HTMLElement | null, windowElement: HTMLElement | null, id: string): MenuItem[] {
+    if (icon) {
+      if (!icon.classList.contains("is-selected")) {
+        for (const item of icons) {
+          item.classList.toggle("is-selected", item === icon);
+        }
+      }
+      return [{ label: "Open", action: () => actions.open(id) }];
+    }
+    if (!windowElement) {
+      return [
+        { label: "Open Terminal", action: () => actions.open("terminal") },
+        { label: "Play some music…", action: () => actions.open("music") },
+        null,
+        { label: "Clean Up Desktop", action: actions.reset },
+      ];
+    }
+    const items: MenuItem[] = [
+      { label: "Bring to Front", action: () => actions.open(id) },
+      { label: "Collapse / Expand", action: () => actions.shade(id) },
+    ];
+    if (windowElement.classList.contains("document-window")) {
+      items.push({ label: "Zoom / Restore", action: () => actions.zoom(id) });
+    }
+    items.push({ label: "Close Window", action: (origin) => actions.close(id, origin) });
+    return items;
+  }
   document.addEventListener(
     "contextmenu",
     (event) => {
-      if (event.shiftKey || !menu) return;
-      const target = event.target instanceof Element ? event.target : null;
-      if (!target || target.closest("input, textarea, .desktop-menubar")) return;
+      if (event.shiftKey || !menu) {
+        return;
+      }
+      const target = eventElement(event);
+      if (!target || target.closest("input, textarea, .desktop-menubar")) {
+        return;
+      }
       event.preventDefault();
       const icon = target.closest<HTMLElement>("[data-desktop-icon]");
       const windowElement = target.closest<HTMLElement>("[data-window]");
-      const id = icon
-        ? icon.dataset.desktopIcon === "home"
-          ? "main"
-          : (icon.dataset.desktopIcon ?? "main")
-        : (windowElement?.dataset.window ?? "desktop");
-      const description = descriptions[id] ?? [
+      const id = contextId(icon, windowElement);
+      const [title, description] = descriptions[id] ?? [
         windowElement?.getAttribute("aria-label") ?? "Window",
         "A document on kasperrt.me.",
       ];
-      const items: MenuItem[] = [];
-      if (icon) {
-        if (!icon.classList.contains("is-selected")) {
-          icons.forEach((item) => {
-            item.classList.toggle("is-selected", item === icon);
-          });
-        }
-        items.push({ label: "Open", action: () => actions.open(id) });
-      } else if (windowElement) {
-        items.push(
-          { label: "Bring to Front", action: () => actions.open(id) },
-          { label: "Collapse / Expand", action: () => actions.shade(id) },
-        );
-        if (windowElement.classList.contains("document-window"))
-          items.push({ label: "Zoom / Restore", action: () => actions.zoom(id) });
-        items.push({ label: "Close Window", action: (origin) => actions.close(id, origin) });
-      } else {
-        items.push(
-          { label: "Open Terminal", action: () => actions.open("terminal") },
-          { label: "Play some music…", action: () => actions.open("music") },
-          null,
-          { label: "Clean Up Desktop", action: actions.reset },
-        );
-      }
-      items.push(null, { label: "Get Info", action: () => showInfo(description[0], description[1]) });
-      if (id === "desktop")
+      const items = contextItems(icon, windowElement, id);
+      items.push(null, { label: "Get Info", action: () => showInfo(title, description) });
+      if (id === "desktop") {
         items.push({
           label: "Eject reality…",
           action: () =>
             showInfo("Could not eject", "Reality is currently in use.\n\nTry listening to some music instead."),
         });
+      }
       displayMenu(items, event.clientX, event.clientY);
     },
     { signal },
@@ -130,23 +162,32 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
   document.addEventListener(
     "pointerdown",
     (event) => {
-      const target = event.target instanceof Element ? event.target : null;
-      if (!target?.closest("[data-context-menu]")) hideMenu();
+      const target = eventElement(event);
+      if (!target?.closest("[data-context-menu]")) {
+        hideMenu();
+      }
       if (
         event.button !== 0 ||
         !box ||
         target?.closest("[data-window], [data-desktop-icon], .desktop-menubar, [data-context-menu], .skip-link")
-      )
+      ) {
         return;
+      }
       event.preventDefault();
       const origin = { x: event.clientX, y: Math.max(28, event.clientY) };
-      const previouslySelected = new Set(
-        event.shiftKey ? icons.filter((icon) => icon.classList.contains("is-selected")) : [],
-      );
-      if (!event.shiftKey)
+      const previouslySelected = new Set<HTMLElement>();
+      if (event.shiftKey) {
+        for (const icon of icons) {
+          if (icon.classList.contains("is-selected")) {
+            previouslySelected.add(icon);
+          }
+        }
+      }
+      if (!event.shiftKey) {
         icons.forEach((icon) => {
           icon.classList.remove("is-selected");
         });
+      }
       document.body.setPointerCapture(event.pointerId);
       const move = (pointer: PointerEvent) => {
         const left = Math.min(origin.x, pointer.clientX);
@@ -167,7 +208,9 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
         document.body.removeEventListener("pointermove", move);
         document.body.removeEventListener("pointerup", finish);
         document.body.removeEventListener("pointercancel", finish);
-        if (document.body.hasPointerCapture(event.pointerId)) document.body.releasePointerCapture(event.pointerId);
+        if (document.body.hasPointerCapture(event.pointerId)) {
+          document.body.releasePointerCapture(event.pointerId);
+        }
         finishSelection = undefined;
       };
       finishSelection?.();
@@ -181,7 +224,7 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
   menu?.addEventListener(
     "pointerover",
     (event) => {
-      const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>("button") : null;
+      const button = eventElement(event)?.closest<HTMLButtonElement>("button");
       button?.focus({ preventScroll: true });
     },
     { signal },
@@ -193,14 +236,16 @@ export function initDesktopInteractions(signal: AbortSignal, actions: DesktopAct
       const index = buttons.indexOf(document.activeElement as HTMLButtonElement);
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
         event.preventDefault();
-        buttons[(index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length]?.focus();
+        buttons[nextMenuIndex(index, buttons.length, event.key)]?.focus();
       }
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
         hideMenu(true);
       }
-      if (event.key === "Tab") hideMenu();
+      if (event.key === "Tab") {
+        hideMenu();
+      }
     },
     { signal },
   );

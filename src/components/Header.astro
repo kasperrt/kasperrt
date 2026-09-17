@@ -3,8 +3,15 @@ interface Props {
   windowId: string;
   title: string;
 }
+
 const { windowId, title } = Astro.props;
 ---
+
 <header class="window-titlebar" data-window-drag tabindex="0" aria-label={`Move ${title} window with arrow keys`}>
-  <button type="button" class="desktop-close" data-close={windowId} aria-label={`Close ${title}`}></button><span class="titlebar-stripes" aria-hidden="true"></span><span class="window-title">{title}</span><span class="titlebar-stripes" aria-hidden="true"></span><button type="button" class="desktop-zoom" data-zoom={windowId} aria-label={`Zoom ${title}`}></button><button type="button" class="desktop-shade" data-shade={windowId} aria-label={`Collapse ${title}`}></button>
+  <button type="button" class="desktop-close" data-close={windowId} aria-label={`Close ${title}`}></button>
+  <span class="titlebar-stripes" aria-hidden="true"></span>
+  <span class="window-title">{title}</span>
+  <span class="titlebar-stripes" aria-hidden="true"></span>
+  <button type="button" class="desktop-zoom" data-zoom={windowId} aria-label={`Zoom ${title}`}></button>
+  <button type="button" class="desktop-shade" data-shade={windowId} aria-label={`Collapse ${title}`}></button>
 </header>

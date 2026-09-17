@@ -32,7 +32,7 @@ export class ConsoleController {
   }
 
   private getDate = () => {
-    return new Date().toTimeString().split(" ")[0];
+    return new Date().toTimeString().slice(0, 8);
   };
 
   public setInput = (val: string) => {
@@ -171,7 +171,7 @@ export class ConsoleController {
       const idx = get(this.historyIndex);
       const newIdx = idx === -1 ? this.history.length - 1 : Math.max(0, idx - 1);
       this.historyIndex.set(newIdx);
-      this.input.set(this.history[newIdx]);
+      this.input.set(this.history[newIdx] ?? "");
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       const idx = get(this.historyIndex);
@@ -187,7 +187,7 @@ export class ConsoleController {
 
       const newIdx = idx + 1;
       this.historyIndex.set(newIdx);
-      this.input.set(this.history[newIdx]);
+      this.input.set(this.history[newIdx] ?? "");
     } else if (e.key === "Enter" && !get(this.loading)) {
       e.preventDefault();
       if (onEnter) {

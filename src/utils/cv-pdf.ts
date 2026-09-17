@@ -1,5 +1,7 @@
 import PDFDocument from "pdfkit";
 import type { CollectionEntry } from "astro:content";
+import { formatCvDateRange, formatGrade, getCvEntries } from "./cv";
+import { safeWrapAsync } from "./wrap";
 
 type TextBlock = {
   text: string;
@@ -17,10 +19,7 @@ const plainText = (text: string) =>
     .replace(/\s+/g, " ")
     .trim();
 
-export async function createCvPdf(
-  entries: CollectionEntry<"more">[],
-  portrait: Buffer,
-): Promise<Uint8Array<ArrayBuffer>> {
+async function renderCvPdf(entries: CollectionEntry<"more">[], portrait: Buffer): Promise<Uint8Array<ArrayBuffer>> {
   const doc = new PDFDocument({
     size: "A4",
     margins: { top: 33, bottom: 32, left: 36, right: 36 },
@@ -56,7 +55,9 @@ export async function createCvPdf(
     );
   }
   function ensureSpace(required: number) {
-    if (y + required <= doc.page.height - 32) return;
+    if (y + required <= doc.page.height - 32) {
+      return;
+    }
     doc.addPage();
     y = 33;
   }
@@ -107,66 +108,83 @@ export async function createCvPdf(
   }
   y += 90;
 
-  const experienceRows: Row[] = entries
-    .filter((entry) => entry.data.type === "experience")
-    .sort((a, b) => a.data.order - b.data.order)
-    .map((entry) => {
-      if (entry.data.type !== "experience") throw new Error("Expected experience entry");
-      const data = entry.data;
-      const blocks: TextBlock[] = [];
-      if (data.where) blocks.push({ text: data.where, font: "Helvetica-Bold", size: 9.5, link: data.url });
-      if (data.skills?.length)
-        blocks.push({
-          text: data.skills.join(", "),
-          font: "Helvetica-Oblique",
-          size: 8,
-          leading: 10,
-          color: "#555555",
-        });
-      for (const position of data.positions ?? []) blocks.push({ text: position, font: "Helvetica-Bold" });
-      for (const paragraph of (entry.body ?? "").split(/\n\s*\n/)) {
-        const text = plainText(paragraph);
-        if (text) blocks.push({ text });
+  const sections = getCvEntries(entries);
+  const experienceRows: Row[] = sections.experiences.map((entry) => {
+    const data = entry.data;
+    const blocks: TextBlock[] = [];
+    if (data.where) {
+      blocks.push({ text: data.where, font: "Helvetica-Bold", size: 9.5, link: data.url });
+    }
+    if (data.skills?.length) {
+      blocks.push({
+        text: data.skills.join(", "),
+        font: "Helvetica-Oblique",
+        size: 8,
+        leading: 10,
+        color: "#555555",
+      });
+    }
+    for (const position of data.positions ?? []) {
+      blocks.push({ text: position, font: "Helvetica-Bold" });
+    }
+    for (const paragraph of (entry.body ?? "").split(/\n\s*\n/)) {
+      const text = plainText(paragraph);
+      if (text) {
+        blocks.push({ text });
       }
-      return {
-        date: `${data.from ?? ""}${data.to !== undefined ? ` - ${data.to || "present"}` : ""}`,
-        blocks,
-        company: Boolean(data.where),
-      };
-    });
-  section("Experience", experienceRows[0] ? rowHeight(experienceRows[0]) : 0);
+    }
+    return {
+      date: formatCvDateRange(data.from, data.to, " - "),
+      blocks,
+      company: Boolean(data.where),
+    };
+  });
+  function firstRowHeight(rows: Row[]) {
+    const [first] = rows;
+    if (!first) {
+      return 0;
+    }
+    return rowHeight(first);
+  }
+  section("Experience", firstRowHeight(experienceRows));
   for (const [index, row] of experienceRows.entries()) {
     const next = experienceRows[index + 1];
-    if (row.company && next && !next.company) ensureSpace(rowHeight(row) + rowHeight(next));
+    if (row.company && next && !next.company) {
+      ensureSpace(rowHeight(row) + rowHeight(next));
+    }
     drawRow(row);
   }
 
-  const skills: Row[] = entries
-    .filter((entry) => entry.data.type === "skills")
-    .sort((a, b) => a.data.order - b.data.order)
-    .map((entry) => {
-      if (entry.data.type !== "skills") throw new Error("Expected skills entry");
-      return { date: "", blocks: [{ text: `${entry.data.area}: ${entry.data.points.join(", ")}` }] };
-    });
-  section("Skills", skills[0] ? rowHeight(skills[0]) : 0);
-  for (const row of skills) drawRow(row);
+  const skills: Row[] = sections.skills.map((entry) => {
+    return { date: "", blocks: [{ text: `${entry.data.area}: ${entry.data.points.join(", ")}` }] };
+  });
+  section("Skills", firstRowHeight(skills));
+  for (const row of skills) {
+    drawRow(row);
+  }
 
-  const education: Row[] = entries
-    .filter((entry) => entry.data.type === "education")
-    .sort((a, b) => a.data.order - b.data.order)
-    .map((entry) => {
-      if (entry.data.type !== "education") throw new Error("Expected education entry");
-      return {
-        date: `${entry.data.from} - ${entry.data.to}`,
-        blocks: [
-          { text: entry.data.where, font: "Helvetica-Bold", link: entry.data.url },
-          ...entry.data.grades.map((grade) => ({ text: `${grade.title}${grade.grade ? ` - ${grade.grade}` : ""}` })),
-        ],
-      };
-    });
-  section("Education", education[0] ? rowHeight(education[0]) : 0);
-  for (const row of education) drawRow(row);
+  const education: Row[] = sections.educations.map((entry) => {
+    return {
+      date: `${entry.data.from} - ${entry.data.to}`,
+      blocks: [
+        { text: entry.data.where, font: "Helvetica-Bold", link: entry.data.url },
+        ...entry.data.grades.map((grade) => ({ text: formatGrade(grade) })),
+      ],
+    };
+  });
+  section("Education", firstRowHeight(education));
+  for (const row of education) {
+    drawRow(row);
+  }
 
   doc.end();
   return result;
+}
+
+export async function createCvPdf(entries: CollectionEntry<"more">[], portrait: Buffer) {
+  const [error, pdf] = await safeWrapAsync(() => renderCvPdf(entries, portrait));
+  if (error) {
+    return new Error("Could not generate the CV PDF", { cause: error });
+  }
+  return pdf;
 }

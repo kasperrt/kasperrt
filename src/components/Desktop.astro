@@ -4,41 +4,160 @@ import Header from "./Header.astro";
 import EmbeddedApps from "./apps/EmbeddedApps.astro";
 import { desktopGames } from "../data/desktop-apps";
 ---
+
 <nav class="desktop-menubar" aria-label="Desktop menu">
-  <details class="desktop-menu system-menu"><summary aria-label="System menu"><span class="system-mark" aria-hidden="true">👋</span></summary><div class="desktop-menu-items"><button type="button" data-about-toggle>Info...</button><hr /><a href="/">About Kasper</a><a href="mailto:kasper@rynning-toennesen.email">Send a message...</a></div></details>
-  <details class="desktop-menu"><summary>File</summary><div class="desktop-menu-items"><a href="/">Open Home</a><a href="/projects">Open Projects</a><a href="/blog">Open Writing</a><a href="/more">Open CV</a><hr /><button type="button" data-print-cv>Print CV...</button><button type="button" data-close="active">Close Window</button></div></details>
-  <details class="desktop-menu"><summary>View</summary><div class="desktop-menu-items"><button type="button" data-zoom="active">Zoom Window</button><button type="button" data-shade="active">Collapse / Expand Window</button><hr /><button type="button" data-desktop-reset>Clean Up Desktop</button></div></details>
-  <details class="desktop-menu"><summary>Special</summary><div class="desktop-menu-items"><button type="button" data-terminal-toggle>Open Terminal <span>⌘K</span></button><button type="button" data-music-toggle>Music Player</button><hr /><details class="desktop-submenu"><summary>Games <span aria-hidden="true">▸</span></summary><div class="desktop-menu-items desktop-submenu-items">{desktopGames.map((game) => <button type="button" data-open={game.id}>{game.title}</button>)}</div></details><button type="button" data-open="runtime-lab">Runtime Lab</button><hr /><button type="button" data-uptime-open>Uptime</button></div></details>
-  <details class="desktop-menu"><summary>Help</summary><div class="desktop-menu-items"><button type="button" data-help-toggle>Using this desktop</button><button type="button" data-about-toggle>Info</button></div></details>
-  <div class="menubar-right"><time data-clock title="Oslo · Europe/Oslo">00:00</time><details class="desktop-menu app-menu"><summary><DesktopIcon kind="computer" size={16} /><span>Desktop</span></summary><div class="desktop-menu-items"><button type="button" data-open="main">kasperrt.me</button><button type="button" data-open="projects">Projects</button><button type="button" data-open="writing">Writing</button><button type="button" data-open="cv">Curriculum Vitae</button><button type="button" data-terminal-toggle>Terminal</button><button type="button" data-music-toggle>Music Player</button></div></details></div>
+  <details class="desktop-menu system-menu">
+    <summary aria-label="System menu"><span class="system-mark" aria-hidden="true">👋</span></summary>
+    <div class="desktop-menu-items">
+      <button type="button" data-about-toggle>Info...</button>
+      <hr />
+      <a href="/">About Kasper</a>
+      <a href="mailto:kasper@rynning-toennesen.email">Send a message...</a>
+    </div>
+  </details>
+  <details class="desktop-menu">
+    <summary>File</summary>
+    <div class="desktop-menu-items">
+      <a href="/">Open Home</a>
+      <a href="/projects">Open Projects</a>
+      <a href="/blog">Open Writing</a>
+      <a href="/more">Open CV</a>
+      <hr />
+      <button type="button" data-print-cv>Print CV...</button>
+      <button type="button" data-close="active">Close Window</button>
+    </div>
+  </details>
+  <details class="desktop-menu">
+    <summary>View</summary>
+    <div class="desktop-menu-items">
+      <button type="button" data-zoom="active">Zoom Window</button>
+      <button type="button" data-shade="active">Collapse / Expand Window</button>
+      <hr />
+      <button type="button" data-desktop-reset>Clean Up Desktop</button>
+    </div>
+  </details>
+  <details class="desktop-menu">
+    <summary>Special</summary>
+    <div class="desktop-menu-items">
+      <button type="button" data-terminal-toggle>Open Terminal <span>⌘K</span></button>
+      <button type="button" data-music-toggle>Music Player</button>
+      <hr />
+      <details class="desktop-submenu">
+        <summary>Games <span aria-hidden="true">▸</span></summary>
+        <div class="desktop-menu-items desktop-submenu-items">
+          {desktopGames.map((game) => <button type="button" data-open={game.id}>{game.title}</button>)}
+        </div>
+      </details>
+      <button type="button" data-open="runtime-lab">Runtime Lab</button>
+      <hr />
+      <button type="button" data-uptime-open>Uptime</button>
+    </div>
+  </details>
+  <details class="desktop-menu">
+    <summary>Help</summary>
+    <div class="desktop-menu-items">
+      <button type="button" data-help-toggle>Using this desktop</button>
+      <button type="button" data-about-toggle>Info</button>
+    </div>
+  </details>
+  <div class="menubar-right">
+    <time data-clock title="Oslo · Europe/Oslo">00:00</time>
+    <details class="desktop-menu app-menu">
+      <summary><DesktopIcon kind="computer" size={16} /><span>Desktop</span></summary>
+      <div class="desktop-menu-items">
+        <button type="button" data-open="main">kasperrt.me</button>
+        <button type="button" data-open="projects">Projects</button>
+        <button type="button" data-open="writing">Writing</button>
+        <button type="button" data-open="cv">Curriculum Vitae</button>
+        <button type="button" data-terminal-toggle>Terminal</button>
+        <button type="button" data-music-toggle>Music Player</button>
+      </div>
+    </details>
+  </div>
 </nav>
+
 <nav class="desktop-shortcuts" aria-label="Desktop shortcuts">
   <a href="/" class="desktop-item" data-desktop-icon="home"><DesktopIcon kind="computer" /><span>kasperrt</span></a>
   <a href="/projects" class="desktop-item" data-desktop-icon="projects"><DesktopIcon kind="folder" /><span>Projects</span></a>
   <a href="/blog" class="desktop-item" data-desktop-icon="writing"><DesktopIcon kind="text" /><span>Writing</span></a>
   <a href="/more" class="desktop-item" data-desktop-icon="cv"><DesktopIcon kind="text" /><span>CV</span></a>
-  <button type="button" class="desktop-item" data-desktop-icon="terminal" data-terminal-toggle><DesktopIcon kind="terminal" /><span>Terminal</span></button>
-<button type="button" class="desktop-item" data-desktop-icon="music" data-music-toggle><span class="music-desktop-icon" aria-hidden="true">♫</span><span>Music Player</span></button>
+  <button type="button" class="desktop-item" data-desktop-icon="terminal" data-terminal-toggle>
+    <DesktopIcon kind="terminal" /><span>Terminal</span>
+  </button>
+  <button type="button" class="desktop-item" data-desktop-icon="music" data-music-toggle>
+    <span class="music-desktop-icon" aria-hidden="true">♫</span><span>Music Player</span>
+  </button>
 </nav>
+
 <section class="desktop-window auxiliary-window about-window" data-window="about" aria-labelledby="about-title" hidden>
-  <header class="window-titlebar" data-window-drag tabindex="0" aria-label="Move Info window with arrow keys"><button type="button" class="desktop-close" data-close="about" aria-label="Close Info"></button><span class="titlebar-stripes" aria-hidden="true"></span><span class="window-title" id="about-title">Info</span><span class="titlebar-stripes" aria-hidden="true"></span></header>
-  <div class="about-content"><DesktopIcon kind="computer" size={48} /><div><h2>kasperrt.me</h2><p>Kasper Rynning-Tønnesen<br />Oslo, Norway</p><p>Astro · TypeScript</p><a href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer">github.com/kasperrt</a></div></div><div class="dialog-actions"><button class="desktop-button default-button" type="button" data-close="about">OK</button></div>
+  <header class="window-titlebar" data-window-drag tabindex="0" aria-label="Move Info window with arrow keys">
+    <button type="button" class="desktop-close" data-close="about" aria-label="Close Info"></button>
+    <span class="titlebar-stripes" aria-hidden="true"></span>
+    <span class="window-title" id="about-title">Info</span>
+    <span class="titlebar-stripes" aria-hidden="true"></span>
+  </header>
+  <div class="about-content">
+    <DesktopIcon kind="computer" size={48} />
+    <div>
+      <h2>kasperrt.me</h2>
+      <p>Kasper Rynning-Tønnesen<br />Oslo, Norway</p>
+      <p>Astro · TypeScript</p>
+      <a href="https://github.com/kasperrt" target="_blank" rel="noopener noreferrer">github.com/kasperrt</a>
+    </div>
+  </div>
+  <div class="dialog-actions"><button class="desktop-button default-button" type="button" data-close="about">OK</button></div>
 </section>
+
 <section class="desktop-window auxiliary-window help-window" data-window="help" aria-labelledby="help-title" hidden>
-  <header class="window-titlebar" data-window-drag tabindex="0" aria-label="Move Help window with arrow keys"><button type="button" class="desktop-close" data-close="help" aria-label="Close Help"></button><span class="titlebar-stripes" aria-hidden="true"></span><span class="window-title" id="help-title">Using this desktop</span><span class="titlebar-stripes" aria-hidden="true"></span></header>
-  <div class="help-content"><p>Click an icon to open it. Drag an icon or a window's title bar to move it.</p><p>Drag the bottom-right corner to resize a window. The two buttons on the right of the title bar zoom and collapse it.</p><p>Shake a window back and forth to make it disappear. You can open it again from its icon or the menus.</p><p>Your layout is saved in this browser. Choose <b>View → Clean Up Desktop</b> to reset it.</p><p>Press <b>⌘K</b> (or Ctrl+K) for the terminal. Type <b>help</b> for commands.</p><p>Keyboard: focus a title bar and use the arrow keys to move the window. Hold Shift for larger steps.</p></div><div class="dialog-actions"><button type="button" class="desktop-button default-button" data-close="help">OK</button></div>
+  <header class="window-titlebar" data-window-drag tabindex="0" aria-label="Move Help window with arrow keys">
+    <button type="button" class="desktop-close" data-close="help" aria-label="Close Help"></button>
+    <span class="titlebar-stripes" aria-hidden="true"></span>
+    <span class="window-title" id="help-title">Using this desktop</span>
+    <span class="titlebar-stripes" aria-hidden="true"></span>
+  </header>
+  <div class="help-content">
+    <p>Click an icon to open it. Drag an icon or a window's title bar to move it.</p>
+    <p>Drag the bottom-right corner to resize a window. The two buttons on the right of the title bar zoom and collapse it.</p>
+    <p>Shake a window back and forth to make it disappear. You can open it again from its icon or the menus.</p>
+    <p>Your layout is saved in this browser. Choose <b>View → Clean Up Desktop</b> to reset it.</p>
+    <p>Press <b>⌘K</b> (or Ctrl+K) for the terminal. Type <b>help</b> for commands.</p>
+    <p>Keyboard: focus a title bar and use the arrow keys to move the window. Hold Shift for larger steps.</p>
+  </div>
+  <div class="dialog-actions"><button type="button" class="desktop-button default-button" data-close="help">OK</button></div>
 </section>
 
 <section class="desktop-window music-window" data-window="music" transition:persist="music-player" aria-label="Music Player" hidden>
   <Header windowId="music" title="Music Player" />
-  <div class="music-room-bar"><span class="music-note" aria-hidden="true">♫</span><div><b>trip</b><span>zoff.me / shared listening room</span></div><a href="https://zoff.me/trip" target="_blank" rel="noopener noreferrer">Open room ↗</a></div>
-  <iframe class="music-embed" data-app-frame data-src="https://zoff.me/embed/trip?player=true&playlist=false&skip=false&vote=false&theme=light" title="Zoff room trip" width="100%" height="480" loading="lazy" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div class="music-room-bar">
+    <span class="music-note" aria-hidden="true">♫</span>
+    <div><b>trip</b><span>zoff.me / shared listening room</span></div>
+    <a href="https://zoff.me/trip" target="_blank" rel="noopener noreferrer">Open room ↗</a>
+  </div>
+  <iframe
+    class="music-embed"
+    data-app-frame
+    data-src="https://zoff.me/embed/trip?player=true&playlist=false&skip=false&vote=false&theme=light"
+    title="Zoff room trip"
+    width="100%"
+    height="480"
+    loading="lazy"
+    allow="autoplay; encrypted-media"
+    referrerpolicy="strict-origin-when-cross-origin"
+  ></iframe>
   <span class="resize-grip" aria-hidden="true"></span>
 </section>
+
 <EmbeddedApps />
 <div class="desktop-selection" data-selection-box hidden aria-hidden="true"></div>
 <div class="desktop-context-menu" data-context-menu role="menu" aria-label="Desktop actions" hidden></div>
+
 <section class="desktop-window auxiliary-window info-window" data-window="info" aria-labelledby="info-title" hidden>
-  <header class="window-titlebar" data-window-drag tabindex="0" aria-label="Move information window with arrow keys"><button type="button" class="desktop-close" data-close="info" aria-label="Close information"></button><span class="titlebar-stripes" aria-hidden="true"></span><span class="window-title" id="info-title">Get Info</span><span class="titlebar-stripes" aria-hidden="true"></span></header>
-  <div class="info-content" data-info-content></div><div class="dialog-actions"><button type="button" class="desktop-button default-button" data-close="info">OK</button></div>
+  <header class="window-titlebar" data-window-drag tabindex="0" aria-label="Move information window with arrow keys">
+    <button type="button" class="desktop-close" data-close="info" aria-label="Close information"></button>
+    <span class="titlebar-stripes" aria-hidden="true"></span>
+    <span class="window-title" id="info-title">Get Info</span>
+    <span class="titlebar-stripes" aria-hidden="true"></span>
+  </header>
+  <div class="info-content" data-info-content></div>
+  <div class="dialog-actions"><button type="button" class="desktop-button default-button" data-close="info">OK</button></div>
 </section>

@@ -1,13 +1,37 @@
 ---
 import { getPageProjects } from "~/data/projects";
+
 const pageProjects = getPageProjects();
 ---
+
 <section class="archive-page">
-    <header class="page-heading"><h1>Projects</h1><p>A bunch of side projects, tools, and experiments. I enjoy fucking around to find out. These are the ones worth having public.</p></header>
-    <div class="archive-tools"><p data-project-count aria-live="polite">5 projects</p><label class="search-box"><span aria-hidden="true">⌕</span><input type="search" aria-label="Filter projects" placeholder="Find a project..." data-project-search /></label></div>
-    <div class="project-archive">{pageProjects.map((project, index) => <article class="project-record" data-project-record={`${project.name} ${project.tagline} ${project.blurb}`.toLowerCase()}>
-      {project.image && <a href={project.url} target="_blank" rel="noopener noreferrer" class="project-thumbnail" aria-label={`Open ${project.name}`}><img src={`/projects/${project.image}.webp`} alt={project.alt ?? project.name} width="640" height="400" loading="lazy" /></a>}
-      <div class="project-record-content"><div class="project-record-meta"><span>P—00{index + 1}</span><span>{project.host}</span></div><h2><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></h2><p>{project.blurb ?? project.tagline}</p><a class="record-link" href={project.url} target="_blank" rel="noopener noreferrer">Visit website</a></div>
-    </article>)}</div>
-    <p class="archive-empty" data-project-empty hidden>No matching files. Try another search.</p>
-  </section>
+  <header class="page-heading">
+    <h1>Projects</h1>
+    <p>A bunch of side projects, tools, and experiments. I enjoy fucking around to find out. These are the ones worth having public.</p>
+  </header>
+  <div class="archive-tools">
+    <p data-project-count aria-live="polite">{pageProjects.length} projects</p>
+    <label class="search-box">
+      <span aria-hidden="true">⌕</span>
+      <input type="search" aria-label="Filter projects" placeholder="Find a project..." data-project-search />
+    </label>
+  </div>
+  <div class="project-archive">
+    {pageProjects.map((project, index) => (
+      <article class="project-record" data-project-record={`${project.name} ${project.tagline} ${project.blurb}`.toLowerCase()}>
+        {project.image && (
+          <a href={project.url} target="_blank" rel="noopener noreferrer" class="project-thumbnail" aria-label={`Open ${project.name}`}>
+            <img src={`/projects/${project.image}.webp`} alt={project.alt ?? project.name} width="640" height="400" loading="lazy" />
+          </a>
+        )}
+        <div class="project-record-content">
+          <div class="project-record-meta"><span>P—00{index + 1}</span><span>{project.host}</span></div>
+          <h2><a href={project.url} target="_blank" rel="noopener noreferrer">{project.name}</a></h2>
+          <p>{project.blurb ?? project.tagline}</p>
+          <a class="record-link" href={project.url} target="_blank" rel="noopener noreferrer">Visit website</a>
+        </div>
+      </article>
+    ))}
+  </div>
+  <p class="archive-empty" data-project-empty hidden>No matching files. Try another search.</p>
+</section>

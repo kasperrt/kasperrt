@@ -11,6 +11,8 @@ import Desktop from "~/components/Desktop.astro";
 import Terminal from "~/components/Terminal.astro";
 import desktopBootstrap from "~/utils/desktop/bootstrap.js?raw";
 import BlogWindows from "~/components/apps/BlogWindows.astro";
+import { getInitialWindow } from "~/utils/desktop/routes";
+import { optionalIsoDate, siteUrl, structuredDataList } from "~/utils/page-meta";
 
 interface Props {
   title: string;
@@ -53,26 +55,17 @@ const {
   htmlClass = "",
   bodyClass = "",
 }: Props = Astro.props;
-const activePath = Astro.url.pathname;
-const initialWindow = activePath.startsWith("/projects")
-  ? "projects"
-  : activePath.startsWith("/more")
-    ? "cv"
-    : activePath.startsWith("/blog/") && activePath !== "/blog/"
-      ? `article-${activePath.replace(/^\/blog\//, "").replace(/\/$/, "")}`
-      : activePath.startsWith("/blog")
-        ? "writing"
-        : "main";
-const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).toString() : "";
-const rssUrl = Astro.site ? new URL("/rss.xml", Astro.site).toString() : "/rss.xml";
-const authorUrl = Astro.site ? new URL("/", Astro.site).toString() : "/";
+const initialWindow = getInitialWindow(Astro.url.pathname);
+const canonicalUrl = siteUrl(Astro.url.pathname, Astro.site, "");
+const rssUrl = siteUrl("/rss.xml", Astro.site);
+const authorUrl = siteUrl("/", Astro.site);
 const ogUrl = ogUrlProp ?? canonicalUrl;
-const image = Astro.site ? new URL(ogImage, Astro.site).toString() : ogImage;
-const structuredDataItems = Array.isArray(structuredData) ? structuredData : structuredData ? [structuredData] : [];
+const image = siteUrl(ogImage, Astro.site);
+const structuredDataItems = structuredDataList(structuredData);
 const twitterCard = twitterCardProp ?? "summary_large_image";
-const toIsoString = (value?: Date | string) => (value ? new Date(value).toISOString() : undefined);
-const publishedTimeIso = toIsoString(publishedTime);
-const modifiedTimeIso = toIsoString(modifiedTime);
+const publishedTimeIso = optionalIsoDate(publishedTime);
+const modifiedTimeIso = optionalIsoDate(modifiedTime);
+const isConsolePage = bodyClass === "console-page";
 ---
 
 <!doctype html>
@@ -156,13 +149,14 @@ const modifiedTimeIso = toIsoString(modifiedTime);
 
   <body class={bodyClass} data-initial-window={initialWindow}>
     <a class="skip-link" href="#main-content">Skip to content</a>
-    {bodyClass === "console-page" ? <main id="main-content"><slot /></main> : (
+    {isConsolePage && <main id="main-content"><slot /></main>}
+    {!isConsolePage && (
       <>
         <Desktop />
-        <DesktopWindow id="main" title="kasperrt.me" initial={initialWindow === 'main'}><Home /></DesktopWindow>
-        <DesktopWindow id="projects" title="Projects" initial={initialWindow === 'projects'}><Projects /></DesktopWindow>
-        <DesktopWindow id="writing" title="Writing" initial={initialWindow === 'writing'}><Writing /></DesktopWindow>
-        <DesktopWindow id="cv" title="Curriculum Vitae" initial={initialWindow === 'cv'}><CV /></DesktopWindow>
+        <DesktopWindow id="main" title="kasperrt.me" initial={initialWindow === "main"}><Home /></DesktopWindow>
+        <DesktopWindow id="projects" title="Projects" initial={initialWindow === "projects"}><Projects /></DesktopWindow>
+        <DesktopWindow id="writing" title="Writing" initial={initialWindow === "writing"}><Writing /></DesktopWindow>
+        <DesktopWindow id="cv" title="Curriculum Vitae" initial={initialWindow === "cv"}><CV /></DesktopWindow>
         <BlogWindows initialWindow={initialWindow} />
         <Terminal />
         <PrintCV />

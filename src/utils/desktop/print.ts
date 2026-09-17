@@ -1,11 +1,30 @@
+import { safeWrap } from "../wrap";
+
 const cvPdfUrl = "/kasper-rynning-tonnesen-cv.pdf";
+
+function printFrame(frame: HTMLIFrameElement) {
+  const content = frame.contentWindow;
+  if (!content) {
+    window.open(cvPdfUrl, "_blank", "noopener");
+    return;
+  }
+  const [error] = safeWrap(() => {
+    content.focus();
+    content.print();
+  });
+  if (error) {
+    console.warn(new Error("Could not print the CV in its frame", { cause: error }));
+    window.open(cvPdfUrl, "_blank", "noopener");
+  }
+}
 
 export function printCv() {
   let frame = document.querySelector<HTMLIFrameElement>("[data-cv-print-frame]");
   if (frame) {
-    if (frame.dataset.ready !== "true") return;
-    frame.contentWindow?.focus();
-    frame.contentWindow?.print();
+    if (frame.dataset.ready !== "true") {
+      return;
+    }
+    printFrame(frame);
     return;
   }
   frame = document.createElement("iframe");
@@ -17,12 +36,7 @@ export function printCv() {
     "load",
     () => {
       frame.dataset.ready = "true";
-      try {
-        frame.contentWindow?.focus();
-        frame.contentWindow?.print();
-      } catch {
-        window.open(cvPdfUrl, "_blank", "noopener");
-      }
+      printFrame(frame);
     },
     { once: true },
   );

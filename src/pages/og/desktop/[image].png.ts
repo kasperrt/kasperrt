@@ -3,6 +3,7 @@ import { getCollection } from "astro:content";
 import { getPageProjects } from "../../../data/projects";
 import { createDesktopOg, type DesktopOg } from "../../../utils/desktop-og";
 import { formatReadingTime } from "../../../utils/readingTime";
+import { buildErrorResponse } from "../../../utils/build-error";
 
 export const prerender = true;
 
@@ -48,7 +49,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       ],
     },
   };
-  for (const post of posts)
+  for (const post of posts) {
     cards[`blog-${post.id}`] = {
       kind: "article",
       windowTitle: `${post.data.title}.txt`,
@@ -56,10 +57,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
       subtitle: `${post.data.pubDate.toISOString().slice(0, 10)} · ${formatReadingTime(post.body ?? "")}`,
       summary: post.data.description,
     };
+  }
   return Object.entries(cards).map(([image, card]) => ({ params: { image }, props: { card } }));
 };
 
 export const GET: APIRoute = async ({ props }) => {
   const image = await createDesktopOg(props.card);
+  if (image instanceof Error) {
+    return buildErrorResponse(image);
+  }
   return new Response(image, { headers: { "Content-Type": "image/png" } });
 };

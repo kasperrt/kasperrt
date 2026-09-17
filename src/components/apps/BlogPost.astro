@@ -1,18 +1,29 @@
 ---
 import { render, type CollectionEntry } from "astro:content";
 import { formatReadingTime } from "~/utils/readingTime";
+
 interface Props {
   post: CollectionEntry<"blog">;
 }
+
 const { post } = Astro.props;
 const { Content } = await render(post);
 const readingTime = formatReadingTime(post.body ?? "");
+const emailSubject = encodeURIComponent(post.data.title);
 ---
+
 <section class="article-page markdown">
   <header class="article-heading">
     <h1>{post.data.title}</h1>
-    <div class="article-meta"><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time><span>{readingTime}</span>{post.data.draft && <span>Draft</span>}{post.data.updatedDate && <span>Updated {post.data.updatedDate.toISOString().slice(0, 10)}</span>}</div>
+    <div class="article-meta">
+      <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toISOString().slice(0, 10)}</time>
+      <span>{readingTime}</span>
+      {post.data.draft && <span>Draft</span>}
+      {post.data.updatedDate && <span>Updated {post.data.updatedDate.toISOString().slice(0, 10)}</span>}
+    </div>
   </header>
   <article><Content /></article>
-  <div class="section-heading"><a href={`mailto:kasper@rynning-toennesen.email?subject=${encodeURIComponent(post.data.title)}`}>Email me about this post</a></div>
+  <div class="section-heading">
+    <a href={`mailto:kasper@rynning-toennesen.email?subject=${emailSubject}`}>Email me about this post</a>
+  </div>
 </section>

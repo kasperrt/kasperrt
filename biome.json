@@ -51,6 +51,27 @@
   },
   "overrides": [
     {
+      "includes": [
+        "src/utils/desktop.ts",
+        "src/utils/desktop/**",
+        "src/utils/desktop-og.ts",
+        "src/utils/cv*.ts",
+        "src/utils/uptime.ts",
+        "src/utils/page-meta.ts",
+        "src/utils/build-error.ts",
+        "src/pages/og/desktop/**",
+        "src/pages/kasper-rynning-tonnesen-cv.pdf.ts"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useBlockStatements": "error",
+            "noNestedTernary": "error"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.svelte", "**/*.astro"],
       "linter": {
         "rules": {

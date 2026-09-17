@@ -51,7 +51,7 @@ export function getLinkValue(value: ConsoleCommand): string | null {
   if (parts.length <= 1) {
     return null;
   }
-  return parts[0];
+  return parts.at(0) ?? null;
 }
 
 export function getCommandText(value: ConsoleCommand): string {
@@ -66,11 +66,11 @@ export function getLinkSummary(value: ConsoleCommand): string | null {
   if (!isLink(value)) {
     return null;
   }
-  const parts = text.split(" ");
-  if (parts.length <= 1) {
+  const [url, ...description] = text.split(" ");
+  if (!url || description.length === 0) {
     return null;
   }
-  return text.substring(parts[0].length);
+  return text.substring(url.length);
 }
 
 export function isItalicCommand(value: ConsoleCommand): boolean {

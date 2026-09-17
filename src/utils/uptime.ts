@@ -19,7 +19,10 @@ export function formatAliveDuration(now: Date) {
   const month = value("month");
   const day = value("day");
   const birthdayPassed = month > birthMonth || (month === birthMonth && day >= birthDay);
-  const lastBirthdayYear = year - (birthdayPassed ? 0 : 1);
+  let lastBirthdayYear = year;
+  if (!birthdayPassed) {
+    lastBirthdayYear -= 1;
+  }
   const years = lastBirthdayYear - birthYear;
   const days = Math.floor(
     (Date.UTC(year, month - 1, day) - Date.UTC(lastBirthdayYear, birthMonth - 1, birthDay)) / 86400000,

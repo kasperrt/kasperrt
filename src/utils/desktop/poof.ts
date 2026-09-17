@@ -1,9 +1,20 @@
 const svgNamespace = "http://www.w3.org/2000/svg";
 
 export type PoofOrigin = { x: number; y: number };
+type CloudPath = [outline: string, fill: string];
+type CloudPuff = [x: number, y: number, size: number];
+
+export function poofOrigin(event: MouseEvent): PoofOrigin | undefined {
+  if (event.detail === 0) {
+    return;
+  }
+  return { x: event.clientX, y: event.clientY };
+}
 
 export function poofWindow(element: HTMLElement, origin?: PoofOrigin) {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
   const rect = (element.querySelector("[data-close]") ?? element).getBoundingClientRect();
   const cloud = document.createElement("div");
   cloud.className = "window-poof";
@@ -13,16 +24,17 @@ export function poofWindow(element: HTMLElement, origin?: PoofOrigin) {
     top: `${origin?.y ?? rect.top + rect.height / 2}px`,
     zIndex: "9999",
   });
-  const pixels = [
+  const pixels: CloudPath[] = [
     ["M7 0H14V2H17V4H20V6H22V12H20V14H16V16H5V14H2V12H0V6H2V4H5V2H7Z", "#171421"],
     ["M7 2H14V4H17V6H20V12H16V14H5V12H2V6H5V4H7Z", "#fff"],
     ["M5 5H7V7H5ZM15 8H17V10H15Z", "#171421"],
   ];
-  for (const [index, [dx, dy, size]] of [
+  const puffs: CloudPuff[] = [
     [-12, -8, 22],
     [12, -8, 22],
     [0, 4, 33],
-  ].entries()) {
+  ];
+  for (const [index, [dx, dy, size]] of puffs.entries()) {
     const puff = document.createElementNS(svgNamespace, "svg");
     puff.setAttribute("viewBox", "0 0 22 16");
     puff.setAttribute("shape-rendering", "crispEdges");

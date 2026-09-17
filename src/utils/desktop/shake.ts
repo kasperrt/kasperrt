@@ -11,16 +11,25 @@ export function createShakeDetector(x: number, y: number) {
   return (nextX: number, nextY: number, time: number): boolean => {
     return [nextX, nextY].some((position, index) => {
       const axis = axes[index];
+      if (!axis) {
+        return false;
+      }
       if (!axis.direction || time - axis.lastTurn > 350) {
         const distance = position - axis.origin;
-        if (Math.abs(distance) < 28) return false;
+        if (Math.abs(distance) < 28) {
+          return false;
+        }
         axis.direction = Math.sign(distance);
         axis.peak = position;
         axis.reversals = 0;
         axis.lastTurn = time;
-      } else if ((position - axis.peak) * axis.direction > 0) {
+        return false;
+      }
+      if ((position - axis.peak) * axis.direction > 0) {
         axis.peak = position;
-      } else if ((axis.peak - position) * axis.direction >= 28) {
+        return axis.reversals >= 3;
+      }
+      if ((axis.peak - position) * axis.direction >= 28) {
         axis.direction *= -1;
         axis.origin = axis.peak;
         axis.peak = position;

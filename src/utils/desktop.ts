@@ -10,7 +10,9 @@ const lines: Line[] = [{ text: "kasperrt.me" }, { text: "Type help for available
 
 function initDesktopApplication() {
   cleanup?.();
-  if (!document.querySelector("[data-window]")) return;
+  if (!document.querySelector("[data-window]")) {
+    return;
+  }
   const controller = new AbortController();
   const { signal } = controller;
   const desktop = initDesktop(signal);
@@ -25,7 +27,9 @@ function initDesktopApplication() {
     if (line.command) {
       row.className = "command-echo";
       const context = document.querySelector(".gnzh-context")?.cloneNode(true);
-      if (context) row.append(context);
+      if (context) {
+        row.append(context);
+      }
       const command = document.createElement("span");
       command.textContent = `╰─➤ ${line.text}`;
       row.append(command);
@@ -35,7 +39,10 @@ function initDesktopApplication() {
     if (line.uptime) {
       row.dataset.uptime = "";
       row.textContent = `Uptime: ${formatAliveDuration(new Date())}`;
-    } else if (line.href) {
+      output?.append(row);
+      return;
+    }
+    if (line.href) {
       const link = document.createElement("a");
       link.textContent = line.text;
       link.href = line.href;
@@ -44,7 +51,10 @@ function initDesktopApplication() {
         link.rel = "noopener noreferrer";
       }
       row.append(link);
-    } else row.textContent = line.text;
+      output?.append(row);
+      return;
+    }
+    row.textContent = line.text;
     output?.append(row);
   }
   output?.replaceChildren();
@@ -59,14 +69,16 @@ function initDesktopApplication() {
   }
   function updateTime() {
     const now = new Date();
-    for (const clock of document.querySelectorAll("[data-clock]"))
+    for (const clock of document.querySelectorAll("[data-clock]")) {
       clock.textContent = now.toLocaleTimeString("en-GB", {
         timeZone: "Europe/Oslo",
         hour: "2-digit",
         minute: "2-digit",
       });
-    for (const uptime of document.querySelectorAll("[data-uptime]"))
+    }
+    for (const uptime of document.querySelectorAll("[data-uptime]")) {
       uptime.textContent = `Uptime: ${formatAliveDuration(now)}`;
+    }
   }
   updateTime();
   const interval = window.setInterval(updateTime, 1000);
@@ -95,23 +107,36 @@ function initDesktopApplication() {
   ];
   function passwordPrompt(command?: string) {
     passwordCommand = command;
-    if (!input || !promptLabel) return;
+    if (!input || !promptLabel) {
+      return;
+    }
     input.value = "";
-    input.type = command ? "password" : "text";
-    input.autocomplete = command ? "new-password" : "off";
-    input.setAttribute("aria-label", command ? "Sudo password" : "Terminal command");
-    if (command) input.removeAttribute("name");
-    else input.name = "command";
-    promptLabel.textContent = command ? "[sudo] password for guest: " : "╰─➤ ";
+    if (command) {
+      input.type = "password";
+      input.autocomplete = "new-password";
+      input.setAttribute("aria-label", "Sudo password");
+      input.removeAttribute("name");
+      promptLabel.textContent = "[sudo] password for guest: ";
+      return;
+    }
+    input.type = "text";
+    input.autocomplete = "off";
+    input.setAttribute("aria-label", "Terminal command");
+    input.name = "command";
+    promptLabel.textContent = "╰─➤ ";
   }
   function execute(command: string, elevated = false) {
     const reply = getShellReply(command, elevated);
     if (reply) {
-      if (reply.text) append({ text: reply.text });
-      if (reply.passwordCommand) passwordPrompt(reply.passwordCommand);
+      if (reply.text) {
+        append({ text: reply.text });
+      }
+      if (reply.passwordCommand) {
+        passwordPrompt(reply.passwordCommand);
+      }
       return;
     }
-    const [name] = command.toLowerCase().split(/\s+/);
+    const [name = ""] = command.toLowerCase().split(/\s+/);
     switch (name) {
       case "help":
         append({
@@ -134,8 +159,9 @@ function initDesktopApplication() {
         append({ text: "CV", href: "/more" });
         break;
       case "projects":
-        for (const project of getPageProjects())
+        for (const project of getPageProjects()) {
           append({ text: `${project.name}: ${project.tagline}`, href: project.url });
+        }
         break;
       case "writing":
         append({ text: "Read the blog", href: "/blog" });
@@ -167,12 +193,18 @@ function initDesktopApplication() {
     }
   }
   function scrollToPrompt() {
-    if (output) output.scrollTop = output.scrollHeight;
+    if (output) {
+      output.scrollTop = output.scrollHeight;
+    }
   }
   function run(raw: string) {
     const command = raw.trim();
-    if (!command) return;
-    if (passwordCommand !== undefined) passwordPrompt();
+    if (!command) {
+      return;
+    }
+    if (passwordCommand !== undefined) {
+      passwordPrompt();
+    }
     history.push(command);
     historyIndex = history.length;
     append({ text: command, command: true });
@@ -183,16 +215,20 @@ function initDesktopApplication() {
     "submit",
     (event) => {
       event.preventDefault();
-      if (!input) return;
+      if (!input) {
+        return;
+      }
       if (passwordCommand !== undefined) {
         const command = passwordCommand;
         passwordPrompt();
         execute(command, true);
-      } else {
-        const command = input.value;
-        input.value = "";
-        run(command);
+        scrollToPrompt();
+        input.focus();
+        return;
       }
+      const command = input.value;
+      input.value = "";
+      run(command);
       scrollToPrompt();
       input.focus();
     },
@@ -202,17 +238,25 @@ function initDesktopApplication() {
     "click",
     (event) => {
       const target = event.target;
-      if (!(target instanceof Element) || target.closest("a, button, input")) return;
+      if (!(target instanceof Element) || target.closest("a, button, input")) {
+        return;
+      }
       const selection = window.getSelection();
-      if (selection && !selection.isCollapsed) return;
+      if (selection && !selection.isCollapsed) {
+        return;
+      }
       input?.focus({ preventScroll: true });
     },
     { signal },
   );
   const terminalObserver = new MutationObserver(() => {
-    if (terminal?.hidden && passwordCommand !== undefined) passwordPrompt();
+    if (terminal?.hidden && passwordCommand !== undefined) {
+      passwordPrompt();
+    }
   });
-  if (terminal) terminalObserver.observe(terminal, { attributes: true, attributeFilter: ["hidden"] });
+  if (terminal) {
+    terminalObserver.observe(terminal, { attributes: true, attributeFilter: ["hidden"] });
+  }
   document.querySelector("[data-uptime-open]")?.addEventListener("click", () => run("uptime"), { signal });
   input?.addEventListener(
     "keydown",
@@ -222,7 +266,9 @@ function initDesktopApplication() {
         (passwordCommand !== undefined && event.key === "Escape")
       ) {
         const selection = window.getSelection();
-        if (passwordCommand === undefined && selection && !selection.isCollapsed) return;
+        if (passwordCommand === undefined && selection && !selection.isCollapsed) {
+          return;
+        }
         event.preventDefault();
         passwordPrompt();
         append({ text: "^C" });
@@ -231,25 +277,35 @@ function initDesktopApplication() {
       }
       if (event.ctrlKey && event.key.toLowerCase() === "d" && !input.value) {
         event.preventDefault();
-        if (passwordCommand !== undefined) passwordPrompt();
-        else desktop.close("terminal");
+        if (passwordCommand !== undefined) {
+          passwordPrompt();
+          return;
+        }
+        desktop.close("terminal");
         return;
       }
       if (passwordCommand !== undefined) {
-        if (event.key === "ArrowUp" || event.key === "ArrowDown") event.preventDefault();
+        if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+          event.preventDefault();
+        }
         return;
       }
       if (event.key === "ArrowUp" || event.key === "ArrowDown") {
         event.preventDefault();
-        historyIndex = Math.max(0, Math.min(history.length, historyIndex + (event.key === "ArrowUp" ? -1 : 1)));
+        let direction = 1;
+        if (event.key === "ArrowUp") {
+          direction = -1;
+        }
+        historyIndex = Math.max(0, Math.min(history.length, historyIndex + direction));
         input.value = history[historyIndex] ?? "";
         input.setSelectionRange(input.value.length, input.value.length);
       }
       if (event.key === "Tab" && input.value.trim()) {
         const matches = commands.filter((command) => command.startsWith(input.value.trim().toLowerCase()));
-        if (matches.length === 1) {
+        const [match] = matches;
+        if (match && matches.length === 1) {
           event.preventDefault();
-          input.value = matches[0];
+          input.value = match;
         }
       }
     },
@@ -262,12 +318,22 @@ function initDesktopApplication() {
       let count = 0;
       for (const record of document.querySelectorAll<HTMLElement>("[data-project-record]")) {
         record.hidden = !record.dataset.projectRecord?.includes(search.value.trim().toLowerCase());
-        if (!record.hidden) count++;
+        if (!record.hidden) {
+          count++;
+        }
       }
       const label = document.querySelector("[data-project-count]");
-      if (label) label.textContent = `${count} project${count === 1 ? "" : "s"}`;
+      let projectLabel = "projects";
+      if (count === 1) {
+        projectLabel = "project";
+      }
+      if (label) {
+        label.textContent = `${count} ${projectLabel}`;
+      }
       const empty = document.querySelector<HTMLElement>("[data-project-empty]");
-      if (empty) empty.hidden = count > 0;
+      if (empty) {
+        empty.hidden = count > 0;
+      }
     },
     { signal },
   );

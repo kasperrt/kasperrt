@@ -9,11 +9,12 @@ const MORE_DIR = "./src/content/more/";
 
 function parseFrontmatter<T extends object>(file: string): T {
   const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(file);
-  if (!match) {
+  const content = match?.at(1);
+  if (!content) {
     return {} as T;
   }
 
-  return (load(match[1]) ?? {}) as T;
+  return (load(content) ?? {}) as T;
 }
 
 function getLatestDate(current: Date | null, next?: Date | null | string): Date | null {

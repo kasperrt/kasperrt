@@ -52,8 +52,11 @@
   });
   document.addEventListener("astro:after-swap", resumeCycle);
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) clearTimeout(timer);
-    else resumeCycle();
+    if (document.hidden) {
+      clearTimeout(timer);
+      return;
+    }
+    resumeCycle();
   });
   window.addEventListener("pageshow", resumeCycle);
 })();

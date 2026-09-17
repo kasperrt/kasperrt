@@ -12,6 +12,7 @@ const posts = await getCollection("blog", ({ id, data }) => !data.draft || initi
   const id = `article-${post.id}`;
   const initial = id === initialWindow;
   return <DesktopWindow id={id} title={`${post.data.title}.txt`} initial={initial} source={`/blog/${post.id}`}>
-    {initial ? <BlogPost post={post} /> : <p class="article-loading" role="status">Opening post…</p>}
+    {initial && <BlogPost post={post} />}
+    {!initial && <p class="article-loading" role="status">Opening post…</p>}
   </DesktopWindow>;
 })}
