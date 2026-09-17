@@ -89,6 +89,7 @@ export async function createDesktopOg(card: DesktopOg): Promise<Uint8Array<Array
   rect(52, 60, 986, windowHeight - 4, "#ffffff");
   rect(54, 62, 982, windowHeight - 8, face);
   button(64, 70, 18);
+  svg.push('<path d="M69 75l8 8M77 75l-8 8" fill="none" stroke="#111" stroke-width="2" shape-rendering="crispEdges"/>');
   button(980, 70, 18);
   button(1008, 70, 18);
   rect(985, 75, 8, 7, "#666666");
