@@ -189,7 +189,8 @@ export function initDesktop(signal: AbortSignal) {
     if (!source || !content || content.querySelector(".article-page") || element.dataset.articleLoading) return;
     element.dataset.articleLoading = "true";
     try {
-      const response = await fetch(source, { signal });
+      // Static pages live in directories; avoid the host's trailing-slash redirect.
+      const response = await fetch(`${source.replace(/\/$/, "")}/`, { signal });
       if (!response.ok) throw new Error(`Could not load post: ${response.status}`);
       const document = new DOMParser().parseFromString(await response.text(), "text/html");
       const article = document.querySelector(
