@@ -3,7 +3,8 @@ export const rootMeta = {
   description:
     "Kasper Rynning-Tønnesen is a CTO and software engineer in Oslo, Norway, working with Go, React, TypeScript, PostgreSQL, product engineering, and web architecture.",
   robots: "index, follow",
-  ogImage: "/og/kasper-rynning-tonnesen.png",
+  ogImage: "/og/desktop/home.png",
+  ogImageAlt: "Kasper Rynning-Tønnesen's homepage in a classic desktop window on a lilac background.",
   ogImageWidth: 1200,
   ogImageHeight: 630,
   ogUrl: "https://kasperrt.me/",
@@ -15,7 +16,7 @@ export const resumeMeta = {
   description:
     "View the CV of Kasper Rynning-Tønnesen, a CTO and software engineer with experience in full-stack development, React, Go, TypeScript, and scalable web architecture.",
   robots: "index, follow",
-  ogImage: "/og/kasper-rynning-tonnesen.png",
+  ogImage: "/og/desktop/cv.png",
   ogImageWidth: 1200,
   ogImageHeight: 630,
   ogUrl: "https://kasperrt.me/more/",
@@ -27,7 +28,7 @@ export const projectsMeta = {
   description:
     "Side projects by Kasper Rynning-Tønnesen: wiretyped, zoff, etys, swarm aid and degen - a typed HTTP client, shared music rooms, browser games, an agent message board, and generative art.",
   robots: "index, follow",
-  ogImage: "/og/kasper-rynning-tonnesen.png",
+  ogImage: "/og/desktop/projects.png",
   ogImageWidth: 1200,
   ogImageHeight: 630,
   ogUrl: "https://kasperrt.me/projects/",
@@ -39,7 +40,7 @@ export const blogIndexMeta = {
   description:
     "Software engineering posts from Kasper Rynning-Tønnesen about TypeScript, Go, web architecture, error handling, security, and building products.",
   robots: "index, follow",
-  ogImage: "/og/kasper-rynning-tonnesen-blog.png",
+  ogImage: "/og/desktop/writing.png",
   ogImageWidth: 1200,
   ogImageHeight: 630,
   ogUrl: "https://kasperrt.me/blog/",
@@ -50,7 +51,9 @@ export const consoleMeta = {
   title: "Console | kasper rynning-tønnesen",
   description: "A small terminal playground on kasperrt.me.",
   robots: "noindex, follow",
-  ogImage: "/me-small.png",
+  ogImage: "/og/desktop/home.png",
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
   ogUrl: "https://kasperrt.me/console/",
   twitterHandle: "kasper_rt",
 };

@@ -29,9 +29,15 @@ importers:
       '@astrojs/svelte':
         specifier: 9.0.1
         version: 9.0.1(@types/node@26.1.1)(astro@7.2.8(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.1.1)(jiti@2.7.0)(terser@5.46.2)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(svelte@5.56.4(@typescript-eslint/types@8.57.1))(terser@5.46.2)(typescript@6.0.3)(yaml@2.9.0)
+      fontkit:
+        specifier: 2.0.4
+        version: 2.0.4
       pdfkit:
         specifier: 0.20.2
         version: 0.20.2
+      sharp:
+        specifier: 0.35.4
+        version: 0.35.4(@types/node@26.1.1)
       svelte:
         specifier: 5.56.4
         version: 5.56.4(@typescript-eslint/types@8.57.1)
@@ -60,6 +66,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.3.2
         version: 4.3.2(vite@8.1.3(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.2)(yaml@2.9.0))
+      '@types/fontkit':
+        specifier: 2.0.9
+        version: 2.0.9
       '@types/js-yaml':
         specifier: 4.0.9
         version: 4.0.9
@@ -997,6 +1006,9 @@ packages:
 
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
+
+  '@types/fontkit@2.0.9':
+    resolution: {integrity: sha512-qNYerFky3muCmZPq+R+B3cUDRA5OONw/oh6aGGFxx2LOBz6yu8eamKusrhkHnC6rc2fm76+G9z9QoWSB2SaQaw==}
 
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
@@ -2590,8 +2602,7 @@ snapshots:
   '@esbuild/win32-x64@0.28.1':
     optional: true
 
-  '@img/colour@1.1.0':
-    optional: true
+  '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.35.4':
     optionalDependencies:
@@ -2942,6 +2953,10 @@ snapshots:
       '@types/estree': 1.0.9
 
   '@types/estree@1.0.9': {}
+
+  '@types/fontkit@2.0.9':
+    dependencies:
+      '@types/node': 26.1.1
 
   '@types/hast@3.0.4':
     dependencies:
@@ -3817,7 +3832,6 @@ snapshots:
       '@img/sharp-win32-ia32': 0.35.4
       '@img/sharp-win32-x64': 0.35.4
       '@types/node': 26.1.1
-    optional: true
 
   shiki@4.3.1:
     dependencies:
