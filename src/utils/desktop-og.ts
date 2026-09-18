@@ -152,8 +152,7 @@ async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: Des
     if (card.kind === "home") {
       text(card.title, 92, 164, 37);
       text(card.subtitle, 94, 211, 23);
-      text("Cofounder & CTO at embroidery.", 94, 261, 23);
-      text("Previously VP of Engineering at Pistachio.", 94, 297, 20, "#444444");
+      text("Previously VP of Engineering at Pistachio.", 94, 247, 20, "#444444");
       rect(838, 133, 164, 206, "#999999");
       rect(840, 135, 160, 202, "#dddddd");
       svg.push(`<image x="842" y="137" width="156" height="198" href="data:image/png;base64,${portrait}"/>`);

@@ -15,7 +15,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
       kind: "home",
       windowTitle: "kasperrt.me",
       title: "Kasper Rynning-Tønnesen",
-      subtitle: "Developer in Oslo, Norway.",
+      subtitle: "Cofounder & CTO at embroidery.",
     },
     projects: {
       kind: "listing",
