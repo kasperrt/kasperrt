@@ -2,6 +2,7 @@ import { isRecord } from "./state";
 import { safeWrap } from "../wrap";
 import type { initDesktop } from "./windows";
 import { easterEggIdeas } from "../../data/desktop-files";
+import { createWindow } from "./window-content";
 
 interface TextFile {
   id: string;
@@ -59,45 +60,39 @@ function saveFile(file: TextFile) {
 }
 
 export function initDocuments(signal: AbortSignal, desktop: Desktop) {
-  const template = document.querySelector<HTMLTemplateElement>("[data-text-file-template]");
+  const editorTemplate = document.querySelector<HTMLTemplateElement>("[data-text-file-editor-template]");
   const iconTemplate = document.querySelector<HTMLTemplateElement>("[data-text-file-icon-template]");
   const shortcuts = document.querySelector(".desktop-shortcuts");
   const form = document.querySelector<HTMLFormElement>("[data-new-file-form]");
   const nameInput = form?.querySelector<HTMLInputElement>("input");
   const errorMessage = form?.querySelector<HTMLElement>("[data-new-file-error]");
-  if (!template || !iconTemplate || !shortcuts || !form || !nameInput || !errorMessage) {
+  if (!editorTemplate || !iconTemplate || !shortcuts || !form || !nameInput || !errorMessage) {
     return;
   }
 
   const renderFile = (file: TextFile) => {
     const element =
-      document.querySelector<HTMLElement>(`[data-window="${file.id}"]`) ??
-      template.content.firstElementChild?.cloneNode(true);
+      document.querySelector<HTMLElement>(`[data-window="${file.id}"]`) ?? createWindow(file.id, file.name);
+    if (element instanceof Error) {
+      return new Error("Could not create the text file window.", { cause: element });
+    }
     const icon =
       document.querySelector<HTMLElement>(`[data-desktop-icon="${file.id}"]`) ??
       iconTemplate.content.firstElementChild?.cloneNode(true);
     if (!(element instanceof HTMLElement) || !(icon instanceof HTMLElement)) {
       return new Error("Could not create the text file window.");
     }
-    const editor = element.querySelector<HTMLTextAreaElement>("[data-file-editor]");
+    const editor = editorTemplate.content.firstElementChild?.cloneNode(true);
+    const workspace = element.querySelector(".workspace-content");
     const title = element.querySelector<HTMLElement>(".window-title");
     const status = element.querySelector<HTMLElement>(".window-status > span");
     const iconLabel = icon.querySelector<HTMLElement>("span");
-    if (!editor || !title || !status || !iconLabel) {
+    if (!(editor instanceof HTMLTextAreaElement) || !workspace || !title || !status || !iconLabel) {
       return new Error("The text file window is missing its controls.");
     }
-    element.id = `${file.id}-window`;
-    element.dataset.window = file.id;
+    workspace.replaceChildren(editor);
+    element.dataset.saveable = "";
     element.classList.add("text-file-window");
-    element.setAttribute("aria-label", file.name);
-    element.querySelector("[data-window-drag]")?.setAttribute("aria-label", `Move ${file.name} window with arrow keys`);
-    for (const control of ["close", "zoom", "shade"]) {
-      const button = element.querySelector<HTMLElement>(`[data-${control}]`);
-      if (button) {
-        button.setAttribute(`data-${control}`, file.id);
-      }
-    }
-    element.querySelector("[data-close]")?.setAttribute("aria-label", `Close ${file.name}`);
     title.textContent = file.name;
     editor.setAttribute("aria-label", `${file.name} contents`);
     editor.value = file.content;

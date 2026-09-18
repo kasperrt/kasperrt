@@ -4,6 +4,7 @@ import DesktopShortcut from "../DesktopShortcut.astro";
 import Header from "../Header.astro";
 import DesktopIcon from "../DesktopIcon.astro";
 import DesktopWindow from "../DesktopWindow.astro";
+import WindowLoading from "../WindowLoading.astro";
 ---
 
 <WindowFrame class="auxiliary-window top-32 left-50 h-84 w-104 resize-none" data-window="new-file" aria-label="New file" hidden>
@@ -19,10 +20,13 @@ import DesktopWindow from "../DesktopWindow.astro";
   </form>
 </WindowFrame>
 
-<template data-text-file-template>
-  <DesktopWindow id="text-file-template" title="Text file" saveable editor>
-    <textarea class="text-file-editor min-w-0 flex-1 resize-none border-0 bg-white p-3.75 font-mono text-xs/loose text-neutral-900 focus:outline-none" data-file-editor aria-label="Text file contents" spellcheck="false"></textarea>
+<template data-window-template>
+  <DesktopWindow id="window-template" title="Window" editor>
+    <WindowLoading />
   </DesktopWindow>
+</template>
+<template data-text-file-editor-template>
+  <textarea class="text-file-editor min-w-0 flex-1 resize-none border-0 bg-white p-3.75 font-mono text-xs/loose text-neutral-900 focus:outline-none" data-file-editor aria-label="Text file contents" spellcheck="false"></textarea>
 </template>
 <template data-text-file-icon-template>
   <DesktopShortcut label="" type="button" >

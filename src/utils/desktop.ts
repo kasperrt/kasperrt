@@ -20,7 +20,18 @@ function initDesktopApplication() {
       if (error) {
         return new Error("Could not load the terminal", { cause: error });
       }
+      if (windowSignal.aborted) {
+        return;
+      }
       terminalRun = module.initTerminal(windowSignal, desktop);
+      windowSignal.addEventListener(
+        "abort",
+        () => {
+          terminalRun = undefined;
+          pendingUptime = false;
+        },
+        { once: true },
+      );
       if (pendingUptime) {
         terminalRun("uptime");
         pendingUptime = false;
@@ -31,12 +42,18 @@ function initDesktopApplication() {
       if (error) {
         return new Error("Could not load the music player", { cause: error });
       }
+      if (windowSignal.aborted) {
+        return;
+      }
       module.initMusicPlayer(windowSignal);
     }
     if (id === "env") {
       const [error, module] = await safeWrapAsync(() => import("./desktop/environment"));
       if (error) {
         return new Error("Could not load the environment editor", { cause: error });
+      }
+      if (windowSignal.aborted) {
+        return;
       }
       module.initEnvironmentFile(windowSignal);
     }

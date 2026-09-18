@@ -49,7 +49,10 @@ const {
 }: Props = Astro.props;
 const initialWindow = getInitialWindow(Astro.url.pathname);
 const posts = await getCollection("blog");
-const windowIds = [...windowApps, ...posts.map((post) => `article-${post.id}`)].join(" ");
+const windowTitles = {
+  ...windowApps,
+  ...Object.fromEntries(posts.map((post) => [`article-${post.id}`, `${post.data.title}.txt`])),
+};
 const canonicalUrl = siteUrl(Astro.url.pathname, Astro.site, "");
 const rssUrl = siteUrl("/rss.xml", Astro.site);
 const authorUrl = siteUrl("/", Astro.site);
@@ -128,27 +131,17 @@ const desktopBootstrapScript = `(${desktopBootstrap.toString()})(${safeWrap.toSt
         />
       ))
     }
-    <meta
-      name="theme-color"
-      content="#b09acb"
-      media="(prefers-color-scheme: light)"
-    />
-    <meta
-      name="theme-color"
-      content="#b09acb"
-      media="(prefers-color-scheme: dark)"
-    />
+    <meta name="theme-color" content="#b09acb" />
   </head>
 
   <body
     class="m-0 h-svh min-h-svh overflow-hidden overscroll-none bg-[var(--desktop,#bba8de)] bg-[repeating-linear-gradient(0deg,#ffffff04_0_1px,transparent_1px_2px)] p-0 font-desktop text-xs/normal text-neutral-900 [transition:var(--desktop-transition,none)] [:where(&)_a]:text-link [:where(&)_a]:underline [:where(&)_a]:underline-offset-2 [:where(&)_a:visited]:text-purple-900 [:where(&)_a:hover]:text-blue-950 selection:bg-selection selection:text-white [:where(&)_button]:cursor-pointer [&_:where(button,a,summary,[tabindex]):focus-visible]:outline [&_:where(button,a,summary,[tabindex]):focus-visible]:outline-dotted [&_:where(button,a,summary,[tabindex]):focus-visible]:-outline-offset-2 [&_input:focus-visible]:outline [&_input:focus-visible]:outline-indigo-700 [&_input:focus-visible]:outline-offset-1 [&.dragging]:cursor-grabbing [&.dragging]:select-none [&.dragging_*]:cursor-grabbing [&.dragging_*]:select-none [&.dragging_iframe]:pointer-events-none motion-reduce:transition-none print:m-0 print:h-auto print:min-h-0 print:overflow-visible print:bg-white print:bg-none print:p-0 print:transition-none print:[&>:not(#cv-window)]:hidden"
     data-initial-window={initialWindow}
-    data-window-ids={windowIds}
+    data-window-titles={JSON.stringify(windowTitles)}
   >
     <a class="skip-link fixed -top-20 left-5 z-20000 bg-white p-2 focus:top-7.5" href="#main-content">Skip to content</a>
     <Desktop />
-    <AppWindow id="main" initial={initialWindow === "main"} />
-    {initialWindow !== "main" && <AppWindow id={initialWindow} initial />}
+    <AppWindow id={initialWindow} initial />
     <script>import "../utils/desktop";</script>
   </body>
 </html>

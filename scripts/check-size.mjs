@@ -20,7 +20,7 @@ async function checkSizes() {
   }
   const checked = new Set([
     ...initial,
-    ...files.filter((file) => /\.(?:html|js|css|woff2)$/.test(file) || /^projects\/.*\.webp$/.test(file)),
+    ...files.filter((file) => /\.(?:html|js|css|svg|woff2)$/.test(file) || /^projects\/.*\.webp$/.test(file)),
   ]);
   const sizes = await Promise.all(
     Array.from(checked, async (file) => {
@@ -29,7 +29,7 @@ async function checkSizes() {
         return new Error(`Could not measure ${file}`, { cause: error });
       }
       let transferred = body.length;
-      if (/\.(?:html|css|js)$/.test(file)) {
+      if (/\.(?:html|css|js|svg)$/.test(file)) {
         const [compressionError, compressed] = await safeWrapAsync(() => readFile(`build/${file}.br`));
         if (compressionError) {
           return new Error(`Could not measure the compressed ${file}`, { cause: compressionError });

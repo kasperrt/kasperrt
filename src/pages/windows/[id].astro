@@ -7,7 +7,7 @@ export const partial = true;
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
-  return [...windowApps, ...posts.map((post) => `article-${post.id}`)].map((id) => ({ params: { id } }));
+  return [...Object.keys(windowApps), ...posts.map((post) => `article-${post.id}`)].map((id) => ({ params: { id } }));
 }
 
 const id = Astro.params.id ?? "main";

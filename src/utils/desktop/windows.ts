@@ -13,6 +13,12 @@ import { arrowOffset, eventElement } from "./events";
 import { saveBackgroundColor } from "./background";
 import { safeWrap, safeWrapAsync } from "../wrap";
 import type { initTrash } from "./trash";
+import { createWindow, installWindowContent, readWindowTitles, showWindowStatus } from "./window-content";
+
+interface WindowLoad {
+  controller: AbortController;
+  result: Promise<void>;
+}
 
 type DragKind = "window" | "icon";
 interface DraggedIcon {
@@ -45,9 +51,16 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
     console.warn(error);
   }
   const compact = () => window.innerWidth < 640;
-  const availableWindows = new Set(document.body.dataset.windowIds?.split(" ") ?? []);
-  const loadingWindows = new Map<string, Promise<HTMLElement | Error>>();
-  let generation = 0;
+  const titles = readWindowTitles();
+  let windowTitles = new Map<string, string>();
+  if (titles instanceof Error) {
+    console.warn(titles);
+  }
+  if (!(titles instanceof Error)) {
+    windowTitles = titles;
+  }
+  const availableWindows = new Set(windowTitles.keys());
+  const loadingWindows = new Map<string, WindowLoad>();
   const windows = Array.from(document.querySelectorAll<HTMLElement>("[data-window]"));
   const icons = Array.from(document.querySelectorAll<HTMLElement>("[data-desktop-icon]"));
   const regularIcons = icons.filter((icon) => !icon.hasAttribute("data-hidden-icon"));
@@ -298,80 +311,126 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
     element.classList.add("inactive");
     observer.observe(element);
   }
-  async function ensureWindow(id: string): Promise<HTMLElement | Error> {
+  function ensureWindow(id: string): HTMLElement | Error {
     const existing = find(id);
     if (existing) {
       return existing;
     }
-    if (!availableWindows.has(id)) {
+    const title = windowTitles.get(id);
+    if (!title) {
       return new Error(`Unknown desktop window: ${id}`);
+    }
+    const element = createWindow(id, title);
+    if (element instanceof Error) {
+      return new Error(`Could not create ${id}`, { cause: element });
+    }
+    element.dataset.loadState = "idle";
+    document.body.append(element);
+    registerWindow(element);
+    return element;
+  }
+  function cancelWindowLoad(id: string) {
+    const pending = loadingWindows.get(id);
+    if (!pending) {
+      return;
+    }
+    pending.controller.abort();
+    loadingWindows.delete(id);
+    const element = find(id);
+    if (element) {
+      element.dataset.loadState = "idle";
+      element.removeAttribute("aria-busy");
+    }
+  }
+  async function loadWindow(element: HTMLElement) {
+    const id = element.dataset.window;
+    if (!id || !element.dataset.loadState) {
+      return;
     }
     const pending = loadingWindows.get(id);
     if (pending) {
-      return pending;
+      return pending.result;
     }
-    const version = generation;
+    const statusError = showWindowStatus(element);
+    if (statusError) {
+      console.warn(statusError);
+      return;
+    }
+    applyWindow(element);
+    element.dataset.loadState = "loading";
+    const controller = new AbortController();
+    const loadSignal = controller.signal;
+    signal.addEventListener("abort", () => controller.abort(), { once: true, signal: loadSignal });
     const load = async () => {
-      const element = await fetchWindow(id, signal);
-      if (element instanceof Error) {
-        return element;
+      const content = await fetchWindow(id, loadSignal);
+      if (loadSignal.aborted) {
+        return;
       }
-      if (signal.aborted || version !== generation) {
-        return new Error(`Loading ${id} was cancelled`);
+      if (content instanceof Error) {
+        return new Error(`Could not load ${id}`, { cause: content });
       }
-      document.body.append(element);
-      const windowController = new AbortController();
-      signal.addEventListener("abort", () => windowController.abort(), { once: true, signal: windowController.signal });
+      const contentError = installWindowContent(element, content);
+      if (contentError) {
+        return new Error(`Could not display ${id}`, { cause: contentError });
+      }
+      applyWindow(element);
       if (id === "trash") {
         const [error, module] = await safeWrapAsync(() => import("./trash"));
         if (error) {
-          windowController.abort();
-          element.remove();
           return new Error("Could not load Trash", { cause: error });
         }
-        renderTrash = module.initTrash(windowController.signal, restoreTrashItem);
+        if (loadSignal.aborted) {
+          return;
+        }
+        renderTrash = module.initTrash(loadSignal, restoreTrashItem);
         showTrash();
       }
-      const error = await prepareWindow(element, windowController.signal);
+      const error = await prepareWindow(element, loadSignal);
       if (error) {
-        windowController.abort();
-        element.remove();
         return new Error(`Could not initialize ${id}`, { cause: error });
       }
-      if (signal.aborted || version !== generation) {
-        windowController.abort();
-        element.remove();
-        return new Error(`Loading ${id} was cancelled`);
-      }
-      registerWindow(element);
-      syncAppEntries();
-      return element;
     };
-    const promise = load();
-    loadingWindows.set(id, promise);
-    const result = await promise;
-    loadingWindows.delete(id);
+    const finish = async () => {
+      const error = await load();
+      if (loadSignal.aborted) {
+        return;
+      }
+      loadingWindows.delete(id);
+      element.removeAttribute("aria-busy");
+      if (error) {
+        controller.abort();
+        console.warn(error);
+        element.dataset.loadState = "error";
+        const statusError = showWindowStatus(element, true);
+        if (statusError) {
+          console.warn(statusError);
+        }
+        applyWindow(element);
+        return;
+      }
+      delete element.dataset.loadState;
+      syncAppEntries();
+      if (!element.hidden && !isTrashed(id)) {
+        loadFrame(element);
+        if (frontWindow() === element) {
+          updateSaveMenu(element);
+          if (id === "terminal") {
+            element.querySelector<HTMLInputElement>("input")?.focus();
+          }
+        }
+      }
+    };
+    const result = finish();
+    loadingWindows.set(id, { controller, result });
     return result;
   }
   async function open(id: string) {
     if (isTrashed("main") || isTrashed(id)) {
       return;
     }
-    const version = generation;
-    const icon = icons.find((item) => item.dataset.desktopIcon === id);
-    icon?.setAttribute("aria-busy", "true");
-    const element = await ensureWindow(id);
-    icon?.removeAttribute("aria-busy");
-    if (signal.aborted || version !== generation || isTrashed("main") || isTrashed(id)) {
-      return;
-    }
+    const element = ensureWindow(id);
     if (element instanceof Error) {
       console.warn(element);
-      const content = document.querySelector("[data-info-content]");
-      if (content) {
-        content.textContent = "Couldn't open this window. Check your connection and try again.";
-      }
-      void open("info");
       return;
     }
     const entry = state.windows[id];
@@ -405,6 +464,10 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
     if (id === "new-file") {
       element.querySelector<HTMLInputElement>("input")?.select();
     }
+    if (element.dataset.loadState) {
+      await loadWindow(element);
+      return;
+    }
     loadFrame(element);
   }
   function close(id: string, origin?: PoofOrigin) {
@@ -414,6 +477,7 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
     if (!element || !entry || entry.closed) {
       return;
     }
+    cancelWindowLoad(id);
     poofWindow(element, origin);
     state.windows[id] = {
       ...createWindowState(id, initial),
@@ -670,7 +734,9 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
   });
 
   function reset() {
-    generation++;
+    for (const id of loadingWindows.keys()) {
+      cancelWindowLoad(id);
+    }
     crashScreen?.close();
     const backgroundError = saveBackgroundColor(null);
     if (backgroundError) {
@@ -717,6 +783,9 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
         }
         if (button.dataset.close) {
           close(button.dataset.close, poofOrigin(event));
+        }
+        if (button.dataset.windowRetry) {
+          open(button.dataset.windowRetry);
         }
         if (button.dataset.open) {
           open(button.dataset.open);
@@ -863,21 +932,13 @@ export function initDesktop(signal: AbortSignal, prepareWindow: PrepareWindow) {
     }
     bringForward(initialElement);
   }
-  async function restoreWindow(id: string) {
-    const version = generation;
-    const element = await ensureWindow(id);
-    if (signal.aborted || generation !== version) {
-      return;
-    }
+  function restoreWindow(id: string) {
+    const element = ensureWindow(id);
     if (element instanceof Error) {
       console.warn(element);
       return;
     }
-    loadFrame(element);
-    const front = frontWindow();
-    for (const item of windows) {
-      item.classList.toggle("inactive", item !== front);
-    }
+    void loadWindow(element);
   }
   for (const [id, entry] of Object.entries(state.windows)) {
     if (!entry.closed && !find(id) && availableWindows.has(id) && !isTrashed("main") && !isTrashed(id)) {
