@@ -56,7 +56,7 @@ async function readResources(): Promise<DesktopResources | Error> {
 async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: DesktopResources) {
   const svg: string[] = [];
   const rect = (x: number, y: number, w: number, h: number, fill: string) =>
-    svg.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/>`);
+    svg.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" shape-rendering="crispEdges"/>`);
   const measure = (value: string, size: number, font = chicago) =>
     (font.layout(value).advanceWidth * size) / font.unitsPerEm;
 
@@ -103,11 +103,11 @@ async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: Des
     }
     return y + wrapped.length * size * 1.45;
   }
-  function button(x: number, y: number, size: number) {
-    rect(x, y, size, size, "#555555");
-    rect(x + 1, y + 1, size - 1, size - 1, "#ffffff");
-    rect(x + 2, y + 2, size - 3, size - 3, "#eeeeee");
-    rect(x + 4, y + 4, size - 5, size - 5, "#aaaaaa");
+  function button(x: number, y: number) {
+    rect(x, y, 24, 24, "#555555");
+    rect(x + 1.5, y + 1.5, 21, 21, "#ffffff");
+    rect(x + 3, y + 3, 19.5, 19.5, "#888888");
+    rect(x + 3, y + 3, 18, 18, face);
   }
   rect(0, 0, width, height, "#bba8de");
   let windowHeight = 516;
@@ -122,13 +122,15 @@ async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: Des
   rect(50, 58, 990, windowHeight, ink);
   rect(52, 60, 986, windowHeight - 4, "#ffffff");
   rect(54, 62, 982, windowHeight - 8, face);
-  button(64, 70, 18);
-  svg.push('<path d="M69 75l8 8M77 75l-8 8" fill="none" stroke="#111" stroke-width="2" shape-rendering="crispEdges"/>');
-  button(980, 70, 18);
-  button(1008, 70, 18);
-  rect(985, 75, 8, 7, "#666666");
-  rect(986, 76, 6, 5, "#dddddd");
-  rect(1012, 77, 10, 2, "#666666");
+  button(64, 68);
+  svg.push(
+    '<path d="M1 1h1v1h1v1h2V2h1V1h1v1H6v1H5v2h1v1h1v1H6V6H5V5H3v1H2v1H1V6h1V5h1V3H2V2H1z" transform="translate(70 74) scale(1.5)" fill="#333333" shape-rendering="crispEdges"/>',
+  );
+  button(976, 68);
+  button(1008, 68);
+  rect(982, 74, 12, 12, "#333333");
+  rect(983.5, 75.5, 9, 9, face);
+  rect(1014, 78.5, 12, 3, "#333333");
   for (let y = 69; y <= 88; y += 4) {
     rect(94, y, 874, 1, "#888888");
     rect(94, y + 1, 874, 1, "#ffffff");
@@ -144,8 +146,10 @@ async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: Des
   rect(58, 100, 974, windowHeight - 80, "#ffffff");
   text("kasperrt.me", 64, 560 + bottomOffset, 17);
   text("Oslo, Norway", 857, 560 + bottomOffset, 16, "#444444", mono);
-  for (let i = 0; i < 4; i++) {
-    svg.push(`<path d="M${1022 + i * 4} ${568 + bottomOffset}L1034 ${556 + i * 4 + bottomOffset}" stroke="#777777"/>`);
+  for (let row = 0; row < 3; row++) {
+    for (let column = 0; column <= row; column++) {
+      rect(1031 - column * 4.5, 553 + bottomOffset + row * 4.5, 3, 3, "#777777");
+    }
   }
 
   function drawContent() {
@@ -184,8 +188,18 @@ async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: Des
   }
   drawContent();
   svg.push("</g>");
-  const source = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${svg.join("")}</svg>`;
-  return new Uint8Array(await sharp(Buffer.from(source)).png().toBuffer());
+  let outputWidth = width;
+  let outputHeight = height;
+  if (card.kind === "home") {
+    outputWidth = 800;
+    outputHeight = 420;
+  }
+  const source = `<svg xmlns="http://www.w3.org/2000/svg" width="${outputWidth}" height="${outputHeight}" viewBox="0 0 ${width} ${height}">${svg.join("")}</svg>`;
+  return new Uint8Array(
+    await sharp(Buffer.from(source))
+      .png({ palette: true, colours: 64, dither: 0, compressionLevel: 9, effort: 10 })
+      .toBuffer(),
+  );
 }
 
 export async function createDesktopOg(card: DesktopOg) {

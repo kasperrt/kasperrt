@@ -5,8 +5,8 @@ export const rootMeta = {
   robots: "index, follow",
   ogImage: "/og/desktop/home.png",
   ogImageAlt: "Kasper Rynning-Tønnesen's homepage in a classic desktop window on a lilac background.",
-  ogImageWidth: 1200,
-  ogImageHeight: 630,
+  ogImageWidth: 800,
+  ogImageHeight: 420,
   ogUrl: "https://kasperrt.me/",
   twitterHandle: "kasper_rt",
 };
