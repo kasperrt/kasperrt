@@ -1,7 +1,7 @@
 export const desktopApps = [
   {
     id: "brick",
-    title: "Brick Racers",
+    title: "Web Racers",
     url: "https://brick.etys.no",
     description: "Build a car, race for championship rewards, or challenge a friend.",
   },

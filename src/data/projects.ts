@@ -42,7 +42,7 @@ export const projects: Project[] = [
     url: "https://etys.no",
     tagline: "Playful browser games and tiny web experiments.",
     blurb:
-      "A small pile of browser games and tools: LEGO Racers reworked for the browser, a 3D endless runner, confession rooms, code challenges and a drinking game timer. Each one quick to open, none of them particularly serious.",
+      "A small pile of browser games and tools: Web Racers, a LEGO Racers rework for the browser with online multiplayer, a 3D endless runner, confession rooms, code challenges and a drinking game timer. Each one quick to open, none of them particularly serious.",
     image: "etys",
     alt: "The etys.no landing page",
   },
