@@ -7,11 +7,11 @@ onlyBuiltDependencies:
 
 overrides:
   defu: '>=6.1.6'
-  devalue: '>=5.8.1'
+  devalue: '^5.9.3'
   esbuild: 0.28.1
-  fast-uri: 4.1.3
-  fast-uri@>=4.0.0 <4.1.3: '>=4.1.3'
+  fast-uri: 4.1.5
   fast-xml-parser: '>=5.10.1'
+  http-cache-semantics: '>=4.3.0'
   js-yaml: 4.3.2
   lodash: 4.17.23
   nanoid: 3.3.18
@@ -19,6 +19,7 @@ overrides:
   postcss: 8.5.23
   postcss@<=8.5.17: '>=8.5.18'
   postcss@<=8.5.22: '>=8.5.23'
-  smol-toml: '>=1.7.1'
+  smol-toml: '>=1.9.0'
+  source-map-js: '>=1.2.2'
   svgo: '>=4.1.0'
   yaml: '>=2.8.3'
