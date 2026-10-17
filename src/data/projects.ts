@@ -37,6 +37,16 @@ export const projects: Project[] = [
     alt: "The wiretyped.io landing page",
   },
   {
+    name: "smolter",
+    host: "kasperrt.github.io/smolter",
+    url: "https://kasperrt.github.io/smolter",
+    tagline: "A tiny React and Preact router with loaders and actions.",
+    blurb:
+      "Small, typed routing for React and Preact, built around loaders and actions. Start with navigation, then add data loading, forms, server rendering and file-based routes as you need them.",
+    image: "smolter",
+    alt: "The smolter logo with its loaders and actions tagline",
+  },
+  {
     name: "etys",
     host: "etys.no",
     url: "https://etys.no",
@@ -45,6 +55,16 @@ export const projects: Project[] = [
       "A small pile of browser games and tools: Web Racers, a LEGO Racers rework for the browser with online multiplayer, a 3D endless runner, confession rooms, code challenges and a drinking game timer. Each one quick to open, none of them particularly serious.",
     image: "etys",
     alt: "The etys.no landing page",
+  },
+  {
+    name: "poppel",
+    host: "poppel.io",
+    url: "https://poppel.io",
+    tagline: "A holding company showcase with a browser game.",
+    blurb:
+      "A playful showcase for a holding company, with pixel art and a browser game tucked into the site. A little more fun than the usual company page.",
+    image: "poppel",
+    alt: "Pixel-art Kasper peeking from a poplar tree on poppel.io",
   },
   {
     name: "swarm aid",

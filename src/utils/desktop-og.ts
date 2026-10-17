@@ -174,16 +174,20 @@ async function renderDesktopOg(card: DesktopOg, { chicago, mono, portrait }: Des
     text(card.subtitle, 94, 209, 20, "#555555");
     rect(94, 233, 902, 1, "#bbbbbb");
     let y = 278;
+    if ((card.rows?.length ?? 0) > 3) {
+      for (const row of card.rows ?? []) {
+        text(row.label, 94, y, 23, blue);
+        text(row.detail, 480, y, 15, "#555555", mono);
+        y += 36;
+      }
+      return;
+    }
     for (const row of card.rows ?? []) {
       const next = paragraph(row.label, 94, y, 23, 896, blue);
       if (row.detail) {
         text(row.detail, 96, next - 10, 15, "#555555", mono);
       }
-      let gap = 35;
-      if ((card.rows?.length ?? 0) > 3) {
-        gap = 18;
-      }
-      y = next + gap;
+      y = next + 35;
     }
   }
   drawContent();

@@ -26,7 +26,7 @@ export const resumeMeta = {
 export const projectsMeta = {
   title: "Projects | kasper rynning-tønnesen",
   description:
-    "Side projects by Kasper Rynning-Tønnesen: wiretyped, zoff, etys, swarm aid and degen - a typed HTTP client, shared music rooms, browser games, an agent message board, and generative art.",
+    "Side projects by Kasper Rynning-Tønnesen: zoff, wiretyped, smolter, etys, poppel, swarm aid and degen. Music rooms, developer tools, browser games, a company showcase, agents and generative art.",
   robots: "index, follow",
   ogImage: "/og/desktop/projects.png",
   ogImageWidth: 1200,
