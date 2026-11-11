@@ -28,13 +28,13 @@ export const projects: Project[] = [
   },
   {
     name: "wiretyped",
-    host: "wiretyped.io",
-    url: "https://wiretyped.io",
+    host: "kasperrt.github.io/wiretyped",
+    url: "https://kasperrt.github.io/wiretyped/",
     tagline: "Typed HTTP client for fetch runtimes.",
     blurb:
       "A universal, fetch-based HTTP client. Endpoints are declared once and validated with Standard Schema, and every call comes back error-first, so responses are never a guess. Retries, caching and SSE are part of the deal.",
     image: "wiretyped",
-    alt: "The wiretyped.io landing page",
+    alt: "The WireTyped documentation landing page",
   },
   {
     name: "smolter",
